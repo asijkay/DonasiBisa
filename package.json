@@ -16,7 +16,8 @@
     "db:migrate": "tsx --env-file=.env.local src/db/migrate.ts",
     "db:seed": "tsx --conditions=react-server --env-file=.env.local src/db/seed.ts",
     "db:studio": "drizzle-kit studio",
-    "jobs:run": "tsx --conditions=react-server --env-file=.env.local scripts/run-jobs.ts"
+    "jobs:run": "tsx --conditions=react-server --env-file=.env.local scripts/run-jobs.ts",
+    "qstash:schedules": "tsx --env-file=.env.local scripts/setup-qstash-schedules.ts"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.11.3",

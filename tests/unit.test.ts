@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { canTransition, mapMidtransStatus, mapXenditStatus } from "../src/lib/payments/status-mapper";
 import { midtransAdapter, midtransSignature } from "../src/lib/payments/providers/midtrans";
 import { xenditAdapter } from "../src/lib/payments/providers/xendit";
@@ -9,6 +9,8 @@ import {
   getDonationBlockReason,
   resolveDonationAmount,
 } from "../src/services/campaigns.service";
+import { resendEmailProvider } from "../src/lib/notifications/email";
+import { NotificationSendError } from "../src/lib/notifications/whatsapp";
 import { hasPermission } from "../src/lib/auth/permissions";
 import { findUnknownPlaceholders, renderTemplate } from "../src/lib/notifications/render";
 import { normalizeWhatsapp, slugify } from "../src/lib/utils/contact";
@@ -136,6 +138,36 @@ describe("Xendit webhook payload shapes (per official docs)", () => {
   it("also accepts a flat (unwrapped) payload", async () => {
     const flat = JSON.stringify({ event: "payment.capture", payment_request_id: "pr-9", reference_id: "DON-F-1", status: "SUCCEEDED", request_amount: 5000, currency: "IDR" });
     expect(await xenditAdapter.verifyAndNormalizeWebhook(flat, h)).toMatchObject({ status: "SUCCEEDED", providerReference: "DON-F-1" });
+  });
+});
+
+describe("Resend email provider", () => {
+  afterEach(() => { vi.restoreAllMocks(); delete process.env.RESEND_API_KEY; });
+  const msg = { to: "donor@example.com", subject: "Halo", text: "isi", html: "<p>isi</p>" };
+
+  it("posts to the Resend API with bearer auth and returns the message id", async () => {
+    process.env.RESEND_API_KEY = "re_test_key";
+    const { resetEnvCache } = await import("../src/lib/env");
+    resetEnvCache();
+    const spy = vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response(JSON.stringify({ id: "msg_123" }), { status: 200 }));
+    await expect(resendEmailProvider.send(msg)).resolves.toEqual({ messageId: "msg_123" });
+    const [url, init] = spy.mock.calls[0];
+    expect(url).toBe("https://api.resend.com/emails");
+    expect((init as RequestInit).headers).toMatchObject({ Authorization: "Bearer re_test_key" });
+    expect(JSON.parse((init as RequestInit).body as string)).toMatchObject({ to: ["donor@example.com"], subject: "Halo" });
+  });
+
+  it("marks 4xx as non-retryable and 5xx/429 as retryable", async () => {
+    process.env.RESEND_API_KEY = "re_test_key";
+    const { resetEnvCache } = await import("../src/lib/env");
+    resetEnvCache();
+    const f = vi.spyOn(globalThis, "fetch");
+    f.mockResolvedValueOnce(new Response(JSON.stringify({ message: "domain not verified" }), { status: 403 }));
+    await expect(resendEmailProvider.send(msg)).rejects.toMatchObject({ retryable: false });
+    f.mockResolvedValueOnce(new Response("{}", { status: 503 }));
+    await expect(resendEmailProvider.send(msg)).rejects.toBeInstanceOf(NotificationSendError);
+    f.mockResolvedValueOnce(new Response("{}", { status: 429 }));
+    await expect(resendEmailProvider.send(msg)).rejects.toMatchObject({ retryable: true });
   });
 });
 

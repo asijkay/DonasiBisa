@@ -31,6 +31,7 @@ const schema = z.object({
   QSTASH_TOKEN: optionalStr,
   QSTASH_CURRENT_SIGNING_KEY: optionalStr,
   QSTASH_NEXT_SIGNING_KEY: optionalStr,
+  RESEND_API_KEY: optionalStr,
   SMTP_HOST: z.string().default("smtp.gmail.com"),
   SMTP_PORT: z.coerce.number().default(465),
   SMTP_SECURE: bool,

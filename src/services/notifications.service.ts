@@ -13,7 +13,7 @@ import { getEnv, isDevelopment } from "@/lib/env";
 import { enqueueJob, registerLocalHandler } from "@/lib/qstash/queue";
 import { EVENT_KEYS, type EventKey } from "@/lib/notifications/templates";
 import { renderTemplate, type TemplateVars } from "@/lib/notifications/render";
-import { emailConfigured, smtpEmailProvider, type EmailProvider } from "@/lib/notifications/email";
+import { emailConfigured, getEmailProvider, type EmailProvider } from "@/lib/notifications/email";
 import { fonnteProvider, NotificationSendError, whatsappConfigured, type WhatsappProvider } from "@/lib/notifications/whatsapp";
 import { formatIDR } from "@/lib/utils/format";
 
@@ -134,7 +134,7 @@ export async function dispatchNotification(logId: string, deps: DispatchDeps = {
     const attempts = log.attempts + 1;
     const result =
       channel === "EMAIL"
-        ? await (deps.email ?? smtpEmailProvider).send({ to: log.recipient, subject, text, html })
+        ? await (deps.email ?? getEmailProvider()).send({ to: log.recipient, subject, text, html })
         : await (deps.whatsapp ?? fonnteProvider).send({ to: log.recipient, message: text });
     await mark({ status: "SENT", attempts, templateId: template.id, providerMessageId: result.messageId ?? null, sentAt: new Date(), errorMessage: null });
   } catch (e) {

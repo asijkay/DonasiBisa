@@ -28,7 +28,7 @@ Tanpa kredensial apa pun aplikasi tetap bisa dicoba end-to-end di mode developme
 | Midtrans / Xendit | **Simulator gateway lokal** (`PAYMENT_SIMULATOR=true`, hanya `APP_ENV=development`). Adapter asli, verifikasi signature, dan settlement tetap berjalan; tombol "Bayar" di `/dev/pay/...` mengirim webhook bertanda tangan. |
 | Google login | Wajib: isi `AUTH_GOOGLE_ID`/`AUTH_GOOGLE_SECRET` (lihat bagian Google SSO). Login dev tanpa Google sudah dihapus. |
 | Redis / QStash | Cache & rate limit in-memory; job dijalankan inline. Jadwal lokal: `npm run jobs:run`. |
-| Email / WhatsApp | Dikirim sebagai `SKIPPED (CHANNEL_DISABLED)` di log notifikasi (preview isi tersimpan di dev). |
+| Email / WhatsApp (Resend atau Gmail SMTP; Fonnte) | Dikirim sebagai `SKIPPED (CHANNEL_DISABLED)` di log notifikasi (preview isi tersimpan di dev). |
 
 **Menjadi Super Admin:** isi `ADMIN_EMAIL_ALLOWLIST` (mis. `admin@example.com`), login Google dengan email itu, lalu buka `/admin`.
 
@@ -121,3 +121,6 @@ tests/              Vitest
 
 ## Tema
 Tombol tema (perangkat / terang / gelap) ada di header; default mengikuti pengaturan perangkat dan pilihan disimpan di browser. Breadcrumb dan tombol kembali (`PageNav`) ada di semua halaman publik, akun, dan admin.
+
+## Email
+Pengirim email dipilih otomatis: jika `RESEND_API_KEY` terisi memakai **Resend** (HTTP API, disarankan), selain itu Gmail SMTP (`SMTP_USER`/`SMTP_APP_PASSWORD`). Aktifkan dengan `NOTIFICATIONS_EMAIL_ENABLED=true`. Tanpa domain terverifikasi, Resend hanya mengirim dari `onboarding@resend.dev` ke email pemilik akun; verifikasi domain di https://resend.com/domains untuk mengirim ke donatur.
