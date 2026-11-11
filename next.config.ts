@@ -28,6 +28,8 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  // Verification builds use NEXT_DIST_DIR=.next-verify so they never clobber a running `next dev` (.next).
+  distDir: process.env.NEXT_DIST_DIR || ".next",
   poweredByHeader: false,
   serverExternalPackages: ["postgres", "nodemailer", "pdf-lib"],
   images: { remotePatterns: [{ protocol: "https", hostname: "**" }] },

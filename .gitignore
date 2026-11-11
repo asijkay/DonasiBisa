@@ -22,3 +22,5 @@ coverage/
 .idea/
 .vscode/
 .claude/
+
+.next-verify/
