@@ -18,10 +18,8 @@ export function SectionHeading({ eyebrow, title, children, center = false }: { e
 export function Hero({ ctaLabel, stats }: { ctaLabel: string; stats: PublicStats }) {
   const hasStats = stats.donationCount > 0;
   return (
-    <section className="full-bleed hero-bg relative -mt-8 overflow-hidden">
-      <div aria-hidden className="pointer-events-none absolute -right-32 -top-32 h-[34rem] w-[34rem] rounded-full bg-brand/15 blur-3xl" />
-      <div aria-hidden className="pointer-events-none absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-brand-accent/20 blur-3xl" />
-      <div className="relative mx-auto grid max-w-6xl items-center gap-10 px-4 py-14 sm:py-20 lg:grid-cols-[1.05fr_1fr]">
+    <section className="relative -mt-4">
+      <div className="relative grid items-center gap-10 py-10 sm:py-16 lg:grid-cols-[1.05fr_1fr]">
         <div>
           <p className="reveal inline-flex items-center gap-2 rounded-full border border-brand/20 bg-card px-3 py-1 text-xs font-bold text-brand-ink">
             <IconShield width={14} height={14} /> Donasi aman · tanpa perlu membuat akun
@@ -91,8 +89,8 @@ export function StatsBand({ stats }: { stats: PublicStats }) {
     { v: stats.activeCampaigns.toLocaleString("id-ID"), l: "Campaign aktif" },
   ];
   return (
-    <section aria-label="Ringkasan" className="full-bleed band-blue text-white">
-      <div className="mx-auto max-w-6xl px-4 py-12">
+    <section aria-label="Ringkasan" className="band-blue rounded-3xl text-white shadow-xl shadow-brand/20">
+      <div className="px-6 py-10 sm:px-10">
         {empty ? (
           <div className="text-center">
             <p className="text-2xl font-extrabold sm:text-3xl">Jadilah donatur pertama</p>
@@ -117,7 +115,7 @@ export function HowItWorks() {
     { Icon: IconFile, t: "Terima konfirmasi", d: "Notifikasi dikirim lewat email/WhatsApp. Login Google untuk mengunduh bukti donasi PDF." },
   ];
   return (
-    <section id="cara-kerja" className="wash full-bleed scroll-mt-24 py-16"><div className="mx-auto max-w-6xl px-4">
+    <section id="cara-kerja" className="scroll-mt-24 py-14"><div>
       <SectionHeading eyebrow="Cara kerja" title="Berdonasi semudah tiga langkah" center>Proses singkat, aman, dan dapat dipantau dari awal sampai selesai.</SectionHeading>
       <ol className="mt-10 grid gap-5 md:grid-cols-3">
         {steps.map((s, i) => (
@@ -192,8 +190,8 @@ export function Faq() {
 
 export function CtaBand({ ctaLabel }: { ctaLabel: string }) {
   return (
-    <section className="full-bleed band-navy -mb-16">
-      <div className="mx-auto flex max-w-6xl flex-col items-center gap-6 px-4 py-14 text-center">
+    <section className="band-navy rounded-3xl shadow-xl shadow-brand/20">
+      <div className="flex flex-col items-center gap-6 px-6 py-12 text-center sm:px-10">
         <h2 className="max-w-2xl text-3xl font-extrabold tracking-tight text-white sm:text-4xl">Satu donasi kecil bisa jadi awal perubahan besar</h2>
         <p className="max-w-xl text-white/80">Pilih campaign yang menyentuh hati Anda hari ini.</p>
         <Link href="/campaigns" className="inline-flex items-center gap-2 rounded-xl bg-brand-accent px-7 py-3.5 text-base font-bold text-on-accent shadow-lg transition hover:-translate-y-0.5 hover:brightness-105">

@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import "./globals.css";
 import { getBrand } from "@/services/brand.service";
 import { getCurrentUser } from "@/lib/auth/session";
+import { AppBackground } from "@/components/public/app-background";
 import { CookieBanner } from "@/components/public/cookie-banner";
 import { SiteFooter, SiteHeader } from "@/components/public/site-chrome";
 
@@ -37,6 +38,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
       </head>
       <body>
+        <AppBackground />
         <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-50 focus:rounded focus:bg-card focus:px-3 focus:py-2">
           Lewati ke konten
         </a>

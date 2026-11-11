@@ -25,7 +25,7 @@ export default async function CampaignsPage({ searchParams }: { searchParams: Pr
         ))}
       </nav>
       {rows.length === 0 ? <EmptyState title="Belum ada campaign di kategori ini">Coba kategori lain atau kembali lagi nanti.</EmptyState> : (
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">{rows.map((c) => (<CampaignCard key={c.id} c={c} />))}</div>
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">{rows.map((c) => (<CampaignCard key={c.id} c={c} headingLevel="h2" />))}</div>
       )}
     </div>
   );

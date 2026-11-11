@@ -5,7 +5,7 @@ import { Badge, ProgressBar, StatusBadge } from "@/components/ui";
 import { CoverImage } from "./cover-image";
 import { CATEGORY_META, IconArrow } from "./icons";
 
-export function CampaignCard({ c }: { c: CampaignCardDTO }) {
+export function CampaignCard({ c, headingLevel: H = "h3" }: { c: CampaignCardDTO; headingLevel?: "h2" | "h3" }) {
   const pct = progressPercent(c.raisedAmount, c.targetAmount);
   const cat = CATEGORY_META[c.category];
   return (
@@ -21,9 +21,9 @@ export function CampaignCard({ c }: { c: CampaignCardDTO }) {
           {!c.isOpen && <StatusBadge status={c.status} />}
           {c.isDemo && <Badge tone="warning">DEMO</Badge>}
         </div>
-        <h3 className="text-lg font-bold leading-snug text-slate-900">
+        <H className="text-lg font-bold leading-snug text-slate-900">
           <Link href={`/campaigns/${c.slug}`} className="hover:text-brand-ink">{c.title}</Link>
-        </h3>
+        </H>
         <p className="line-clamp-2 text-sm text-slate-600">{c.summary}</p>
         <div className="mt-auto space-y-2 pt-2">
           <ProgressBar percent={pct} label={`Progres ${c.title}`} />
