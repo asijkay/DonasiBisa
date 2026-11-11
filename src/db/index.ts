@@ -20,8 +20,19 @@ function create(): Database {
   return drizzle(client, { schema });
 }
 
-/** Module-level singleton (survives HMR in dev). */
-export const db: Database = globalForDb.__db ?? (globalForDb.__db = create());
+/** Real client, created on first use so importing this module never needs env (e.g. during `next build`). */
+export function getDb(): Database {
+  return (globalForDb.__db ??= create());
+}
+
+/** Lazy singleton facade (survives HMR in dev). */
+export const db: Database = new Proxy({} as Database, {
+  get(_target, prop) {
+    const real = getDb();
+    const value = Reflect.get(real, prop, real) as unknown;
+    return typeof value === "function" ? value.bind(real) : value;
+  },
+});
 
 export async function closeDb(): Promise<void> {
   await globalForDb.__pg?.end({ timeout: 5 });

@@ -3,12 +3,12 @@ import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import { eq } from "drizzle-orm";
-import { db } from "@/db";
+import { db, getDb } from "@/db";
 import { accounts, sessions, userRoles, users, verificationTokens } from "@/db/schema";
 import { afterVerifiedLogin } from "./after-login";
 
 export const { handlers, auth, signIn, signOut } = NextAuth(() => ({
-  adapter: DrizzleAdapter(db, {
+  adapter: DrizzleAdapter(getDb(), {
     usersTable: users,
     accountsTable: accounts,
     sessionsTable: sessions,
