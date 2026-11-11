@@ -1,0 +1,46 @@
+import type { Metadata, Viewport } from "next";
+import type { ReactNode } from "react";
+import "./globals.css";
+import { getBrand } from "@/services/brand.service";
+import { getCurrentUser } from "@/lib/auth/session";
+import { SiteFooter, SiteHeader } from "@/components/public/site-chrome";
+
+// Pages read live data (campaigns, sessions); never prerender them at build time.
+export const dynamic = "force-dynamic";
+
+export const viewport: Viewport = { width: "device-width", initialScale: 1 };
+
+export async function generateMetadata(): Promise<Metadata> {
+  const brand = await getBrand();
+  return {
+    title: { default: brand.brandName, template: `%s · ${brand.brandName}` },
+    description: brand.tagline ?? "Platform donasi online",
+    icons: brand.faviconUrl ? { icon: brand.faviconUrl } : undefined,
+  };
+}
+
+const HEX = /^#[0-9a-fA-F]{6}$/;
+const safeColor = (v: string, fallback: string) => (HEX.test(v) ? v : fallback);
+
+export default async function RootLayout({ children }: { children: ReactNode }) {
+  const [brand, user] = await Promise.all([getBrand(), getCurrentUser().catch(() => null)]);
+  // Colors are validated against #RRGGBB before being interpolated into CSS.
+  const css = `:root{--brand-primary:${safeColor(brand.primaryColor, "#0f766e")};--brand-secondary:${safeColor(brand.secondaryColor, "#334155")};--brand-accent:${safeColor(brand.accentColor, "#f59e0b")};--brand-bg:${safeColor(brand.backgroundColor, "#ffffff")}}`;
+  return (
+    <html lang="id">
+      <head>
+        <style dangerouslySetInnerHTML={{ __html: css }} />
+      </head>
+      <body>
+        <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-50 focus:rounded focus:bg-white focus:px-3 focus:py-2">
+          Lewati ke konten
+        </a>
+        <SiteHeader brand={brand} user={user} />
+        <main id="main" className="mx-auto min-h-[60vh] max-w-6xl px-4 py-8">
+          {children}
+        </main>
+        <SiteFooter brand={brand} />
+      </body>
+    </html>
+  );
+}
