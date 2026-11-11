@@ -24,7 +24,7 @@ export async function enqueueJob(name: JobName, payload: unknown): Promise<void>
   const env = getEnv();
   if (env.QSTASH_TOKEN) {
     try {
-      const client = new Client({ token: env.QSTASH_TOKEN });
+      const client = new Client({ token: env.QSTASH_TOKEN, baseUrl: env.QSTASH_URL });
       await client.publishJSON({
         url: `${env.NEXT_PUBLIC_APP_URL}/api/internal/jobs/${name}`,
         body: payload as Record<string, unknown>,

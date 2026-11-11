@@ -3,6 +3,7 @@ import { Client } from "@upstash/qstash";
 /**
  * Creates (idempotently) the Upstash QStash cron schedules that call our signed internal job routes.
  * Usage: APP_URL=https://donasibisa.vercel.app QSTASH_TOKEN=... npm run qstash:schedules
+ * Set QSTASH_URL when your Upstash account is not in the default (EU) region, e.g. https://qstash-us-east-1.upstash.io
  * Cron is evaluated in UTC by QStash.
  */
 const appUrl = (process.env.APP_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? "").replace(/\/$/, "");
@@ -17,7 +18,7 @@ const SCHEDULES: Array<{ path: string; cron: string; body?: unknown; note: strin
 ];
 
 async function main(): Promise<void> {
-  const client = new Client({ token });
+  const client = new Client({ token, baseUrl: process.env.QSTASH_URL });
   const existing = await client.schedules.list();
   for (const s of SCHEDULES) {
     const destination = `${appUrl}${s.path}`;

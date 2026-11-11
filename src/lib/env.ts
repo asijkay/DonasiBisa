@@ -28,6 +28,7 @@ const schema = z.object({
   PAYMENT_SIMULATOR: bool,
   UPSTASH_REDIS_REST_URL: optionalStr,
   UPSTASH_REDIS_REST_TOKEN: optionalStr,
+  QSTASH_URL: optionalStr,
   QSTASH_TOKEN: optionalStr,
   QSTASH_CURRENT_SIGNING_KEY: optionalStr,
   QSTASH_NEXT_SIGNING_KEY: optionalStr,
