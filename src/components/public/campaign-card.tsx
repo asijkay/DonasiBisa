@@ -7,7 +7,7 @@ import { CoverImage } from "./cover-image";
 export function CampaignCard({ c }: { c: CampaignCardDTO }) {
   const pct = progressPercent(c.raisedAmount, c.targetAmount);
   return (
-    <article className="flex flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition hover:shadow-md">
+    <article className="flex flex-col overflow-hidden rounded-xl border border-slate-200 bg-card shadow-sm transition hover:shadow-md">
       <CoverImage src={c.coverImageUrl} alt="" className="h-40 w-full" />
       <div className="flex flex-1 flex-col gap-3 p-4">
         <div className="flex flex-wrap items-center gap-2">

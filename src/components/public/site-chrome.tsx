@@ -1,16 +1,15 @@
-/* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
+import { BrandLogo } from "./logo";
 import type { BrandDTO } from "@/services/brand.service";
 import type { SessionUser } from "@/lib/auth/session";
 import { signOutAction } from "@/app/actions/auth";
 
 export function SiteHeader({ brand, user }: { brand: BrandDTO; user: SessionUser | null }) {
   return (
-    <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/90 backdrop-blur">
+    <header className="sticky top-0 z-30 border-b border-slate-200 bg-card/90 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
-        <Link href="/" className="flex items-center gap-2 text-lg font-bold text-slate-900">
-          {brand.logoUrl && <img src={brand.logoUrl} alt="" className="h-8 w-8 rounded object-contain" />}
-          <span>{brand.brandName}</span>
+        <Link href="/" aria-label={`${brand.brandName} — beranda`} className="flex items-center">
+          <BrandLogo brand={brand} className="h-10" priority />
         </Link>
         <nav aria-label="Navigasi utama" className="flex items-center gap-1 text-sm font-medium sm:gap-3">
           <Link href="/#campaign" className="rounded px-2 py-1 hover:bg-slate-100">Campaign</Link>

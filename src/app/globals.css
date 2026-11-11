@@ -6,6 +6,7 @@
   --brand-secondary: #334155;
   --brand-accent: #f59e0b;
   --brand-bg: #ffffff;
+  --card: #ffffff;
 }
 
 @theme inline {
@@ -13,6 +14,7 @@
   --color-brand-secondary: var(--brand-secondary);
   --color-brand-accent: var(--brand-accent);
   --color-surface: var(--brand-bg);
+  --color-card: var(--card);
   --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 
@@ -43,3 +45,23 @@ body {
 .prose-md blockquote { border-left: 4px solid #cbd5e1; padding-left: 1em; color: #475569; }
 .prose-md table { border-collapse: collapse; }
 .prose-md th, .prose-md td { border: 1px solid #e2e8f0; padding: 0.4em 0.7em; }
+
+/* Dark mode: remap the neutral palette so existing utilities adapt; brand colors stay as configured. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --card: #0f1a2e;
+    --color-slate-50: #0d1628;
+    --color-slate-100: #172238;
+    --color-slate-200: #273550;
+    --color-slate-300: #3a4a68;
+    --color-slate-400: #7d8ba5;
+    --color-slate-500: #98a5bb;
+    --color-slate-600: #b4bfd1;
+    --color-slate-700: #cbd5e3;
+    --color-slate-800: #e2e8f0;
+    --color-slate-900: #f8fafc;
+  }
+  html { background: #0a1220; color: #e2e8f0; }
+  .prose-md blockquote { border-left-color: #3a4a68; color: #b4bfd1; }
+  .prose-md th, .prose-md td { border-color: #273550; }
+}

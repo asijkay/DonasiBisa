@@ -25,14 +25,14 @@ const safeColor = (v: string, fallback: string) => (HEX.test(v) ? v : fallback);
 export default async function RootLayout({ children }: { children: ReactNode }) {
   const [brand, user] = await Promise.all([getBrand(), getCurrentUser().catch(() => null)]);
   // Colors are validated against #RRGGBB before being interpolated into CSS.
-  const css = `:root{--brand-primary:${safeColor(brand.primaryColor, "#0f766e")};--brand-secondary:${safeColor(brand.secondaryColor, "#334155")};--brand-accent:${safeColor(brand.accentColor, "#f59e0b")};--brand-bg:${safeColor(brand.backgroundColor, "#ffffff")}}`;
+  const css = `:root{--brand-primary:${safeColor(brand.primaryColor, "#0064db")};--brand-secondary:${safeColor(brand.secondaryColor, "#062246")};--brand-accent:${safeColor(brand.accentColor, "#fc9f27")};--brand-bg:${safeColor(brand.backgroundColor, "#ffffff")}}`;
   return (
     <html lang="id">
       <head>
         <style dangerouslySetInnerHTML={{ __html: css }} />
       </head>
       <body>
-        <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-50 focus:rounded focus:bg-white focus:px-3 focus:py-2">
+        <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-50 focus:rounded focus:bg-card focus:px-3 focus:py-2">
           Lewati ke konten
         </a>
         <SiteHeader brand={brand} user={user} />

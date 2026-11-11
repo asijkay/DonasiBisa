@@ -21,9 +21,12 @@ async function seed(): Promise<void> {
   await db
     .insert(brandConfig)
     .values({
-      brandName: "Donasi Platform",
+      brandName: "DonasiBisa",
+      primaryColor: "#0064db",
+      secondaryColor: "#062246",
+      accentColor: "#fc9f27",
       tagline: "Berbagi kebaikan, satu donasi pada satu waktu.",
-      footerText: "© Donasi Platform. Nama dan identitas brand masih placeholder.",
+      footerText: "© DonasiBisa.",
       contactEmail: "halo@example.com",
     })
     .onConflictDoNothing();

@@ -9,7 +9,7 @@ const btnBase =
   "inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-50";
 const btnVariants = {
   primary: "bg-brand text-white hover:brightness-110",
-  secondary: "border border-slate-300 bg-white text-slate-800 hover:bg-slate-50",
+  secondary: "border border-slate-300 bg-card text-slate-800 hover:bg-slate-50",
   danger: "bg-red-600 text-white hover:bg-red-700",
   ghost: "text-slate-700 hover:bg-slate-100",
 } as const;
@@ -24,7 +24,7 @@ export function ButtonLink({ variant = "primary", className, href, ...props }: A
 }
 
 export function Card({ className, children }: { className?: string; children: ReactNode }) {
-  return <div className={cn("rounded-xl border border-slate-200 bg-white p-5 shadow-sm", className)}>{children}</div>;
+  return <div className={cn("rounded-xl border border-slate-200 bg-card p-5 shadow-sm", className)}>{children}</div>;
 }
 
 export function Label({ htmlFor, children, hint }: { htmlFor: string; children: ReactNode; hint?: string }) {
@@ -37,7 +37,7 @@ export function Label({ htmlFor, children, hint }: { htmlFor: string; children: 
 }
 
 const field =
-  "w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-brand";
+  "w-full rounded-lg border border-slate-300 bg-card px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-brand";
 
 export function Input({ className, ...props }: InputHTMLAttributes<HTMLInputElement>) {
   return <input className={cn(field, className)} {...props} />;
@@ -158,7 +158,7 @@ export function PageHeading({ title, children }: { title: string; children?: Rea
 
 export function Table({ children }: { children: ReactNode }) {
   return (
-    <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white">
+    <div className="overflow-x-auto rounded-xl border border-slate-200 bg-card">
       <table className="w-full min-w-[640px] text-left text-sm">{children}</table>
     </div>
   );

@@ -16,7 +16,7 @@ export default async function NewsPage() {
       ) : (
         <ul className="space-y-4">
           {news.map((n) => (
-            <li key={n.slug} className="rounded-xl border border-slate-200 bg-white p-4">
+            <li key={n.slug} className="rounded-xl border border-slate-200 bg-card p-4">
               <p className="text-xs text-slate-500">{formatDate(n.publishedAt)}{n.campaignTitle ? ` · Update campaign: ${n.campaignTitle}` : " · Berita umum"}</p>
               <h2 className="mt-1 text-lg font-semibold"><Link href={`/news/${n.slug}`} className="hover:underline">{n.title}</Link></h2>
               <p className="mt-1 text-sm text-slate-600">{n.excerpt}</p>

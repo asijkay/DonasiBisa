@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Alert, Card, EmptyState, PageHeading, StatusBadge } from "@/components/ui";
 import { requireUser } from "@/lib/auth/session";
 import { getDonorForUser, getDonorSummary, listDonorTransactions } from "@/services/donations.service";
+import { Avatar } from "@/components/public/logo";
 import { formatDateTime, formatIDR } from "@/lib/utils/format";
 
 export const metadata: Metadata = { title: "Akun saya" };
@@ -14,7 +15,7 @@ export default async function AccountPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeading title={`Halo, ${user.name ?? user.email}`} />
+      <div className="flex items-center gap-3"><Avatar src={user.image} name={user.name} size={48} /><PageHeading title={`Halo, ${user.name ?? user.email}`} /></div>
       {!donor && <Alert tone="info" title="Belum ada donasi yang terhubung">Donasi yang dibuat dengan email {user.email} akan muncul di sini setelah Anda berdonasi.</Alert>}
       {summary && (
         <div className="grid gap-4 sm:grid-cols-3">
@@ -29,7 +30,7 @@ export default async function AccountPage() {
           <Link href="/account/transactions" className="text-sm font-medium text-brand hover:underline">Lihat semua</Link>
         </div>
         {recent.length === 0 ? <EmptyState title="Belum ada transaksi" /> : (
-          <ul className="divide-y divide-slate-200 rounded-xl border border-slate-200 bg-white">
+          <ul className="divide-y divide-slate-200 rounded-xl border border-slate-200 bg-card">
             {recent.map(({ d, campaignTitle }) => (
               <li key={d.id} className="flex flex-wrap items-center justify-between gap-2 p-4">
                 <div>

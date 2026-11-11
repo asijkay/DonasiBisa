@@ -82,6 +82,9 @@ npm run jobs:run       # jalankan job lifecycle/expire/retry secara lokal
 - **Integrasi (Postgres nyata):** settlement (sekali hitung, webhook ganda, event bersamaan, tidak bisa turun status, amount mismatch, late success, auto-close target, lifecycle), pembuatan donasi (idempotency, preset, status campaign), pembuatan pembayaran (provider dimock), tautan donor.
 - Playwright E2E **belum** disertakan (lihat "Keputusan terbuka").
 
+## Aset brand
+Logo bawaan ada di `public/brand/` (`logo-light|dark` PNG 1600px + `@1x` + WebP, `icon-192|512`, `icon-maskable-512`, `apple-touch-icon`, `placeholder`). Favicon/ikon memakai konvensi Next (`src/app/favicon.ico` 16/32/48, `icon.png`, `apple-icon.png`, `opengraph-image.png`, `manifest.ts`). Varian terang/gelap dipilih otomatis lewat `prefers-color-scheme`; jika `Logo URL` diisi di `/admin/brand`, gambar itu menggantikan logo bawaan. Ikon saja dipakai sebagai favicon dan placeholder foto profil/gambar (`Avatar`, `CoverImage`).
+
 ## Struktur
 ```
 src/app/            halaman publik, /account, /admin, /api (donations, webhooks, receipts, public, internal/jobs, dev)

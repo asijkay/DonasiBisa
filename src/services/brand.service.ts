@@ -27,13 +27,13 @@ export type BrandDTO = {
 
 /** Neutral fallback used until the singleton row exists. Never hardcode these in components. */
 const FALLBACK: BrandDTO = {
-  brandName: "Donasi Platform",
+  brandName: "DonasiBisa",
   tagline: null,
   logoUrl: null,
   faviconUrl: null,
-  primaryColor: "#0f766e",
-  secondaryColor: "#334155",
-  accentColor: "#f59e0b",
+  primaryColor: "#0064db",
+  secondaryColor: "#062246",
+  accentColor: "#fc9f27",
   backgroundColor: "#ffffff",
   contactEmail: null,
   contactWhatsapp: null,
