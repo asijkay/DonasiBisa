@@ -82,6 +82,9 @@ npm run jobs:run       # jalankan job lifecycle/expire/retry secara lokal
 - **Integrasi (Postgres nyata):** settlement (sekali hitung, webhook ganda, event bersamaan, tidak bisa turun status, amount mismatch, late success, auto-close target, lifecycle), pembuatan donasi (idempotency, preset, status campaign), pembuatan pembayaran (provider dimock), tautan donor.
 - Playwright E2E **belum** disertakan (lihat "Keputusan terbuka").
 
+## Deploy ke Vercel
+Workflow `.github/workflows/deploy.yml` men-deploy tanpa Vercel GitHub App (repo di akun GitHub A, project Vercel di akun B). Tambahkan secret di GitHub → Settings → Secrets and variables → Actions: `VERCEL_TOKEN` (buat di Vercel → Account Settings → Tokens), `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID` (dari `.vercel/project.json` setelah `vercel link`). Tanpa secret, workflow melewati deploy. Push ke `main` = production, PR = preview.
+
 ## Aset brand
 Logo bawaan ada di `public/brand/` (`logo-light|dark` PNG 1600px + `@1x` + WebP, `icon-192|512`, `icon-maskable-512`, `apple-touch-icon`, `placeholder`). Favicon/ikon memakai konvensi Next (`src/app/favicon.ico` 16/32/48, `icon.png`, `apple-icon.png`, `opengraph-image.png`, `manifest.ts`). Varian terang/gelap dipilih otomatis lewat `prefers-color-scheme`; jika `Logo URL` diisi di `/admin/brand`, gambar itu menggantikan logo bawaan. Ikon saja dipakai sebagai favicon dan placeholder foto profil/gambar (`Avatar`, `CoverImage`).
 
