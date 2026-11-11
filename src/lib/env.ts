@@ -1,10 +1,14 @@
 import "server-only";
 import { z } from "zod";
 
+/** Case-insensitive boolean flag ("true"/"True"/"1"/"yes" → true). Unknown values are rejected. */
 const bool = z
-  .enum(["true", "false", ""])
+  .string()
+  .trim()
+  .toLowerCase()
+  .pipe(z.enum(["true", "false", "1", "0", "yes", "no", ""]))
   .optional()
-  .transform((v) => v === "true");
+  .transform((v) => v === "true" || v === "1" || v === "yes");
 
 const optionalStr = z
   .string()
