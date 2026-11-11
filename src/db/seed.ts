@@ -34,7 +34,7 @@ async function seed(): Promise<void> {
   // 2. Providers: disabled by default. Only in dev with the simulator are they enabled for convenience.
   const enableForDev = simulatorEnabled();
   const providerDefs = [
-    { provider: "MIDTRANS" as const, sortOrder: 1, channels: [["qris", "QRIS"], ["gopay", "GoPay"], ["bca_va", "BCA Virtual Account"]] },
+    { provider: "MIDTRANS" as const, sortOrder: 1, channels: [["other_qris", "QRIS"], ["gopay", "GoPay"], ["bca_va", "BCA Virtual Account"]] },
     { provider: "XENDIT" as const, sortOrder: 2, channels: [["QRIS", "QRIS"], ["DANA", "DANA"], ["BCA_VIRTUAL_ACCOUNT", "BCA Virtual Account"]] },
   ];
   for (const def of providerDefs) {
@@ -48,6 +48,9 @@ async function seed(): Promise<void> {
         .onConflictDoNothing();
     }
   }
+
+  // Fix-up: Midtrans Snap calls QRIS "other_qris". Rename the old seeded code once, keeping admin edits.
+  await db.execute(sql`update payment_method_configs set channel_code = 'other_qris' where channel_code = 'qris' and provider_id = (select id from payment_providers where provider = 'MIDTRANS') and not exists (select 1 from payment_method_configs m2 where m2.provider_id = payment_method_configs.provider_id and m2.channel_code = 'other_qris')`);
 
   // 3. Notification templates.
   for (const t of DEFAULT_TEMPLATES) {
