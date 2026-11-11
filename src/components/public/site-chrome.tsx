@@ -15,7 +15,7 @@ const NAV = [
 ];
 
 export function SiteHeader({ brand, user }: { brand: BrandDTO; user: SessionUser | null }) {
-  const link = "rounded-lg px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-brand-soft hover:text-brand-ink";
+  const link = "whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-brand-soft hover:text-brand-ink";
   return (
     <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-card/85 backdrop-blur-md">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
@@ -23,22 +23,22 @@ export function SiteHeader({ brand, user }: { brand: BrandDTO; user: SessionUser
           <BrandLogo brand={brand} className="h-9 sm:h-10" priority />
         </Link>
 
-        <nav aria-label="Navigasi utama" className="hidden items-center gap-1 md:flex">
+        <nav aria-label="Navigasi utama" className="hidden items-center gap-1 lg:flex">
           {NAV.map((n) => (<Link key={n.href} href={n.href} className={link}>{n.label}</Link>))}
         </nav>
 
         <div className="flex items-center gap-2">
-          <ThemeToggle className="hidden sm:inline-flex" />
+          <ThemeToggle className="hidden xl:inline-flex" />
           {user ? (
             <>
-              {user.roles.length > 0 && <Link href="/admin" className={`${link} hidden sm:inline-flex`}>Admin</Link>}
-              <Link href="/account" className={`${link} hidden sm:inline-flex`}>Akun</Link>
-              <form action={signOutAction} className="hidden sm:block"><button className={link} type="submit">Keluar</button></form>
+              {user.roles.length > 0 && <Link href="/admin" className={`${link} hidden xl:inline-flex`}>Admin</Link>}
+              <Link href="/account" className={`${link} hidden xl:inline-flex`}>Akun</Link>
+              <form action={signOutAction} className="hidden xl:block"><button className={link} type="submit">Keluar</button></form>
             </>
           ) : (
-            <Link href="/login" className={`${link} hidden sm:inline-flex`}>Masuk</Link>
+            <Link href="/login" className={`${link} hidden xl:inline-flex`}>Masuk</Link>
           )}
-          <Link href="/campaigns" className="hidden rounded-xl bg-brand-accent px-4 py-2 text-sm font-bold text-on-accent transition hover:brightness-105 sm:inline-flex">
+          <Link href="/campaigns" className="hidden whitespace-nowrap rounded-xl bg-brand-accent px-4 py-2 text-sm font-bold text-on-accent transition hover:brightness-95 sm:inline-flex">
             {brand.ctaLabel}
           </Link>
 
@@ -64,7 +64,7 @@ export function SiteHeader({ brand, user }: { brand: BrandDTO; user: SessionUser
 }
 
 export function SiteFooter({ brand }: { brand: BrandDTO }) {
-  const l = "rounded underline-offset-2 hover:text-white hover:underline";
+  const l = "inline-block rounded py-1 underline-offset-2 hover:text-white hover:underline";
   return (
     <footer className="band-navy text-white/90">
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:grid-cols-2 lg:grid-cols-4">

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { LegalPage, LegalSection } from "@/components/public/legal";
 import { getBrand } from "@/services/brand.service";
 
-export const metadata: Metadata = { title: "Kebijakan Pengembalian Dana" };
+export const metadata: Metadata = { title: "Kebijakan Pengembalian Dana", description: "Kapan donasi dapat dikembalikan, cara mengajukan, dan berapa lama prosesnya.", alternates: { canonical: "/refund" } };
 
 const SECTIONS = [
   { id: "prinsip", title: "Prinsip umum" },

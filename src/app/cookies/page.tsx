@@ -3,7 +3,7 @@ import Link from "next/link";
 import { LegalPage, LegalSection } from "@/components/public/legal";
 import { CookieSettingsButton } from "@/components/public/cookie-banner";
 
-export const metadata: Metadata = { title: "Kebijakan Cookie" };
+export const metadata: Metadata = { title: "Kebijakan Cookie", description: "Cookie dan penyimpanan lokal yang kami pakai. Tidak ada cookie iklan atau pelacak pihak ketiga.", alternates: { canonical: "/cookies" } };
 
 const SECTIONS = [
   { id: "apa", title: "Apa itu cookie dan penyimpanan lokal" },

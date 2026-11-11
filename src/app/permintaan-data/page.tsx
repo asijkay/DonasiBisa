@@ -5,7 +5,7 @@ import { SubmitButton } from "@/components/ui/submit-button";
 import { PageNav } from "@/components/public/page-nav";
 import { submitDataRequestAction } from "@/app/actions/privacy";
 
-export const metadata: Metadata = { title: "Permintaan data pribadi" };
+export const metadata: Metadata = { title: "Permintaan data pribadi", description: "Ajukan akses atau penghapusan data pribadi untuk donasi yang Anda buat sebagai tamu.", alternates: { canonical: "/permintaan-data" } };
 
 export default async function DataRequestPage({ searchParams }: { searchParams: Promise<{ sent?: string; error?: string }> }) {
   const { sent, error } = await searchParams;
@@ -22,7 +22,7 @@ export default async function DataRequestPage({ searchParams }: { searchParams: 
             <div><Label htmlFor="type">Jenis permintaan</Label><Select id="type" name="type" defaultValue="ACCESS"><option value="ACCESS">Akses / unduh salinan data saya</option><option value="DELETE">Hapus data pribadi saya</option></Select></div>
             <div><Label htmlFor="email">Email yang dipakai saat berdonasi</Label><Input id="email" name="email" type="email" required autoComplete="email" /></div>
             <div><Label htmlFor="details" hint="(opsional)">Keterangan</Label><Textarea id="details" name="details" rows={3} maxLength={1000} /></div>
-            <label className="flex items-start gap-2 text-sm"><input type="checkbox" name="confirm" required className="mt-1 h-4 w-4" /><span>Saya menyatakan email tersebut adalah milik saya. Kami dapat meminta bukti kepemilikan sebelum memproses.</span></label>
+            <label className="flex items-start gap-3 py-1 text-sm"><input type="checkbox" name="confirm" required className="mt-0.5 h-5 w-5 shrink-0" /><span>Saya menyatakan email tersebut adalah milik saya. Kami dapat meminta bukti kepemilikan sebelum memproses.</span></label>
             <SubmitButton pendingLabel="Mengirim…">Kirim permintaan</SubmitButton>
           </form>
         </Card>

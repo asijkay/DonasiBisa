@@ -3,14 +3,14 @@ import { PageNav } from "@/components/public/page-nav";
 import { PageHeading, Table, Td, Th } from "@/components/ui";
 import credits from "@/lib/image-credits.json";
 
-export const metadata: Metadata = { title: "Kredit foto" };
+export const metadata: Metadata = { title: "Kredit foto", description: "Sumber dan lisensi foto ilustrasi yang dipakai di situs ini.", alternates: { canonical: "/kredit-foto" } };
 
 export default function CreditsPage() {
   return (
     <div className="mx-auto max-w-4xl">
       <PageNav crumbs={[{ label: "Beranda", href: "/" }, { label: "Kredit foto" }]} />
       <PageHeading title="Kredit foto" />
-      <p className="mb-4 text-sm text-slate-600">Foto ilustrasi pada landing page bersumber dari Wikimedia Commons berlisensi bebas (domain publik atau CC0). Foto bersifat ilustratif dan tidak merepresentasikan campaign tertentu.</p>
+      <p className="mb-4 text-sm text-slate-600">Foto ilustrasi pada landing page dan sampul campaign contoh (demo) bersumber dari Wikimedia Commons berlisensi bebas (domain publik atau CC0). Foto bersifat ilustratif: pada campaign demo, foto tidak menggambarkan peristiwa atau penerima manfaat yang sebenarnya.</p>
       <Table>
         <thead><tr><Th>Foto</Th><Th>Karya</Th><Th>Pembuat</Th><Th>Lisensi</Th></tr></thead>
         <tbody>

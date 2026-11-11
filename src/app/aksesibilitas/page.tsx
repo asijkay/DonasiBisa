@@ -3,7 +3,7 @@ import Link from "next/link";
 import { LegalPage, LegalSection } from "@/components/public/legal";
 import { getBrand } from "@/services/brand.service";
 
-export const metadata: Metadata = { title: "Aksesibilitas" };
+export const metadata: Metadata = { title: "Aksesibilitas", description: "Komitmen aksesibilitas, fitur yang tersedia, dan cara melaporkan hambatan.", alternates: { canonical: "/aksesibilitas" } };
 
 const SECTIONS = [
   { id: "komitmen", title: "Komitmen kami" },

@@ -51,7 +51,7 @@ export function ThemeToggle({ className }: { className?: string }) {
   }
 
   return (
-    <div role="radiogroup" aria-label="Tema tampilan" className={cn("inline-flex rounded-full border border-slate-300 bg-card p-0.5", className)}>
+    <div role="radiogroup" aria-label="Tema tampilan" className={cn("rounded-full border border-slate-300 bg-card p-0.5", className ?? "inline-flex")}>
       {OPTIONS.map(({ value, label, Icon }) => (
         <button
           key={value}
@@ -61,7 +61,7 @@ export function ThemeToggle({ className }: { className?: string }) {
           aria-label={label}
           title={label}
           onClick={() => choose(value)}
-          className={cn("flex h-8 w-8 items-center justify-center rounded-full transition", pref === value ? "bg-brand text-white shadow" : "text-slate-600 hover:text-brand-ink")}
+          className={cn("flex h-9 w-9 items-center justify-center rounded-full transition", pref === value ? "bg-brand text-white shadow" : "text-slate-600 hover:text-brand-ink")}
         >
           <Icon width={16} height={16} />
         </button>

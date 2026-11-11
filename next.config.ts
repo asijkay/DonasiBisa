@@ -34,7 +34,12 @@ const nextConfig: NextConfig = {
   serverExternalPackages: ["postgres", "nodemailer", "pdf-lib"],
   images: { remotePatterns: [{ protocol: "https", hostname: "**" }] },
   async headers() {
-    return [{ source: "/:path*", headers: securityHeaders }];
+    return [
+      { source: "/:path*", headers: securityHeaders },
+      // Landing/brand images are not content-hashed, so cache for a week and revalidate in the background.
+      { source: "/images/:path*", headers: [{ key: "Cache-Control", value: "public, max-age=604800, stale-while-revalidate=86400" }] },
+      { source: "/brand/:path*", headers: [{ key: "Cache-Control", value: "public, max-age=604800, stale-while-revalidate=86400" }] },
+    ];
   },
 };
 

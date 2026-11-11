@@ -56,15 +56,15 @@ export function CookieBanner() {
     saveConsent(functional);
     setReopened(false);
   };
-  const btn = "flex-1 rounded-xl border-2 border-brand px-4 py-2.5 text-sm font-bold text-brand-ink transition hover:bg-brand-soft";
+  const btn = "flex-1 rounded-xl border-2 border-brand px-3 py-2 text-xs font-bold sm:px-4 sm:py-2.5 sm:text-sm text-brand-ink transition hover:bg-brand-soft";
 
   return (
-    <section ref={ref} role="region" aria-labelledby="cookie-title" className="fixed inset-x-3 bottom-3 z-50 mx-auto max-w-xl rounded-2xl border border-slate-300 bg-card p-5 shadow-2xl">
-      <h2 id="cookie-title" className="text-base font-bold text-slate-900">Pengaturan cookie</h2>
-      <p className="mt-1.5 text-sm text-slate-700">
+    <section ref={ref} role="region" aria-labelledby="cookie-title" className="fixed inset-x-3 bottom-3 z-50 mx-auto max-w-xl rounded-2xl border border-slate-300 bg-card p-4 shadow-2xl sm:p-5">
+      <h2 id="cookie-title" className="text-sm font-bold text-slate-900 sm:text-base">Pengaturan cookie</h2>
+      <p className="mt-1.5 text-xs leading-relaxed text-slate-700 sm:text-sm">
         Kami memakai cookie <strong>penting</strong> agar situs dan login berfungsi. Cookie <strong>preferensi</strong> (opsional) hanya mengingat pilihan tampilan terang/gelap Anda. Kami tidak memakai cookie iklan atau pelacak. <Link href="/cookies" className="font-semibold text-brand-ink underline underline-offset-2">Selengkapnya</Link>
       </p>
-      <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+      <div className="mt-3 flex gap-2 sm:mt-4">
         <button type="button" className={btn} onClick={() => choose(false)}>Hanya yang diperlukan</button>
         <button type="button" className={btn} onClick={() => choose(true)}>Terima preferensi</button>
       </div>

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { EmptyState } from "@/components/ui";
 import { CampaignCard } from "@/components/public/campaign-card";
@@ -8,6 +9,15 @@ import { getBrand } from "@/services/brand.service";
 import { getPublicStats, listPublicCampaigns } from "@/services/campaigns.service";
 import { listPublishedNews } from "@/services/news.service";
 import { formatDate } from "@/lib/utils/format";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const brand = await getBrand();
+  return {
+    title: { absolute: `${brand.brandName} — Donasi Online Aman, Tanpa Akun` },
+    description: brand.tagline ?? "Pilih campaign, donasi dalam hitungan menit tanpa perlu membuat akun, dan pantau perkembangannya.",
+    alternates: { canonical: "/" },
+  };
+}
 
 export default async function HomePage() {
   const [brand, stats, featured, active, news] = await Promise.all([

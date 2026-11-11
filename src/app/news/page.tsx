@@ -5,7 +5,7 @@ import { EmptyState, PageHeading } from "@/components/ui";
 import { listPublishedNews } from "@/services/news.service";
 import { formatDate } from "@/lib/utils/format";
 
-export const metadata: Metadata = { title: "Berita" };
+export const metadata: Metadata = { title: "Berita", description: "Kabar terbaru dan perkembangan penyaluran dari campaign donasi.", alternates: { canonical: "/news" } };
 
 export default async function NewsPage() {
   const news = await listPublishedNews(50);

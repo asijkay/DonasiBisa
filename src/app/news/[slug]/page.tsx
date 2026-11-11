@@ -11,7 +11,14 @@ type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const row = await getPublishedNews((await params).slug);
-  return row ? { title: row.n.title, description: row.n.excerpt } : {};
+  if (!row) return {};
+  const slug = (await params).slug;
+  return {
+    title: row.n.title,
+    description: row.n.excerpt,
+    alternates: { canonical: `/news/${slug}` },
+    openGraph: { title: row.n.title, description: row.n.excerpt, type: "article", images: row.n.coverImageUrl ? [{ url: row.n.coverImageUrl, alt: row.n.coverImageAlt ?? row.n.title }] : undefined },
+  };
 }
 
 export default async function NewsDetailPage({ params }: Props) {

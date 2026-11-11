@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { CampaignCardDTO } from "@/services/campaigns.service";
-import { formatIDR, progressPercent } from "@/lib/utils/format";
+import { daysLeft, formatIDR, progressPercent } from "@/lib/utils/format";
 import { Badge, ProgressBar, StatusBadge } from "@/components/ui";
 import { Reveal } from "./reveal";
 import { CoverImage } from "./cover-image";
@@ -9,6 +9,7 @@ import { CATEGORY_META, IconArrow } from "./icons";
 export function CampaignCard({ c, headingLevel: H = "h3", delay = 0 }: { c: CampaignCardDTO; headingLevel?: "h2" | "h3"; delay?: number }) {
   const pct = progressPercent(c.raisedAmount, c.targetAmount);
   const cat = CATEGORY_META[c.category];
+  const left = c.isOpen ? daysLeft(c.endsAt) : null;
   return (
     <Reveal delay={delay} className="h-full"><article className="card-hover group flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-card shadow-sm">
       <Link href={`/campaigns/${c.slug}`} className="relative block overflow-hidden" tabIndex={-1} aria-hidden>
@@ -32,7 +33,7 @@ export function CampaignCard({ c, headingLevel: H = "h3", delay = 0 }: { c: Camp
             <span><strong className="text-slate-900">{formatIDR(c.raisedAmount)}</strong> <span className="text-slate-500">terkumpul</span></span>
             <span className="font-semibold text-brand-ink">{pct}%</span>
           </div>
-          <p className="text-xs text-slate-500">dari target {formatIDR(c.targetAmount)}</p>
+          <p className="text-xs text-slate-500">dari target {formatIDR(c.targetAmount)}{left !== null ? ` · sisa ${left} hari` : ""}</p>
         </div>
         <Link href={c.isOpen ? `/donate/${c.slug}` : `/campaigns/${c.slug}`} className="mt-1 inline-flex items-center justify-center gap-2 rounded-xl bg-brand-accent px-4 py-2.5 text-sm font-bold text-on-accent transition-all duration-200 hover:brightness-95 active:scale-[0.99]">
           {c.isOpen ? "Donasi sekarang" : "Lihat campaign"} <IconArrow width={16} height={16} />

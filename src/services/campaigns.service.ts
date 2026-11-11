@@ -159,8 +159,9 @@ function toCard(c: CampaignRow): CampaignCardDTO {
 
 const json = <T>(v: unknown): T => JSON.parse(JSON.stringify(v)) as T;
 
-export async function listPublicCampaigns(opts: { featured?: boolean; limit?: number; category?: CampaignCategory } = {}): Promise<CampaignCardDTO[]> {
-  const key = opts.featured ? CacheKeys.featuredCampaigns : `${CacheKeys.campaignList}:${opts.limit ?? 24}:${opts.category ?? "all"}`;
+/** `completed: true` lists finished campaigns (a trust signal) instead of the open ones. */
+export async function listPublicCampaigns(opts: { featured?: boolean; limit?: number; category?: CampaignCategory; completed?: boolean } = {}): Promise<CampaignCardDTO[]> {
+  const key = opts.featured ? CacheKeys.featuredCampaigns : `${CacheKeys.campaignList}:${opts.limit ?? 24}:${opts.category ?? "all"}${opts.completed ? ":done" : ""}`;
   return cached(key, CACHE_TTL_SECONDS, async () => {
     const now = new Date();
     const rows = await db
@@ -168,10 +169,10 @@ export async function listPublicCampaigns(opts: { featured?: boolean; limit?: nu
       .from(campaigns)
       .where(
         and(
-          eq(campaigns.status, "PUBLISHED"),
+          eq(campaigns.status, opts.completed ? "COMPLETED" : "PUBLISHED"),
           opts.featured ? eq(campaigns.isFeatured, true) : undefined,
           opts.category ? eq(campaigns.category, opts.category) : undefined,
-          or(sql`${campaigns.endsAt} is null`, gt(campaigns.endsAt, now)),
+          opts.completed ? undefined : or(sql`${campaigns.endsAt} is null`, gt(campaigns.endsAt, now)),
           or(sql`${campaigns.startsAt} is null`, lte(campaigns.startsAt, now)),
         ),
       )

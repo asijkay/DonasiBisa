@@ -4,7 +4,7 @@ import { LegalPage, LegalSection } from "@/components/public/legal";
 import { getBrand } from "@/services/brand.service";
 import { ADULT_AGE } from "@/lib/consent";
 
-export const metadata: Metadata = { title: "Syarat Layanan" };
+export const metadata: Metadata = { title: "Syarat Layanan", description: "Aturan penggunaan platform donasi: donasi, pembayaran, campaign, dan tanggung jawab para pihak.", alternates: { canonical: "/terms" } };
 
 const SECTIONS = [
   { id: "layanan", title: "Tentang layanan" },

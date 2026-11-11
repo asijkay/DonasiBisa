@@ -59,10 +59,10 @@ export function Select({ className, ...props }: SelectHTMLAttributes<HTMLSelectE
   return <select className={cn(field, className)} {...props} />;
 }
 
-export function FieldError({ children }: { children?: ReactNode }) {
+export function FieldError({ children, id }: { children?: ReactNode; id?: string }) {
   if (!children) return null;
   return (
-    <p role="alert" className="mt-1 text-sm text-red-700">
+    <p id={id} role="alert" className="mt-2 text-sm text-red-700 dark:text-red-400">
       {children}
     </p>
   );

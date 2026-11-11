@@ -40,7 +40,7 @@ export function Hero({ ctaLabel, stats }: { ctaLabel: string; stats: PublicStats
             </Link>
           </div>
           <ul className="reveal reveal-3 mt-8 grid gap-4 text-sm text-slate-700 sm:grid-cols-2">
-            {["Pembayaran lewat Midtrans & Xendit", "Konfirmasi via email & WhatsApp", "Bukti donasi PDF untuk donatur", "Data pribadi tidak ditampilkan publik"].map((t) => (
+            {["Bayar via QRIS, e-wallet, atau virtual account", "Konfirmasi via email & WhatsApp", "Bukti donasi PDF untuk donatur", "Data pribadi tidak ditampilkan publik"].map((t) => (
               <li key={t} className="flex items-center gap-2"><span className="flex h-5 w-5 items-center justify-center rounded-full bg-brand text-white"><IconCheck width={12} height={12} strokeWidth={3} /></span>{t}</li>
             ))}
           </ul>

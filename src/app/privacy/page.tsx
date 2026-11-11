@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { BusinessDetails, LegalPage, LegalSection } from "@/components/public/legal";
 import { getBrand } from "@/services/brand.service";
+import { getCurrentUser } from "@/lib/auth/session";
 
-export const metadata: Metadata = { title: "Kebijakan Privasi" };
+export const metadata: Metadata = { title: "Kebijakan Privasi", description: "Data pribadi apa yang kami kumpulkan, untuk apa, berapa lama disimpan, dan hak Anda sesuai UU PDP.", alternates: { canonical: "/privacy" } };
 
 const SECTIONS = [
   { id: "pengendali", title: "Siapa kami (pengendali data)" },
@@ -20,13 +21,13 @@ const SECTIONS = [
 ];
 
 export default async function PrivacyPage() {
-  const brand = await getBrand();
+  const [brand, user] = await Promise.all([getBrand(), getCurrentUser().catch(() => null)]);
   const contact = brand.privacyContactEmail ?? brand.contactEmail;
   return (
     <LegalPage crumb="Kebijakan Privasi" title="Kebijakan Privasi" sections={SECTIONS} intro={`Kebijakan ini menjelaskan bagaimana ${brand.brandName} memproses data pribadi Anda, sesuai Undang-Undang Nomor 27 Tahun 2022 tentang Pelindungan Data Pribadi (UU PDP). Kami hanya mengumpulkan data yang benar-benar diperlukan.`}>
       <LegalSection id="pengendali" title="1. Siapa kami (pengendali data)">
         <p>Pengendali data pribadi adalah penyelenggara berikut:</p>
-        <BusinessDetails brand={brand} />
+        <BusinessDetails brand={brand} showAdminHint={(user?.roles.length ?? 0) > 0} />
       </LegalSection>
 
       <LegalSection id="data" title="2. Data apa yang kami kumpulkan">

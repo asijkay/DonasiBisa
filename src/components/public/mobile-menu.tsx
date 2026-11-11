@@ -13,7 +13,7 @@ export function MobileMenu({ children }: { children: ReactNode }) {
   return (
     <details
       ref={ref}
-      className="relative md:hidden"
+      className="relative xl:hidden"
       onKeyDown={(e) => {
         if (e.key === "Escape") close();
       }}

@@ -7,6 +7,7 @@ import { AppBackground } from "@/components/public/app-background";
 import { CookieBanner } from "@/components/public/cookie-banner";
 import { SiteFooter, SiteHeader } from "@/components/public/site-chrome";
 import { ChromeGate } from "@/components/public/chrome-gate";
+import { siteUrl } from "@/lib/utils/site";
 
 // Pages read live data (campaigns, sessions); never prerender them at build time.
 export const dynamic = "force-dynamic";
@@ -16,6 +17,7 @@ export const viewport: Viewport = { width: "device-width", initialScale: 1 };
 export async function generateMetadata(): Promise<Metadata> {
   const brand = await getBrand();
   return {
+    metadataBase: new URL(siteUrl()),
     title: { default: brand.brandName, template: `%s · ${brand.brandName}` },
     description: brand.tagline ?? "Platform donasi online",
     icons: brand.faviconUrl ? { icon: brand.faviconUrl } : undefined,
@@ -25,10 +27,13 @@ export async function generateMetadata(): Promise<Metadata> {
 const THEME_SCRIPT = `(function(){try{var p=localStorage.getItem("theme")||sessionStorage.getItem("theme")||"system";var d=p==="dark"||(p==="system"&&window.matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.dataset.theme=d?"dark":"light"}catch(e){}})()`;
 
 const HEX = /^#[0-9a-fA-F]{6}$/;
-/** Picks dark or white text for a solid background by WCAG relative luminance, so no text color is hardcoded per brand. */
+/** Picks whichever of dark/white text has the higher WCAG contrast on a solid background, so no text color is hardcoded per brand. */
 function readableOn(hex: string): string {
   const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255).map((c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4));
-  return 0.2126 * r + 0.7152 * g + 0.0722 * b > 0.4 ? "#0b0f14" : "#ffffff";
+  const lum = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  const onWhite = 1.05 / (lum + 0.05);
+  const onDark = (lum + 0.05) / 0.055; // #0b0f14 has relative luminance ~0.005
+  return onWhite >= onDark ? "#ffffff" : "#0b0f14";
 }
 const safeColor = (v: string, fallback: string) => (HEX.test(v) ? v : fallback);
 

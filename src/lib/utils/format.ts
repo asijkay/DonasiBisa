@@ -22,3 +22,9 @@ export function progressPercent(raised: number, target: number): number {
   if (target <= 0) return 0;
   return Math.min(100, Math.floor((raised / target) * 100));
 }
+
+/** Whole days left until `endsAt` (never negative); null when the campaign has no end date. */
+export function daysLeft(endsAt: string | null | undefined, now: Date = new Date()): number | null {
+  if (!endsAt) return null;
+  return Math.max(0, Math.ceil((new Date(endsAt).getTime() - now.getTime()) / 86_400_000));
+}
