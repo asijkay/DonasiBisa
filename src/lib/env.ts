@@ -23,6 +23,8 @@ const schema = z.object({
   ADMIN_EMAIL_ALLOWLIST: z.string().default(""),
   MIDTRANS_SERVER_KEY: optionalStr,
   MIDTRANS_CLIENT_KEY: optionalStr,
+  /** New Midtrans dashboards sign notifications with a separate "Signature Secret Key". */
+  MIDTRANS_SIGNATURE_SECRET_KEY: optionalStr,
   MIDTRANS_IS_PRODUCTION: bool,
   PAYMENTS_MIDTRANS_ENABLED: bool,
   XENDIT_SECRET_KEY: optionalStr,

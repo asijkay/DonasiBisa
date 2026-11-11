@@ -104,6 +104,21 @@ describe("webhook verification", () => {
     expect(ev.amount).toBe(50000);
     expect(ev.providerReference).toBe("DON-1-1");
   });
+  it("Midtrans accepts a notification signed with the separate Signature Secret Key", async () => {
+    process.env.MIDTRANS_SIGNATURE_SECRET_KEY = "sig-secret-test";
+    const { resetEnvCache } = await import("../src/lib/env");
+    resetEnvCache();
+    try {
+      const n = { order_id: "DON-9-1", status_code: "200", gross_amount: "15000.00", transaction_status: "settlement", transaction_id: "tx-9" };
+      const signed = JSON.stringify({ ...n, signature_key: midtransSignature(n, "sig-secret-test") });
+      await expect(midtransAdapter.verifyAndNormalizeWebhook(signed, new Headers())).resolves.toMatchObject({ status: "SUCCEEDED", providerReference: "DON-9-1" });
+      const wrong = JSON.stringify({ ...n, signature_key: midtransSignature(n, "some-other-key") });
+      await expect(midtransAdapter.verifyAndNormalizeWebhook(wrong, new Headers())).rejects.toBeInstanceOf(WebhookVerificationError);
+    } finally {
+      delete process.env.MIDTRANS_SIGNATURE_SECRET_KEY;
+      resetEnvCache();
+    }
+  });
   it("Midtrans rejects tampered amount or signature", async () => {
     const tampered = JSON.parse(body());
     tampered.gross_amount = "1.00";

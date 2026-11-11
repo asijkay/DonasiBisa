@@ -28,6 +28,16 @@ function serverKey(): string | undefined {
   return simulatorEnabled() ? SIM_MIDTRANS_SERVER_KEY : getEnv().MIDTRANS_SERVER_KEY;
 }
 
+/**
+ * Keys that may have signed a notification. Newer Midtrans accounts sign with the separate
+ * "Signature Secret Key"; older ones sign with the Server Key. Either is accepted.
+ */
+function signingKeys(): string[] {
+  if (simulatorEnabled()) return [SIM_MIDTRANS_SERVER_KEY];
+  const env = getEnv();
+  return [env.MIDTRANS_SIGNATURE_SECRET_KEY, env.MIDTRANS_SERVER_KEY].filter((k): k is string => !!k);
+}
+
 function bases(): { snap: string; api: string } {
   if (simulatorEnabled()) {
     const b = `${simulatorBaseUrl()}/midtrans`;
@@ -116,8 +126,8 @@ export const midtransAdapter: PaymentGatewayAdapter = {
   },
 
   async verifyAndNormalizeWebhook(rawBody) {
-    const key = serverKey();
-    if (!key) throw new WebhookVerificationError("Midtrans is not configured");
+    const keys = signingKeys();
+    if (keys.length === 0) throw new WebhookVerificationError("Midtrans is not configured");
     let n: MidtransNotification;
     try {
       n = JSON.parse(rawBody) as MidtransNotification;
@@ -127,7 +137,8 @@ export const midtransAdapter: PaymentGatewayAdapter = {
     if (!n.signature_key || !n.order_id || !n.status_code || !n.gross_amount) {
       throw new WebhookVerificationError("Missing signature fields");
     }
-    if (!safeEqual(midtransSignature(n, key), n.signature_key)) throw new WebhookVerificationError();
+    const received = n.signature_key;
+    if (!keys.some((key) => safeEqual(midtransSignature(n, key), received))) throw new WebhookVerificationError();
     return toEvent(n);
   },
 
