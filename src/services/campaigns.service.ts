@@ -132,6 +132,8 @@ export type CampaignCardDTO = {
 export type CampaignDetailDTO = CampaignCardDTO & {
   descriptionMd: string;
   closeReason: CloseReason | null;
+  /** Distinct donors with a SUCCEEDED donation to this campaign (no identities exposed). */
+  donorCount: number;
   options: Array<{ id: string; amount: number; label: string | null }>;
   updates: Array<{ slug: string; title: string; excerpt: string; publishedAt: string | null }>;
 };
@@ -183,7 +185,7 @@ export async function getPublicCampaign(slug: string): Promise<CampaignDetailDTO
   return cached(CacheKeys.campaignDetail(slug), CACHE_TTL_SECONDS, async () => {
     const [c] = await db.select().from(campaigns).where(eq(campaigns.slug, slug)).limit(1);
     if (!c || !["PUBLISHED", "PAUSED", "COMPLETED", "CLOSED"].includes(c.status)) return null as never;
-    const [options, updates] = await Promise.all([
+    const [options, updates, donorAgg] = await Promise.all([
       db
         .select()
         .from(campaignAmountOptions)
@@ -195,11 +197,16 @@ export async function getPublicCampaign(slug: string): Promise<CampaignDetailDTO
         .where(and(eq(newsPosts.campaignId, c.id), eq(newsPosts.status, "PUBLISHED")))
         .orderBy(desc(newsPosts.publishedAt))
         .limit(10),
+      db
+        .select({ n: sql<number>`count(distinct ${donations.donorId})::int` })
+        .from(donations)
+        .where(and(eq(donations.campaignId, c.id), eq(donations.status, "SUCCEEDED"))),
     ]);
     return json<CampaignDetailDTO>({
       ...toCard(c),
       descriptionMd: c.descriptionMd,
       closeReason: c.closeReason,
+      donorCount: donorAgg[0]?.n ?? 0,
       options: options.map((o) => ({ id: o.id, amount: o.amount, label: o.label })),
       updates,
     });

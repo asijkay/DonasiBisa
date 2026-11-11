@@ -3,7 +3,7 @@ import { eq } from "drizzle-orm";
 import { closeDb, db } from "../src/db";
 import { campaigns, donations, notificationLogs, paymentLogs, payments, users, webhookEvents } from "../src/db/schema";
 import { applyPaymentEvent } from "../src/services/payments.service";
-import { runCampaignLifecycle, setCampaignStatus } from "../src/services/campaigns.service";
+import { getPublicCampaign, runCampaignLifecycle, setCampaignStatus } from "../src/services/campaigns.service";
 import type { NormalizedPaymentEvent } from "../src/lib/payments/types";
 import { makeCampaign, makeDonationWithPayment, resetDb } from "./helpers";
 
@@ -123,6 +123,18 @@ describe("settlement", () => {
     const r = await settle(ev(payment.providerReference));
     expect(r).toMatchObject({ outcome: "IGNORED", reason: "LATE_SUCCESS" });
     expect(await raised(c.id)).toBe(0);
+  });
+});
+
+describe("public campaign view after settlement", () => {
+  it("raised amount and donor count update (cache invalidated) once the payment settles", async () => {
+    const c = await makeCampaign();
+    const before = await getPublicCampaign(c.slug);
+    expect(before).toMatchObject({ raisedAmount: 0, donorCount: 0 });
+    const { payment } = await makeDonationWithPayment(c.id, 50_000);
+    await settle(ev(payment.providerReference));
+    const after = await getPublicCampaign(c.slug);
+    expect(after).toMatchObject({ raisedAmount: 50_000, donorCount: 1 });
   });
 });
 

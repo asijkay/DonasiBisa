@@ -60,6 +60,7 @@ export default async function CampaignPage({ params }: Props) {
             <p className="text-2xl font-bold">{formatIDR(c.raisedAmount)}</p>
             <p className="text-sm text-slate-600">terkumpul dari target {formatIDR(c.targetAmount)}</p>
           </div>
+          <p className="text-sm font-semibold text-slate-900" data-testid="donor-count">{c.donorCount.toLocaleString("id-ID")} <span className="font-normal text-slate-600">donatur</span></p>
           <ProgressBar percent={pct} label="Progres donasi" />
           <p className="text-sm text-slate-600">{pct}% tercapai{c.endsAt ? ` · berakhir ${formatDate(c.endsAt)}` : ""}</p>
           {c.isOpen ? (
