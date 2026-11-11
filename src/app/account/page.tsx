@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { PageNav } from "@/components/public/page-nav";
 import { Alert, Card, EmptyState, PageHeading, StatusBadge } from "@/components/ui";
 import { requireUser } from "@/lib/auth/session";
 import { getDonorForUser, getDonorSummary, listDonorTransactions } from "@/services/donations.service";
@@ -15,6 +16,7 @@ export default async function AccountPage() {
 
   return (
     <div className="space-y-6">
+      <PageNav crumbs={[{ label: "Beranda", href: "/" }, { label: "Akun" }]} />
       <div className="flex items-center gap-3"><Avatar src={user.image} name={user.name} size={48} /><PageHeading title={`Halo, ${user.name ?? user.email}`} /></div>
       {!donor && <Alert tone="info" title="Belum ada donasi yang terhubung">Donasi yang dibuat dengan email {user.email} akan muncul di sini setelah Anda berdonasi.</Alert>}
       {summary && (

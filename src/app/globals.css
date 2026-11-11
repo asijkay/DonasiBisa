@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Theme is driven by <html data-theme="light|dark"> (set before paint; defaults to the device setting). */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
 /* Brand tokens are injected at runtime from brand_config (see app/layout.tsx). */
 :root {
   --brand-primary: #0064db; /* 30% — blue */
@@ -54,27 +57,62 @@ body {
 .prose-md th, .prose-md td { border: 1px solid #e2e8f0; padding: 0.4em 0.7em; }
 
 /* Dark mode — 60% black, 30% blue, 10% crisp white. Neutral palette is remapped so utilities adapt. */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --card: #0c1018;
-    --accent-eff: #ffffff;
-    --on-accent: #05070b;
-    --blue-ink: #5aa9ff;
-    --blue-soft: color-mix(in srgb, var(--brand-primary) 22%, #05070b);
-    --color-slate-50: #0a0e15;
-    --color-slate-100: #141a26;
-    --color-slate-200: #232b3b;
-    --color-slate-300: #34405a;
-    --color-slate-400: #7d8ba5;
-    --color-slate-500: #98a5bb;
-    --color-slate-600: #b4bfd1;
-    --color-slate-700: #cbd5e3;
-    --color-slate-800: #e2e8f0;
-    --color-slate-900: #f8fafc;
-  }
-  html { background: #05070b; color: #e7ecf4; }
-  .prose-md blockquote { border-left-color: #34405a; color: #b4bfd1; }
-  .prose-md th, .prose-md td { border-color: #232b3b; }
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --card: #0f1726;
+  --accent-eff: #ffffff;
+  --on-accent: #05070b;
+  --blue-ink: #6db2ff;
+  --blue-soft: color-mix(in srgb, var(--brand-primary) 24%, #05070b);
+  --color-slate-50: #0b111d;
+  --color-slate-100: #18223a;
+  --color-slate-200: #2a3650;
+  --color-slate-300: #3d4b6b;
+  --color-slate-400: #8493ad;
+  --color-slate-500: #9fadc3;
+  --color-slate-600: #b9c4d6;
+  --color-slate-700: #cfd8e6;
+  --color-slate-800: #e4eaf3;
+  --color-slate-900: #f8fafc;
+}
+:root[data-theme="light"] { color-scheme: light; }
+html[data-theme="dark"] { background: #05070b; color: #e7ecf4; }
+:root[data-theme="dark"] .prose-md blockquote { border-left-color: #3d4b6b; color: #b9c4d6; }
+:root[data-theme="dark"] .prose-md th, :root[data-theme="dark"] .prose-md td { border-color: #2a3650; }
+
+/* Gradient surfaces (blue = 30%, coral/white glow = 10%). */
+.hero-bg {
+  background:
+    radial-gradient(60rem 28rem at 85% -10%, rgba(0, 100, 219, 0.22), transparent 60%),
+    radial-gradient(40rem 24rem at -5% 110%, rgba(255, 107, 87, 0.18), transparent 60%),
+    linear-gradient(180deg, #eef5ff, #ffffff);
+}
+.band-blue {
+  background:
+    radial-gradient(34rem 16rem at 88% 0%, rgba(255, 107, 87, 0.3), transparent 62%),
+    linear-gradient(115deg, #0049b0 0%, #0064db 48%, #2a8cff 100%);
+}
+.band-navy {
+  background:
+    radial-gradient(32rem 16rem at 90% 10%, rgba(255, 107, 87, 0.28), transparent 62%),
+    linear-gradient(135deg, #062246 0%, #0a3a8a 62%, #0064db 100%);
+}
+.wash { background: linear-gradient(180deg, transparent, var(--blue-soft) 50%, transparent); }
+:root[data-theme="dark"] .hero-bg {
+  background:
+    radial-gradient(60rem 28rem at 85% -10%, rgba(0, 100, 219, 0.42), transparent 60%),
+    radial-gradient(40rem 24rem at -5% 110%, rgba(255, 255, 255, 0.07), transparent 60%),
+    linear-gradient(180deg, #06142e, #05070b);
+}
+:root[data-theme="dark"] .band-blue {
+  background:
+    radial-gradient(34rem 16rem at 88% 0%, rgba(255, 255, 255, 0.16), transparent 62%),
+    linear-gradient(115deg, #03275c 0%, #0752b8 52%, #1a73e8 100%);
+}
+:root[data-theme="dark"] .band-navy {
+  background:
+    radial-gradient(32rem 16rem at 90% 10%, rgba(255, 255, 255, 0.14), transparent 62%),
+    linear-gradient(135deg, #020b1c 0%, #06254f 60%, #0a4fb5 100%);
 }
 
 /* Motion: gentle reveal, disabled for reduced-motion users. */

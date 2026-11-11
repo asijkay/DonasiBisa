@@ -18,7 +18,7 @@ export function SectionHeading({ eyebrow, title, children, center = false }: { e
 export function Hero({ ctaLabel, stats }: { ctaLabel: string; stats: PublicStats }) {
   const hasStats = stats.donationCount > 0;
   return (
-    <section className="full-bleed relative -mt-8 overflow-hidden bg-brand-soft">
+    <section className="full-bleed hero-bg relative -mt-8 overflow-hidden">
       <div aria-hidden className="pointer-events-none absolute -right-32 -top-32 h-[34rem] w-[34rem] rounded-full bg-brand/15 blur-3xl" />
       <div aria-hidden className="pointer-events-none absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-brand-accent/20 blur-3xl" />
       <div className="relative mx-auto grid max-w-6xl items-center gap-10 px-4 py-14 sm:py-20 lg:grid-cols-[1.05fr_1fr]">
@@ -91,7 +91,7 @@ export function StatsBand({ stats }: { stats: PublicStats }) {
     { v: stats.activeCampaigns.toLocaleString("id-ID"), l: "Campaign aktif" },
   ];
   return (
-    <section aria-label="Ringkasan" className="full-bleed bg-brand text-white">
+    <section aria-label="Ringkasan" className="full-bleed band-blue text-white">
       <div className="mx-auto max-w-6xl px-4 py-12">
         {empty ? (
           <div className="text-center">
@@ -117,19 +117,19 @@ export function HowItWorks() {
     { Icon: IconFile, t: "Terima konfirmasi", d: "Notifikasi dikirim lewat email/WhatsApp. Login Google untuk mengunduh bukti donasi PDF." },
   ];
   return (
-    <section id="cara-kerja" className="scroll-mt-24 py-16">
+    <section id="cara-kerja" className="wash full-bleed scroll-mt-24 py-16"><div className="mx-auto max-w-6xl px-4">
       <SectionHeading eyebrow="Cara kerja" title="Berdonasi semudah tiga langkah" center>Proses singkat, aman, dan dapat dipantau dari awal sampai selesai.</SectionHeading>
       <ol className="mt-10 grid gap-5 md:grid-cols-3">
         {steps.map((s, i) => (
-          <li key={s.t} className="relative rounded-2xl border border-slate-200 bg-card p-6">
-            <span className="absolute right-5 top-4 text-5xl font-black text-brand/10">{i + 1}</span>
+          <li key={s.t} className="relative overflow-hidden rounded-2xl border border-slate-200 bg-gradient-to-br from-card to-brand-soft p-6 shadow-sm">
+            <span aria-hidden className="absolute right-5 top-3 text-6xl font-black text-brand-ink/25">{i + 1}</span>
             <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand text-white"><s.Icon width={24} height={24} /></span>
             <h3 className="mt-4 text-lg font-bold text-slate-900">{s.t}</h3>
             <p className="mt-1.5 text-sm text-slate-600">{s.d}</p>
           </li>
         ))}
       </ol>
-    </section>
+    </div></section>
   );
 }
 
@@ -150,7 +150,7 @@ export function TrustSection() {
         <SectionHeading eyebrow="Kenapa DonasiBisa" title="Niat baik, dengan proses yang bisa dipercaya" />
         <ul className="mt-6 grid gap-4 sm:grid-cols-2">
           {items.map((i) => (
-            <li key={i.t} className="rounded-2xl border border-slate-200 bg-card p-4">
+            <li key={i.t} className="rounded-2xl border border-slate-200 bg-gradient-to-br from-card to-brand-soft p-4 shadow-sm">
               <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-soft text-brand-ink"><i.Icon width={20} height={20} /></span>
               <h3 className="mt-3 font-bold text-slate-900">{i.t}</h3>
               <p className="mt-1 text-sm text-slate-600">{i.d}</p>
@@ -177,7 +177,7 @@ export function Faq() {
       <SectionHeading eyebrow="FAQ" title="Pertanyaan yang sering diajukan" center />
       <div className="mx-auto mt-8 max-w-3xl space-y-3">
         {FAQ.map(([q, a]) => (
-          <details key={q} className="group rounded-2xl border border-slate-200 bg-card px-5 py-4 open:border-brand open:shadow-md">
+          <details key={q} className="group rounded-2xl border border-slate-200 bg-gradient-to-r from-card to-brand-soft px-5 py-4 open:border-brand open:shadow-md">
             <summary className="flex cursor-pointer items-center justify-between gap-4 font-semibold text-slate-900">
               {q}
               <IconChevron width={20} height={20} className="shrink-0 text-brand-ink transition group-open:rotate-180" />
@@ -192,7 +192,7 @@ export function Faq() {
 
 export function CtaBand({ ctaLabel }: { ctaLabel: string }) {
   return (
-    <section className="full-bleed bg-brand-secondary">
+    <section className="full-bleed band-navy -mb-16">
       <div className="mx-auto flex max-w-6xl flex-col items-center gap-6 px-4 py-14 text-center">
         <h2 className="max-w-2xl text-3xl font-extrabold tracking-tight text-white sm:text-4xl">Satu donasi kecil bisa jadi awal perubahan besar</h2>
         <p className="max-w-xl text-white/80">Pilih campaign yang menyentuh hati Anda hari ini.</p>

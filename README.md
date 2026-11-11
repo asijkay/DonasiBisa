@@ -26,17 +26,17 @@ Tanpa kredensial apa pun aplikasi tetap bisa dicoba end-to-end di mode developme
 | Layanan | Jika kredensial kosong |
 |---|---|
 | Midtrans / Xendit | **Simulator gateway lokal** (`PAYMENT_SIMULATOR=true`, hanya `APP_ENV=development`). Adapter asli, verifikasi signature, dan settlement tetap berjalan; tombol "Bayar" di `/dev/pay/...` mengirim webhook bertanda tangan. |
-| Google login | Form **login dev** di `/login` (hanya `APP_ENV=development`) yang membuat sesi Auth.js nyata dan menjalankan logika yang sama (bootstrap admin, tautan donor). |
+| Google login | Wajib: isi `AUTH_GOOGLE_ID`/`AUTH_GOOGLE_SECRET` (lihat bagian Google SSO). Login dev tanpa Google sudah dihapus. |
 | Redis / QStash | Cache & rate limit in-memory; job dijalankan inline. Jadwal lokal: `npm run jobs:run`. |
 | Email / WhatsApp | Dikirim sebagai `SKIPPED (CHANNEL_DISABLED)` di log notifikasi (preview isi tersimpan di dev). |
 
-**Menjadi Super Admin:** isi `ADMIN_EMAIL_ALLOWLIST` (mis. `admin@example.com`), login dengan email itu (Google atau login dev), lalu buka `/admin`.
+**Menjadi Super Admin:** isi `ADMIN_EMAIL_ALLOWLIST` (mis. `admin@example.com`), login Google dengan email itu, lalu buka `/admin`.
 
 ### Alur demo cepat
 1. Buka `/` → campaign `[DEMO]` → **Donasi** → isi form → pilih metode.
 2. Di halaman simulator klik **Bayar berhasil** (atau "2×" untuk menguji webhook ganda).
 3. `/payment/<kode>` menampilkan SUCCEEDED dari database; progres campaign bertambah sekali.
-4. Login (email sama dengan donasi) → `/account` → unduh PDF.
+4. Login Google (email sama dengan donasi) → `/account` → unduh PDF.
 
 ## Cara mengaktifkan Google SSO (belum ada kredensial)
 1. [Google Cloud Console](https://console.cloud.google.com) → buat/pilih project → **APIs & Services → OAuth consent screen** (External, scope `openid`, `email`, `profile`; tambahkan akun Anda sebagai *Test user* selama mode testing).
@@ -109,7 +109,7 @@ tests/              Vitest
 - RBAC dicek di server untuk setiap halaman dan server action; donor biasa mendapat 404 di `/admin`. Receipt & detail transaksi: kepemilikan dicek di query (404 bila bukan pemilik).
 - Markdown disanitasi (`rehype-sanitize`); URL gambar/redirect harus HTTPS; security headers di `next.config.ts`.
 - Rate limit pada create donation / payment / status; WhatsApp hanya jika consent snapshot `true`.
-- Simulator dan login dev **hanya** aktif saat `APP_ENV=development` (route mengembalikan 404 selain itu). **Pastikan `APP_ENV=production` di Vercel.**
+- Simulator gateway **hanya** aktif saat `APP_ENV=development` (route mengembalikan 404 selain itu). **Pastikan `APP_ENV=production` di Vercel.**
 
 ## Keputusan terbuka / BLOCKED
 - **BLOCKED:** kredensial Google OAuth, Midtrans, Xendit, Neon, Upstash, SMTP, Fonnte (lihat tabel fallback di atas).
@@ -118,3 +118,6 @@ tests/              Vitest
 - Kode channel Xendit v3 (mis. `BCA_VIRTUAL_ACCOUNT`) dan `enabled_payments` Midtrans perlu disesuaikan dengan akun merchant.
 - Upload gambar: MVP memakai URL HTTPS.
 - Penyimpangan dari TRD: tanpa shadcn/ui CLI (komponen Tailwind sendiri), tanpa React Hook Form (form native + validasi server Zod), mutasi admin memakai Server Actions (bukan `/api/admin/*`), HTTP adapter alih-alih SDK `midtrans-client`/`xendit-node` (lebih sedikit dependency, mudah disimulasikan), Playwright ditunda.
+
+## Tema
+Tombol tema (perangkat / terang / gelap) ada di header; default mengikuti pengaturan perangkat dan pilihan disimpan di browser. Breadcrumb dan tombol kembali (`PageNav`) ada di semua halaman publik, akun, dan admin.

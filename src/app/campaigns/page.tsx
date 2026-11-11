@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { PageNav } from "@/components/public/page-nav";
 import { EmptyState, PageHeading, cn } from "@/components/ui";
 import { CampaignCard } from "@/components/public/campaign-card";
 import { CATEGORY_META } from "@/components/public/icons";
@@ -15,6 +16,7 @@ export default async function CampaignsPage({ searchParams }: { searchParams: Pr
   const chip = "rounded-full border px-4 py-1.5 text-sm font-semibold transition";
   return (
     <div>
+      <PageNav crumbs={[{ label: "Beranda", href: "/" }, { label: "Campaign" }]} />
       <PageHeading title="Campaign donasi" />
       <nav aria-label="Filter kategori" className="mb-6 flex flex-wrap gap-2">
         <Link href="/campaigns" aria-current={!category ? "page" : undefined} className={cn(chip, !category ? "border-brand bg-brand text-white" : "border-slate-300 hover:border-brand hover:text-brand-ink")}>Semua</Link>

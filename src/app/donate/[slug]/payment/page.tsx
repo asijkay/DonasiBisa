@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import type { Metadata } from "next";
+import { PageNav } from "@/components/public/page-nav";
 import { Alert, Card, PageHeading } from "@/components/ui";
 import { PaymentPicker } from "@/components/public/payment-picker";
 import { getDonationStatus, listAvailablePaymentMethods } from "@/services/donations.service";
@@ -18,6 +19,7 @@ export default async function SelectPaymentPage({ params, searchParams }: { para
 
   return (
     <div className="mx-auto max-w-2xl">
+      <PageNav crumbs={[{ label: "Beranda", href: "/" }, { label: status.campaignTitle, href: `/campaigns/${slug}` }, { label: "Donasi", href: `/donate/${slug}` }, { label: "Pembayaran" }]} />
       <PageHeading title="Pilih metode pembayaran" />
       <Card className="mb-4">
         <p className="text-sm text-slate-600">{status.campaignTitle}</p>

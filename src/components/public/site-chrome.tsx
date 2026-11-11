@@ -4,6 +4,7 @@ import type { SessionUser } from "@/lib/auth/session";
 import { signOutAction } from "@/app/actions/auth";
 import { BrandLogo } from "./logo";
 import { IconMenu } from "./icons";
+import { ThemeToggle } from "./theme-toggle";
 
 const NAV = [
   { href: "/campaigns", label: "Campaign" },
@@ -26,6 +27,7 @@ export function SiteHeader({ brand, user }: { brand: BrandDTO; user: SessionUser
         </nav>
 
         <div className="flex items-center gap-2">
+          <ThemeToggle className="hidden sm:inline-flex" />
           {user ? (
             <>
               {user.roles.length > 0 && <Link href="/admin" className={`${link} hidden sm:inline-flex`}>Admin</Link>}
@@ -47,6 +49,7 @@ export function SiteHeader({ brand, user }: { brand: BrandDTO; user: SessionUser
             <div className="absolute right-0 mt-2 w-60 space-y-1 rounded-2xl border border-slate-200 bg-card p-3 shadow-xl">
               {NAV.map((n) => (<Link key={n.href} href={n.href} className={`${link} block`}>{n.label}</Link>))}
               <hr className="my-2 border-slate-200" />
+              <div className="flex items-center justify-between px-3 py-1 text-sm font-medium text-slate-700">Tema <ThemeToggle /></div>
               {user ? (
                 <>
                   {user.roles.length > 0 && <Link href="/admin" className={`${link} block`}>Admin</Link>}
@@ -67,7 +70,7 @@ export function SiteHeader({ brand, user }: { brand: BrandDTO; user: SessionUser
 
 export function SiteFooter({ brand }: { brand: BrandDTO }) {
   return (
-    <footer className="mt-20 bg-brand-secondary text-white/80">
+    <footer className="band-navy text-white/80">
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:grid-cols-3">
         <div className="space-y-3">
           <p className="text-lg font-bold text-white">{brand.brandName}</p>

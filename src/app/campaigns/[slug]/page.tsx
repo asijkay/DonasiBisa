@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { PageNav } from "@/components/public/page-nav";
 import { Alert, Badge, ButtonLink, Card, ProgressBar, StatusBadge } from "@/components/ui";
 import { Markdown } from "@/components/public/markdown";
 import { CoverImage } from "@/components/public/cover-image";
@@ -22,6 +23,8 @@ export default async function CampaignPage({ params }: Props) {
   const pct = progressPercent(c.raisedAmount, c.targetAmount);
 
   return (
+    <div>
+    <PageNav crumbs={[{ label: "Beranda", href: "/" }, { label: "Campaign", href: "/campaigns" }, { label: c.title }]} />
     <div className="grid gap-8 lg:grid-cols-[1fr_360px]">
       <article>
         <CoverImage src={c.coverImageUrl} alt={c.title} className="h-56 w-full rounded-xl sm:h-80" />
@@ -69,6 +72,7 @@ export default async function CampaignPage({ params }: Props) {
           <p className="text-xs text-slate-500">Anda tidak perlu login untuk berdonasi.</p>
         </Card>
       </aside>
+    </div>
     </div>
   );
 }

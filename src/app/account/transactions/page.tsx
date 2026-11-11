@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { PageNav } from "@/components/public/page-nav";
 import { EmptyState, PageHeading, StatusBadge, Table, Td, Th } from "@/components/ui";
 import { requireUser } from "@/lib/auth/session";
 import { getDonorForUser, listDonorTransactions } from "@/services/donations.service";
@@ -13,6 +14,7 @@ export default async function TransactionsPage() {
   const rows = donor ? await listDonorTransactions(donor.id, 100) : [];
   return (
     <div>
+      <PageNav crumbs={[{ label: "Beranda", href: "/" }, { label: "Akun", href: "/account" }, { label: "Transaksi" }]} />
       <PageHeading title="Riwayat donasi" />
       {rows.length === 0 ? <EmptyState title="Belum ada transaksi" /> : (
         <Table>

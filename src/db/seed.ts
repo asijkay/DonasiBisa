@@ -26,8 +26,7 @@ async function seed(): Promise<void> {
       secondaryColor: "#062246",
       accentColor: "#ff6b57",
       tagline: "Berbagi kebaikan, satu donasi pada satu waktu.",
-      footerText: "© DonasiBisa.",
-      contactEmail: "halo@example.com",
+      footerText: "© 2026 DonasiBisa. Seluruh hak cipta dilindungi.",
     })
     .onConflictDoNothing();
 

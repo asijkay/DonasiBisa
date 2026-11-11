@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PageNav } from "@/components/public/page-nav";
 import { PageHeading, Table, Td, Th } from "@/components/ui";
 import credits from "@/lib/image-credits.json";
 
@@ -7,6 +8,7 @@ export const metadata: Metadata = { title: "Kredit foto" };
 export default function CreditsPage() {
   return (
     <div className="mx-auto max-w-4xl">
+      <PageNav crumbs={[{ label: "Beranda", href: "/" }, { label: "Kredit foto" }]} />
       <PageHeading title="Kredit foto" />
       <p className="mb-4 text-sm text-slate-600">Foto ilustrasi pada landing page bersumber dari Wikimedia Commons berlisensi bebas (domain publik atau CC0). Foto bersifat ilustratif dan tidak merepresentasikan campaign tertentu.</p>
       <Table>

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { PageNav } from "@/components/public/page-nav";
 import { EmptyState, PageHeading } from "@/components/ui";
 import { listPublishedNews } from "@/services/news.service";
 import { formatDate } from "@/lib/utils/format";
@@ -10,6 +11,7 @@ export default async function NewsPage() {
   const news = await listPublishedNews(50);
   return (
     <div>
+      <PageNav crumbs={[{ label: "Beranda", href: "/" }, { label: "Berita" }]} />
       <PageHeading title="Berita &amp; update" />
       {news.length === 0 ? (
         <EmptyState title="Belum ada berita" />

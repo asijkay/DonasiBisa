@@ -19,6 +19,8 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
+const THEME_SCRIPT = `(function(){try{var p=localStorage.getItem("theme")||"system";var d=p==="dark"||(p==="system"&&window.matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.dataset.theme=d?"dark":"light"}catch(e){}})()`;
+
 const HEX = /^#[0-9a-fA-F]{6}$/;
 const safeColor = (v: string, fallback: string) => (HEX.test(v) ? v : fallback);
 
@@ -27,16 +29,18 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   // Colors are validated against #RRGGBB before being interpolated into CSS.
   const css = `:root{--brand-primary:${safeColor(brand.primaryColor, "#0064db")};--brand-secondary:${safeColor(brand.secondaryColor, "#062246")};--brand-accent:${safeColor(brand.accentColor, "#ff6b57")};--brand-bg:${safeColor(brand.backgroundColor, "#ffffff")}}`;
   return (
-    <html lang="id">
+    <html lang="id" suppressHydrationWarning>
       <head>
         <style dangerouslySetInnerHTML={{ __html: css }} />
+        {/* Resolve the theme before first paint (default = device setting) to avoid a flash. */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
       </head>
       <body>
         <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-50 focus:rounded focus:bg-card focus:px-3 focus:py-2">
           Lewati ke konten
         </a>
         <SiteHeader brand={brand} user={user} />
-        <main id="main" className="mx-auto min-h-[60vh] max-w-6xl px-4 py-8">
+        <main id="main" className="mx-auto min-h-[60vh] max-w-6xl px-4 pb-16 pt-8">
           {children}
         </main>
         <SiteFooter brand={brand} />

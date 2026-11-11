@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { PageNav } from "@/components/public/page-nav";
 import { Alert, Card, PageHeading } from "@/components/ui";
 import { DonateForm } from "@/components/public/donate-form";
 import { getEnv } from "@/lib/env";
@@ -20,6 +21,7 @@ export default async function DonatePage({ params }: { params: Promise<{ slug: s
 
   return (
     <div className="mx-auto max-w-2xl">
+      <PageNav crumbs={[{ label: "Beranda", href: "/" }, { label: "Campaign", href: "/campaigns" }, { label: campaign.title, href: `/campaigns/${slug}` }, { label: "Donasi" }]} />
       <PageHeading title="Donasi" />
       <p className="-mt-3 mb-6 text-slate-600">
         untuk <Link href={`/campaigns/${slug}`} className="font-medium text-brand-ink hover:underline">{campaign.title}</Link>

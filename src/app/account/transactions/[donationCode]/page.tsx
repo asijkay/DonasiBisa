@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { PageNav } from "@/components/public/page-nav";
 import { ButtonLink, Card, PageHeading, StatusBadge } from "@/components/ui";
 import { requireUser } from "@/lib/auth/session";
 import { getDonorForUser, getDonorTransaction } from "@/services/donations.service";
@@ -16,6 +17,7 @@ export default async function TransactionDetailPage({ params }: { params: Promis
   const { d, campaignTitle } = row;
   return (
     <div className="mx-auto max-w-2xl">
+      <PageNav crumbs={[{ label: "Beranda", href: "/" }, { label: "Akun", href: "/account" }, { label: "Transaksi", href: "/account/transactions" }, { label: d.donationCode }]} />
       <PageHeading title="Detail donasi"><StatusBadge status={d.status} /></PageHeading>
       <Card className="space-y-4">
         <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-sm">
