@@ -123,6 +123,22 @@ describe("webhook verification", () => {
   });
 });
 
+describe("Xendit webhook payload shapes (per official docs)", () => {
+  const h = new Headers({ "x-callback-token": "test-callback-token" });
+  it("payment.capture, payment.failure and payment_request.expiry map to internal statuses", async () => {
+    const cap = JSON.stringify({ event: "payment.capture", business_id: "b", created: "2026-08-26T07:28:23.731Z", data: { payment_id: "py-1", payment_request_id: "pr-1", reference_id: "DON-A-1", status: "SUCCEEDED", request_amount: 25000, currency: "IDR", channel_code: "DANA" } });
+    const fail = JSON.stringify({ event: "payment.failure", data: { payment_id: "py-2", payment_request_id: "pr-2", reference_id: "DON-B-1", status: "FAILED", request_amount: 10000, currency: "IDR", channel_code: "QRIS", failure_code: "INSUFFICIENT_BALANCE" } });
+    const exp = JSON.stringify({ event: "payment_request.expiry", data: { payment_request_id: "pr-3", reference_id: "DON-C-1", status: "EXPIRED", request_amount: 10000, currency: "IDR", channel_code: "BCA_VIRTUAL_ACCOUNT" } });
+    expect(await xenditAdapter.verifyAndNormalizeWebhook(cap, h)).toMatchObject({ status: "SUCCEEDED", providerReference: "DON-A-1", providerPaymentId: "pr-1", amount: 25000, eventType: "payment.capture" });
+    expect(await xenditAdapter.verifyAndNormalizeWebhook(fail, h)).toMatchObject({ status: "FAILED", providerReference: "DON-B-1" });
+    expect(await xenditAdapter.verifyAndNormalizeWebhook(exp, h)).toMatchObject({ status: "EXPIRED", providerReference: "DON-C-1", eventType: "payment_request.expiry" });
+  });
+  it("also accepts a flat (unwrapped) payload", async () => {
+    const flat = JSON.stringify({ event: "payment.capture", payment_request_id: "pr-9", reference_id: "DON-F-1", status: "SUCCEEDED", request_amount: 5000, currency: "IDR" });
+    expect(await xenditAdapter.verifyAndNormalizeWebhook(flat, h)).toMatchObject({ status: "SUCCEEDED", providerReference: "DON-F-1" });
+  });
+});
+
 describe("RBAC", () => {
   it("maps roles to permissions", () => {
     expect(hasPermission(["SUPER_ADMIN"], "brand:configure")).toBe(true);
