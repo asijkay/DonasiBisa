@@ -398,11 +398,12 @@ export async function getPublicStats(): Promise<PublicStats> {
     const [raised] = await db
       .select({ total: sql<number>`coalesce(sum(${campaigns.raisedAmount}), 0)::bigint`, active: sql<number>`count(*) filter (where ${campaigns.status} = 'PUBLISHED')::int` })
       .from(campaigns)
-      .where(inArray(campaigns.status, ["PUBLISHED", "PAUSED", "COMPLETED", "CLOSED"]));
+      .where(and(inArray(campaigns.status, ["PUBLISHED", "PAUSED", "COMPLETED", "CLOSED"]), eq(campaigns.isDemo, false)));
     const [d] = await db
       .select({ donors: sql<number>`count(distinct ${donations.donorId})::int`, n: sql<number>`count(*)::int` })
       .from(donations)
-      .where(eq(donations.status, "SUCCEEDED"));
+      .innerJoin(campaigns, eq(campaigns.id, donations.campaignId))
+      .where(and(eq(donations.status, "SUCCEEDED"), eq(campaigns.isDemo, false)));
     return { totalRaised: Number(raised.total), donorCount: d.donors, donationCount: d.n, activeCampaigns: raised.active };
   });
 }

@@ -11,7 +11,7 @@ import {
   payments,
   type Provider,
 } from "@/db/schema";
-import { getEnv } from "@/lib/env";
+import { getEnv, liveMoneyEnabled } from "@/lib/env";
 import { normalizeWhatsapp } from "@/lib/utils/contact";
 import { generateDonationCode } from "@/lib/utils/security";
 import { getAdapter } from "@/lib/payments/registry";
@@ -50,6 +50,10 @@ export async function createDonation(input: DonationInput, ctx: { idempotencyKey
   if (block) throw new DomainError(BLOCK_MESSAGES[block], `CAMPAIGN_${block}`, 409);
 
   const env = getEnv();
+  // Demo campaigns are fiction: they must never collect real money.
+  if (campaign.isDemo && liveMoneyEnabled()) {
+    throw new DomainError("Campaign contoh (demo) tidak menerima donasi sungguhan.", "CAMPAIGN_DEMO", 409);
+  }
   const amount = resolveDonationAmount(campaign, options, input, { min: env.MIN_DONATION_AMOUNT, max: env.MAX_DONATION_AMOUNT });
   const whatsapp = normalizeWhatsapp(input.donor.whatsapp);
   if (!whatsapp) throw new DomainError("Nomor WhatsApp tidak valid.", "WHATSAPP_INVALID");

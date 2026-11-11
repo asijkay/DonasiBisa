@@ -1,4 +1,4 @@
-import { and, eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { closeDb, db } from "./index";
 import {
   brandConfig,
@@ -9,6 +9,7 @@ import {
   paymentMethodConfigs,
   paymentProviders,
 } from "./schema";
+import { DEMO_CAMPAIGNS, DEMO_NEWS } from "./demo-data";
 import { DEFAULT_TEMPLATES } from "@/lib/notifications/templates";
 import { getEnv } from "@/lib/env";
 import { simulatorEnabled } from "@/lib/payments/simulator";
@@ -54,68 +55,58 @@ async function seed(): Promise<void> {
   }
 
   // 4. Demo content — clearly labelled; never seeded in production.
-  if (env.APP_ENV !== "production") await seedDemo();
+  // Demo content: automatic outside production; in production only when explicitly requested.
+  if (env.APP_ENV !== "production" || process.env.SEED_DEMO === "true") await seedDemo();
   console.log("Seed complete.");
 }
 
+/** Replaces older generic demo rows (only those with no donations) and upserts the realistic demo set. */
 async function seedDemo(): Promise<void> {
-  type Cat = "PENDIDIKAN" | "KESEHATAN" | "BENCANA" | "SOSIAL" | "LAINNYA";
-  const demoCampaigns: Array<{ slug: string; title: string; amountMode: "OPEN_AMOUNT" | "CLOSED_AMOUNT"; status: "PUBLISHED" | "DRAFT"; featured: boolean; target: number; category: Cat; cover: string | null }> = [
-    { slug: "demo-nominal-bebas", title: "[DEMO] Beasiswa Anak Sekolah (nominal bebas)", amountMode: "OPEN_AMOUNT", status: "PUBLISHED", featured: true, target: 10_000_000, category: "PENDIDIKAN", cover: "/images/landing/education.webp" },
-    { slug: "demo-nominal-paket", title: "[DEMO] Layanan Kesehatan Ibu & Anak (paket nominal)", amountMode: "CLOSED_AMOUNT", status: "PUBLISHED", featured: true, target: 5_000_000, category: "KESEHATAN", cover: "/images/landing/health.webp" },
-    { slug: "demo-bencana", title: "[DEMO] Bantuan Darurat Bencana", amountMode: "OPEN_AMOUNT", status: "PUBLISHED", featured: true, target: 25_000_000, category: "BENCANA", cover: "/images/landing/disaster.webp" },
-    { slug: "demo-draft", title: "[DEMO] Campaign Draft (tidak tampil publik)", amountMode: "OPEN_AMOUNT", status: "DRAFT", featured: false, target: 1_000_000, category: "SOSIAL", cover: "/images/landing/community.webp" },
-  ];
-  for (const c of demoCampaigns) {
-    const [existing] = await db.select({ id: campaigns.id }).from(campaigns).where(eq(campaigns.slug, c.slug));
+  await db.execute(sql`delete from campaigns c where c.is_demo = true and c.slug in ('demo-nominal-bebas','demo-nominal-paket','demo-bencana','demo-draft') and not exists (select 1 from donations d where d.campaign_id = c.id)`);
+  await db.execute(sql`delete from news_posts where slug like 'demo-%'`);
+
+  for (const c of DEMO_CAMPAIGNS) {
+    const endsAt = c.endsInDays ? new Date(Date.now() + c.endsInDays * 86_400_000) : null;
+    const closed = c.status === "COMPLETED";
+    const values = {
+      slug: c.slug,
+      title: c.title,
+      summary: c.summary,
+      descriptionMd: c.description,
+      category: c.category,
+      targetAmount: c.target,
+      raisedAmount: c.raised, // demo rows only: fictional progress for presentations
+      amountMode: c.amountMode,
+      status: c.status,
+      closeReason: closed ? ("TARGET_REACHED" as const) : null,
+      isFeatured: c.featured,
+      isDemo: true,
+      coverImageUrl: c.cover,
+      endsAt,
+      publishedAt: new Date(Date.now() - 20 * 86_400_000),
+    };
+    const [existing] = await db.select({ id: campaigns.id, isDemo: campaigns.isDemo }).from(campaigns).where(eq(campaigns.slug, c.slug));
+    let id: string;
     if (existing) {
-      // Backfill presentation fields on previously seeded demo rows (never touches amounts/status).
-      await db.update(campaigns).set({ category: c.category, coverImageUrl: c.cover, title: c.title }).where(eq(campaigns.id, existing.id));
-      continue;
+      if (!existing.isDemo) continue; // never touch a real campaign that happens to share a slug
+      await db.update(campaigns).set({ ...values, updatedAt: new Date() }).where(eq(campaigns.id, existing.id));
+      id = existing.id;
+    } else {
+      [{ id }] = await db.insert(campaigns).values(values).returning({ id: campaigns.id });
     }
-    const [row] = await db
-      .insert(campaigns)
-      .values({
-        category: c.category,
-        coverImageUrl: c.cover,
-        slug: c.slug,
-        title: c.title,
-        summary: "Contoh campaign untuk demo. Bukan penggalangan dana nyata dan tidak terverifikasi.",
-        descriptionMd: "## Data demo\n\nCampaign ini hanya **contoh** untuk menguji alur donasi. Tidak ada penerima manfaat nyata dan dana tidak disalurkan.\n\n- Tidak terverifikasi\n- Hapus sebelum go-live",
-        targetAmount: c.target,
-        amountMode: c.amountMode,
-        status: c.status,
-        isFeatured: c.featured,
-        isDemo: true,
-        publishedAt: c.status === "PUBLISHED" ? new Date() : null,
-      })
-      .returning();
-    if (c.amountMode === "CLOSED_AMOUNT") {
-      await db.insert(campaignAmountOptions).values([
-        { campaignId: row.id, amount: 25_000, label: "Paket Hemat", sortOrder: 0 },
-        { campaignId: row.id, amount: 50_000, label: "Paket Berbagi", sortOrder: 1 },
-        { campaignId: row.id, amount: 100_000, label: "Paket Peduli", sortOrder: 2 },
-      ]);
+    if (c.presets) {
+      await db.delete(campaignAmountOptions).where(eq(campaignAmountOptions.campaignId, id));
+      await db.insert(campaignAmountOptions).values(c.presets.map(([amount, label], i) => ({ campaignId: id, amount, label, sortOrder: i })));
     }
   }
-  const [paket] = await db.select({ id: campaigns.id }).from(campaigns).where(eq(campaigns.slug, "demo-nominal-paket"));
-  const news = [
-    { slug: "demo-berita-umum-1", title: "[DEMO] Selamat datang di platform donasi", campaignId: null as string | null },
-    { slug: "demo-berita-umum-2", title: "[DEMO] Cara kerja donasi online", campaignId: null as string | null },
-    { slug: "demo-update-paket", title: "[DEMO] Update campaign paket nominal", campaignId: paket?.id ?? null },
-  ];
-  for (const n of news) {
-    const [exists] = await db.select({ id: newsPosts.id }).from(newsPosts).where(and(eq(newsPosts.slug, n.slug)));
-    if (exists) continue;
-    await db.insert(newsPosts).values({
-      slug: n.slug,
-      title: n.title,
-      excerpt: "Konten contoh untuk demo, bukan berita nyata.",
-      bodyMd: "Ini adalah **konten demo**. Ganti dengan berita sebenarnya melalui panel admin.",
-      campaignId: n.campaignId,
-      status: "PUBLISHED",
-      publishedAt: new Date(),
-    });
+
+  for (const n of DEMO_NEWS) {
+    const [c] = n.campaignSlug ? await db.select({ id: campaigns.id }).from(campaigns).where(eq(campaigns.slug, n.campaignSlug)) : [undefined];
+    const publishedAt = new Date(Date.now() - n.daysAgo * 86_400_000);
+    const values = { slug: n.slug, title: n.title, excerpt: n.excerpt, bodyMd: n.body, campaignId: c?.id ?? null, status: "PUBLISHED" as const, publishedAt };
+    const [exists] = await db.select({ id: newsPosts.id }).from(newsPosts).where(eq(newsPosts.slug, n.slug));
+    if (exists) await db.update(newsPosts).set({ ...values, updatedAt: new Date() }).where(eq(newsPosts.id, exists.id));
+    else await db.insert(newsPosts).values(values);
   }
 }
 

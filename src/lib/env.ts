@@ -77,3 +77,9 @@ export function adminAllowlist(): string[] {
     .map((e) => e.trim().toLowerCase())
     .filter(Boolean);
 }
+
+/** True when real money can move (production Midtrans, or a non-development Xendit key). */
+export function liveMoneyEnabled(): boolean {
+  const env = getEnv();
+  return env.MIDTRANS_IS_PRODUCTION || (!!env.XENDIT_SECRET_KEY && !env.XENDIT_SECRET_KEY.startsWith("xnd_development"));
+}

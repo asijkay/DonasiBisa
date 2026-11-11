@@ -5,6 +5,7 @@ import { donations, donors, payments, users } from "../src/db/schema";
 import { createDonation, createPaymentForDonation } from "../src/services/donations.service";
 import { linkDonorToUser } from "../src/services/donors.service";
 import { DomainError } from "../src/services/campaigns.service";
+import { resetEnvCache } from "../src/lib/env";
 import { enableMidtrans, makeCampaign, makeOptions, resetDb } from "./helpers";
 
 const donor = { name: "Siti", email: "Siti@Example.com", whatsapp: "081234567890", whatsappOptIn: true };
@@ -48,6 +49,22 @@ describe("createDonation", () => {
     await createDonation(input, { idempotencyKey: "k2" });
     expect((await db.select().from(donations)).length).toBe(2);
     expect((await db.select().from(donors)).length).toBe(1);
+  });
+});
+
+describe("demo campaigns", () => {
+  it("accept sandbox donations but are blocked when live payment keys are configured", async () => {
+    const c = await makeCampaign({ isDemo: true });
+    const input = { campaignSlug: c.slug, amount: 25_000, donor, isAnonymous: false };
+    await expect(createDonation(input)).resolves.toMatchObject({ status: "PENDING" });
+    process.env.MIDTRANS_IS_PRODUCTION = "true";
+    resetEnvCache();
+    try {
+      await expect(createDonation(input)).rejects.toThrow(/demo/i);
+    } finally {
+      delete process.env.MIDTRANS_IS_PRODUCTION;
+      resetEnvCache();
+    }
   });
 });
 
