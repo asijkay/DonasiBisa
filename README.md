@@ -2,6 +2,8 @@
 
 Platform donasi satu organisasi: campaign (nominal bebas / paket nominal), checkout guest, pembayaran Midtrans & Xendit (sekali bayar), notifikasi email/WhatsApp, donor dashboard + bukti donasi PDF, dan panel admin berbasis RBAC.
 
+**Panduan penggunaan lengkap (donatur, admin, operator): [`docs/PANDUAN.md`](docs/PANDUAN.md).** Bukti uji sandbox: [`docs/EVIDENCE.md`](docs/EVIDENCE.md).
+
 Spesifikasi lengkap ada di [`markdown_docs/`](markdown_docs/) (PRD, TRD, ERD, SETUP). Kontrak antar modul: [`docs/CONTRACTS.md`](docs/CONTRACTS.md).
 
 **Stack:** Next.js 16 (App Router) · TypeScript strict · Tailwind CSS 4 · Drizzle ORM + PostgreSQL (Neon) · Auth.js v5 (Google) · Upstash Redis/QStash (opsional) · Nodemailer · Fonnte · pdf-lib · Vitest.
