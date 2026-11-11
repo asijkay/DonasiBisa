@@ -24,6 +24,7 @@ type XenditPayment = {
   channel_code?: string;
   actions?: XenditAction[];
   expires_at?: string;
+  channel_properties?: { expires_at?: string };
   updated?: string;
   created?: string;
 };
@@ -39,6 +40,11 @@ function baseUrl(): string {
 }
 function authHeader(key: string): string {
   return `Basic ${Buffer.from(`${key}:`).toString("base64")}`;
+}
+
+function parseDate(v?: string): Date | undefined {
+  const d = v ? new Date(v) : undefined;
+  return d && !Number.isNaN(d.getTime()) ? d : undefined;
 }
 
 function toEvent(p: XenditPayment, externalEventId: string, eventType: string, raw: unknown): NormalizedPaymentEvent {
@@ -108,7 +114,7 @@ export const xenditAdapter: PaymentGatewayAdapter = {
       providerReference: input.reference,
       providerPaymentId: json.payment_request_id,
       checkoutUrl: redirect?.value,
-      expiresAt: json.expires_at ? new Date(json.expires_at) : undefined,
+      expiresAt: parseDate(json.expires_at ?? json.channel_properties?.expires_at),
       initialStatus: "PENDING",
       instructionData: {
         title: va ? "Transfer ke Virtual Account" : qr ? "Scan kode QR" : "Lanjutkan pembayaran",
