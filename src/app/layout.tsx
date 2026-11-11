@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
+import { headers } from "next/headers";
 import "./globals.css";
 import { getBrand } from "@/services/brand.service";
 import { getCurrentUser } from "@/lib/auth/session";
@@ -38,7 +39,7 @@ function readableOn(hex: string): string {
 const safeColor = (v: string, fallback: string) => (HEX.test(v) ? v : fallback);
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
-  const [brand, user] = await Promise.all([getBrand(), getCurrentUser().catch(() => null)]);
+  const [brand, user, nonce] = await Promise.all([getBrand(), getCurrentUser().catch(() => null), headers().then((h) => h.get("x-nonce") ?? undefined)]);
   // Colors are validated against #RRGGBB before being interpolated into CSS.
   const css = `:root{--brand-primary:${safeColor(brand.primaryColor, "#0064db")};--brand-secondary:${safeColor(brand.secondaryColor, "#062246")};--brand-accent:${safeColor(brand.accentColor, "#ff6b57")};--brand-bg:${safeColor(brand.backgroundColor, "#ffffff")};--on-accent:${readableOn(safeColor(brand.accentColor, "#ff6b57"))}}`;
   return (
@@ -46,7 +47,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
       <head>
         <style dangerouslySetInnerHTML={{ __html: css }} />
         {/* Resolve the theme before first paint (default = device setting) to avoid a flash. */}
-        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+        <script nonce={nonce} dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
       </head>
       <body>
         <AppBackground />

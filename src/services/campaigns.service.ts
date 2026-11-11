@@ -1,5 +1,5 @@
 import "server-only";
-import { and, asc, desc, eq, gt, inArray, isNotNull, lte, or, sql } from "drizzle-orm";
+import { and, asc, desc, eq, gt, ilike, inArray, isNotNull, lte, or, sql } from "drizzle-orm";
 import { db, type Tx } from "@/db";
 import {
   campaignAmountOptions,
@@ -61,12 +61,12 @@ export function getDonationBlockReason(c: OpenCheckable, now: Date = new Date())
 }
 
 export const BLOCK_MESSAGES: Record<DonationBlockReason, string> = {
-  NOT_PUBLISHED: "Campaign belum dipublikasikan.",
-  PAUSED: "Campaign sedang dijeda dan belum menerima donasi baru.",
-  CLOSED: "Campaign sudah ditutup dan tidak menerima donasi baru.",
-  NOT_STARTED: "Campaign belum dimulai.",
-  ENDED: "Periode campaign sudah berakhir.",
-  TARGET_REACHED: "Target campaign sudah tercapai.",
+  NOT_PUBLISHED: "Kampanye belum dipublikasikan.",
+  PAUSED: "Kampanye sedang dijeda dan belum menerima donasi baru.",
+  CLOSED: "Kampanye sudah ditutup dan tidak menerima donasi baru.",
+  NOT_STARTED: "Kampanye belum dimulai.",
+  ENDED: "Periode kampanye sudah berakhir.",
+  TARGET_REACHED: "Target kampanye sudah tercapai.",
 };
 
 export type AmountOptionRow = { id: string; amount: number; isActive: boolean };
@@ -160,9 +160,14 @@ function toCard(c: CampaignRow): CampaignCardDTO {
 const json = <T>(v: unknown): T => JSON.parse(JSON.stringify(v)) as T;
 
 /** `completed: true` lists finished campaigns (a trust signal) instead of the open ones. */
-export async function listPublicCampaigns(opts: { featured?: boolean; limit?: number; category?: CampaignCategory; completed?: boolean } = {}): Promise<CampaignCardDTO[]> {
-  const key = opts.featured ? CacheKeys.featuredCampaigns : `${CacheKeys.campaignList}:${opts.limit ?? 24}:${opts.category ?? "all"}${opts.completed ? ":done" : ""}`;
-  return cached(key, CACHE_TTL_SECONDS, async () => {
+export type CampaignSort = "terbaru" | "progres" | "berakhir";
+
+export async function listPublicCampaigns(opts: { featured?: boolean; limit?: number; category?: CampaignCategory; completed?: boolean; q?: string; sort?: CampaignSort } = {}): Promise<CampaignCardDTO[]> {
+  const q = opts.q?.trim().slice(0, 80);
+  const sort = opts.sort ?? "terbaru";
+  const like = q ? `%${q.replace(/[\\%_]/g, (c) => `\\${c}`)}%` : null;
+  const key = opts.featured ? CacheKeys.featuredCampaigns : `${CacheKeys.campaignList}:${opts.limit ?? 24}:${opts.category ?? "all"}${opts.completed ? ":done" : ""}:${sort}${q ? `:q:${q.toLowerCase()}` : ""}`;
+  return cached(key, q ? 30 : CACHE_TTL_SECONDS, async () => {
     const now = new Date();
     const rows = await db
       .select()
@@ -174,11 +179,37 @@ export async function listPublicCampaigns(opts: { featured?: boolean; limit?: nu
           opts.category ? eq(campaigns.category, opts.category) : undefined,
           opts.completed ? undefined : or(sql`${campaigns.endsAt} is null`, gt(campaigns.endsAt, now)),
           or(sql`${campaigns.startsAt} is null`, lte(campaigns.startsAt, now)),
+          like ? or(ilike(campaigns.title, like), ilike(campaigns.summary, like)) : undefined,
         ),
       )
-      .orderBy(desc(campaigns.publishedAt))
+      .orderBy(
+        ...(sort === "progres"
+          ? [desc(sql`${campaigns.raisedAmount}::float / ${campaigns.targetAmount}`), desc(campaigns.publishedAt)]
+          : sort === "berakhir"
+            ? [sql`${campaigns.endsAt} asc nulls last`, desc(campaigns.publishedAt)]
+            : [desc(campaigns.publishedAt)]),
+      )
       .limit(opts.limit ?? 24);
     return json<CampaignCardDTO[]>(rows.map(toCard));
+  });
+}
+
+/** Number of public campaigns per category (open ones, or finished ones with `completed`). Used for filter chips and tiles. */
+export async function publicCategoryCounts(completed = false): Promise<Partial<Record<CampaignCategory, number>>> {
+  return cached(`${CacheKeys.campaignList}:counts:${completed ? "done" : "open"}`, CACHE_TTL_SECONDS, async () => {
+    const now = new Date();
+    const rows = await db
+      .select({ category: campaigns.category, n: sql<number>`count(*)::int` })
+      .from(campaigns)
+      .where(
+        and(
+          eq(campaigns.status, completed ? "COMPLETED" : "PUBLISHED"),
+          completed ? undefined : or(sql`${campaigns.endsAt} is null`, gt(campaigns.endsAt, now)),
+          or(sql`${campaigns.startsAt} is null`, lte(campaigns.startsAt, now)),
+        ),
+      )
+      .groupBy(campaigns.category);
+    return json<Partial<Record<CampaignCategory, number>>>(Object.fromEntries(rows.map((r) => [r.category, r.n])));
   });
 }
 
@@ -226,10 +257,10 @@ type Actor = { userId: string };
 
 function assertPublishable(c: CampaignRow, activeOptions: number): void {
   if (!c.title || !c.slug || !c.summary || !c.descriptionMd || !c.targetAmount) {
-    throw new DomainError("Data wajib campaign belum lengkap.", "CAMPAIGN_INCOMPLETE");
+    throw new DomainError("Data wajib kampanye belum lengkap.", "CAMPAIGN_INCOMPLETE");
   }
   if (c.amountMode === "CLOSED_AMOUNT" && activeOptions < 1) {
-    throw new DomainError("Campaign nominal tetap memerlukan minimal satu pilihan nominal aktif.", "NO_AMOUNT_OPTIONS");
+    throw new DomainError("Kampanye nominal tetap memerlukan minimal satu pilihan nominal aktif.", "NO_AMOUNT_OPTIONS");
   }
 }
 
@@ -277,7 +308,7 @@ export async function createCampaign(input: CampaignInput, actor: Actor): Promis
 export async function updateCampaign(id: string, input: CampaignInput, actor: Actor): Promise<CampaignRow> {
   const row = await db.transaction(async (tx) => {
     const [before] = await tx.select().from(campaigns).where(eq(campaigns.id, id)).for("update");
-    if (!before) throw new DomainError("Campaign tidak ditemukan.", "NOT_FOUND", 404);
+    if (!before) throw new DomainError("Kampanye tidak ditemukan.", "NOT_FOUND", 404);
     if (input.slug !== before.slug) {
       const [dupe] = await tx.select({ id: campaigns.id }).from(campaigns).where(eq(campaigns.slug, input.slug)).limit(1);
       if (dupe) throw new DomainError("Slug sudah digunakan.", "SLUG_TAKEN", 409);
@@ -314,7 +345,7 @@ export async function updateCampaign(id: string, input: CampaignInput, actor: Ac
 export async function setCampaignStatus(id: string, to: CampaignStatus, actor: Actor): Promise<CampaignRow> {
   const result = await db.transaction(async (tx) => {
     const [c] = await tx.select().from(campaigns).where(eq(campaigns.id, id)).for("update");
-    if (!c) throw new DomainError("Campaign tidak ditemukan.", "NOT_FOUND", 404);
+    if (!c) throw new DomainError("Kampanye tidak ditemukan.", "NOT_FOUND", 404);
     if (!canCampaignTransition(c.status, to)) {
       throw new DomainError(`Transisi ${c.status} → ${to} tidak diizinkan.`, "INVALID_TRANSITION", 409);
     }

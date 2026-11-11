@@ -23,7 +23,7 @@ export default async function DonatePage({ params }: { params: Promise<{ slug: s
 
   return (
     <div className="mx-auto max-w-2xl">
-      <PageNav crumbs={[{ label: "Beranda", href: "/" }, { label: "Campaign", href: "/campaigns" }, { label: campaign.title, href: `/campaigns/${slug}` }, { label: "Donasi" }]} />
+      <PageNav crumbs={[{ label: "Beranda", href: "/" }, { label: "Kampanye", href: "/campaigns" }, { label: campaign.title, href: `/campaigns/${slug}` }, { label: "Donasi" }]} />
       <div className="reveal"><PageHeading title="Donasi" /></div>
       <p className="reveal reveal-2 -mt-2 mb-6 text-slate-600">
         untuk <Link href={`/campaigns/${slug}`} className="font-medium text-brand-ink hover:underline">{campaign.title}</Link>

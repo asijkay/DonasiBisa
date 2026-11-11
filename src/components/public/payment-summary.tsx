@@ -22,7 +22,7 @@ export function PaymentSummary({ s }: { s: DonationStatusView }) {
           <StatusBadge status={s.status} />
         </div>
         <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-1 text-sm">
-          <dt className="text-slate-600">Campaign</dt><dd>{s.campaignTitle}</dd>
+          <dt className="text-slate-600">Kampanye</dt><dd>{s.campaignTitle}</dd>
           <dt className="text-slate-600">Nominal</dt><dd className="font-semibold">{formatIDR(s.amount)}</dd>
           {pay && (<><dt className="text-slate-600">Metode</dt><dd>{pay.provider === "MIDTRANS" ? "Midtrans" : "Xendit"}</dd></>)}
           {pay?.expiresAt && (<><dt className="text-slate-600">Batas bayar</dt><dd>{formatDateTime(pay.expiresAt)}</dd></>)}
@@ -64,7 +64,7 @@ export function PaymentSummary({ s }: { s: DonationStatusView }) {
           <ButtonLink href={`/donate/${s.campaignSlug}`}>Buat donasi baru</ButtonLink>
         </>
       )}
-      <ButtonLink variant="ghost" href={`/campaigns/${s.campaignSlug}`}>Kembali ke campaign</ButtonLink>
+      <ButtonLink variant="ghost" href={`/campaigns/${s.campaignSlug}`}>Kembali ke kampanye</ButtonLink>
     </div>
   );
 }

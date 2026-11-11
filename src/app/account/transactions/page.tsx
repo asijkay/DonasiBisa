@@ -18,7 +18,7 @@ export default async function TransactionsPage() {
       <PageHeading title="Riwayat donasi" />
       {rows.length === 0 ? <EmptyState title="Belum ada transaksi" /> : (
         <Table>
-          <thead><tr><Th>Tanggal</Th><Th>Campaign</Th><Th>Nominal</Th><Th>Status</Th><Th /></tr></thead>
+          <thead><tr><Th>Tanggal</Th><Th>Kampanye</Th><Th>Nominal</Th><Th>Status</Th><Th /></tr></thead>
           <tbody>
             {rows.map(({ d, campaignTitle }) => (
               <tr key={d.id}>

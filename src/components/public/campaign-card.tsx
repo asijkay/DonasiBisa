@@ -6,12 +6,12 @@ import { Reveal } from "./reveal";
 import { CoverImage } from "./cover-image";
 import { CATEGORY_META, IconArrow } from "./icons";
 
-export function CampaignCard({ c, headingLevel: H = "h3", delay = 0 }: { c: CampaignCardDTO; headingLevel?: "h2" | "h3"; delay?: number }) {
+export function CampaignCard({ c, headingLevel: H = "h3", delay = 0, wrapperClassName = "" }: { c: CampaignCardDTO; headingLevel?: "h2" | "h3"; delay?: number; wrapperClassName?: string }) {
   const pct = progressPercent(c.raisedAmount, c.targetAmount);
   const cat = CATEGORY_META[c.category];
   const left = c.isOpen ? daysLeft(c.endsAt) : null;
   return (
-    <Reveal delay={delay} className="h-full"><article className="card-hover group flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-card shadow-sm">
+    <Reveal delay={delay} className={`h-full ${wrapperClassName}`}><article className="card-hover group flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-card shadow-sm">
       <Link href={`/campaigns/${c.slug}`} className="relative block overflow-hidden" tabIndex={-1} aria-hidden>
         <CoverImage src={c.coverImageUrl} alt="" className="h-44 w-full transition duration-500 ease-out group-hover:scale-[1.02]" />
         <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-brand px-2.5 py-1 text-xs font-semibold text-white shadow">

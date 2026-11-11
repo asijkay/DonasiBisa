@@ -11,7 +11,7 @@ export default function NotFound() {
       <p className="mt-2 text-slate-600">Tautan yang Anda buka tidak tersedia atau sudah tidak aktif.</p>
       <div className="mt-6 flex flex-wrap items-center justify-center gap-4">
         <ButtonLink href="/">Kembali ke beranda</ButtonLink>
-        <ButtonLink href="/campaigns" variant="secondary">Lihat campaign</ButtonLink>
+        <ButtonLink href="/campaigns" variant="secondary">Lihat kampanye</ButtonLink>
       </div>
       <p className="mt-4 text-sm"><Link href="/news" className="font-semibold text-brand-ink underline-offset-2 hover:underline">Baca berita &amp; update</Link></p>
     </div>

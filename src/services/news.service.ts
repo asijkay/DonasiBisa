@@ -16,6 +16,8 @@ export type NewsCardDTO = {
   publishedAt: string | null;
   campaignSlug: string | null;
   campaignTitle: string | null;
+  /** Cover of the related campaign, used as an illustration when the post has no image of its own. */
+  campaignCoverUrl: string | null;
 };
 
 export async function listPublishedNews(limit = 20): Promise<NewsCardDTO[]> {
@@ -29,6 +31,7 @@ export async function listPublishedNews(limit = 20): Promise<NewsCardDTO[]> {
         publishedAt: newsPosts.publishedAt,
         campaignSlug: campaigns.slug,
         campaignTitle: campaigns.title,
+        campaignCoverUrl: campaigns.coverImageUrl,
       })
       .from(newsPosts)
       .leftJoin(campaigns, eq(campaigns.id, newsPosts.campaignId))
@@ -42,7 +45,7 @@ export async function listPublishedNews(limit = 20): Promise<NewsCardDTO[]> {
 
 export async function getPublishedNews(slug: string) {
   const [row] = await db
-    .select({ n: newsPosts, campaignSlug: campaigns.slug, campaignTitle: campaigns.title })
+    .select({ n: newsPosts, campaignSlug: campaigns.slug, campaignTitle: campaigns.title, campaignCoverUrl: campaigns.coverImageUrl })
     .from(newsPosts)
     .leftJoin(campaigns, eq(campaigns.id, newsPosts.campaignId))
     .where(and(eq(newsPosts.slug, slug), eq(newsPosts.status, "PUBLISHED")))

@@ -22,7 +22,7 @@ export default async function TransactionDetailPage({ params }: { params: Promis
       <Card className="space-y-4">
         <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-sm">
           <dt className="text-slate-600">Kode</dt><dd className="font-mono">{d.donationCode}</dd>
-          <dt className="text-slate-600">Campaign</dt><dd>{campaignTitle}</dd>
+          <dt className="text-slate-600">Kampanye</dt><dd>{campaignTitle}</dd>
           <dt className="text-slate-600">Nominal</dt><dd className="font-semibold">{formatIDR(d.amount)}</dd>
           <dt className="text-slate-600">Dibuat</dt><dd>{formatDateTime(d.createdAt)}</dd>
           <dt className="text-slate-600">Dibayar</dt><dd>{formatDateTime(d.paidAt)}</dd>

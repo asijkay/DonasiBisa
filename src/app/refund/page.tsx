@@ -27,14 +27,14 @@ export default async function RefundPage() {
           <li><strong>Pembayaran ganda:</strong> Anda membayar dua kali untuk donasi yang sama.</li>
           <li><strong>Nominal keliru akibat kesalahan sistem kami.</strong></li>
           <li><strong>Donasi oleh pihak di bawah umur tanpa persetujuan wali</strong>, yang diajukan oleh orang tua/wali.</li>
-          <li><strong>Campaign terbukti menyesatkan</strong> atau dibatalkan sebelum dana disalurkan.</li>
+          <li><strong>Kampanye terbukti menyesatkan</strong> atau dibatalkan sebelum dana disalurkan.</li>
           <li><strong>Pembayaran tanpa otorisasi</strong> (misalnya kartu atau akun digunakan pihak lain).</li>
         </ul>
       </LegalSection>
       <LegalSection id="tidak" title="3. Kapan tidak dapat dikembalikan">
         <ul>
           <li>Berubah pikiran setelah donasi berhasil dan dana sudah disalurkan.</li>
-          <li>Salah memilih campaign yang diketahui setelah penyaluran. Kami tetap akan membantu bila dana belum disalurkan.</li>
+          <li>Salah memilih kampanye yang diketahui setelah penyaluran. Kami tetap akan membantu bila dana belum disalurkan.</li>
           <li>Pengajuan setelah lewat <strong>14 hari</strong> sejak donasi berhasil, kecuali untuk pembayaran tanpa otorisasi atau kesalahan kami.</li>
         </ul>
       </LegalSection>

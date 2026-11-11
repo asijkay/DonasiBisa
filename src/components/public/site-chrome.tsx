@@ -6,12 +6,13 @@ import { BrandLogo } from "./logo";
 import { ThemeToggle } from "./theme-toggle";
 import { MobileMenu } from "./mobile-menu";
 import { CookieSettingsButton } from "./cookie-banner";
+import { HeaderCta } from "./header-cta";
 
 const NAV = [
-  { href: "/campaigns", label: "Campaign" },
+  { href: "/campaigns", label: "Kampanye" },
   { href: "/news", label: "Berita" },
   { href: "/#cara-kerja", label: "Cara kerja" },
-  { href: "/#faq", label: "FAQ" },
+  { href: "/#faq", label: "Tanya jawab" },
 ];
 
 export function SiteHeader({ brand, user }: { brand: BrandDTO; user: SessionUser | null }) {
@@ -38,9 +39,7 @@ export function SiteHeader({ brand, user }: { brand: BrandDTO; user: SessionUser
           ) : (
             <Link href="/login" className={`${link} hidden xl:inline-flex`}>Masuk</Link>
           )}
-          <Link href="/campaigns" className="hidden whitespace-nowrap rounded-xl bg-brand-accent px-4 py-2 text-sm font-bold text-on-accent transition hover:brightness-95 sm:inline-flex">
-            {brand.ctaLabel}
-          </Link>
+          <HeaderCta label={brand.ctaLabel} className="hidden whitespace-nowrap rounded-xl bg-brand-accent px-4 py-2 text-sm font-bold text-on-accent transition hover:brightness-95 sm:inline-flex" />
 
           <MobileMenu>
             {NAV.map((n) => (<Link key={n.href} href={n.href} className={`${link} block`}>{n.label}</Link>))}
@@ -55,7 +54,7 @@ export function SiteHeader({ brand, user }: { brand: BrandDTO; user: SessionUser
             ) : (
               <Link href="/login" className={`${link} block`}>Masuk</Link>
             )}
-            <Link href="/campaigns" className="mt-2 block rounded-xl bg-brand-accent px-4 py-2.5 text-center text-sm font-bold text-on-accent">{brand.ctaLabel}</Link>
+            <HeaderCta label={brand.ctaLabel} className="mt-2 block rounded-xl bg-brand-accent px-4 py-2.5 text-center text-sm font-bold text-on-accent" />
           </MobileMenu>
         </div>
       </div>
@@ -69,23 +68,23 @@ export function SiteFooter({ brand }: { brand: BrandDTO }) {
     <footer className="band-navy text-white/90">
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:grid-cols-2 lg:grid-cols-4">
         <div className="space-y-3 lg:col-span-1">
-          <p className="text-lg font-bold text-white">{brand.brandName}</p>
+          <h2 className="text-lg font-bold text-white">{brand.brandName}</h2>
           {brand.tagline && <p className="text-sm">{brand.tagline}</p>}
           {brand.legalName && <p className="text-sm">{brand.legalName}{brand.legalForm ? ` (${brand.legalForm})` : ""}</p>}
           {brand.registrationNumber && <p className="text-xs text-white/80">No. pengesahan: {brand.registrationNumber}</p>}
           {brand.address && <p className="text-sm">{brand.address}</p>}
         </div>
         <nav aria-label="Jelajahi" className="space-y-2 text-sm">
-          <p className="font-semibold text-white">Jelajahi</p>
+          <h2 className="font-semibold text-white">Jelajahi</h2>
           <ul className="space-y-1.5">
-            <li><Link className={l} href="/campaigns">Semua campaign</Link></li>
-            <li><Link className={l} href="/news">Berita &amp; update</Link></li>
-            <li><Link className={l} href="/#faq">Pertanyaan umum</Link></li>
+            <li><Link className={l} href="/campaigns">Semua kampanye</Link></li>
+            <li><Link className={l} href="/news">Berita &amp; kabar</Link></li>
+            <li><Link className={l} href="/#faq">Tanya jawab</Link></li>
             <li><Link className={l} href="/tentang">Tentang &amp; Kontak</Link></li>
           </ul>
         </nav>
         <nav aria-label="Legal dan privasi" className="space-y-2 text-sm">
-          <p className="font-semibold text-white">Legal &amp; privasi</p>
+          <h2 className="font-semibold text-white">Legal &amp; privasi</h2>
           <ul className="space-y-1.5">
             <li><Link className={l} href="/terms">Syarat Layanan</Link></li>
             <li><Link className={l} href="/privacy">Kebijakan Privasi</Link></li>
@@ -96,7 +95,7 @@ export function SiteFooter({ brand }: { brand: BrandDTO }) {
           </ul>
         </nav>
         <div className="space-y-2 text-sm">
-          <p className="font-semibold text-white">Kontak &amp; aksesibilitas</p>
+          <h2 className="font-semibold text-white">Kontak &amp; aksesibilitas</h2>
           {brand.contactEmail && <p><a className={l} href={`mailto:${brand.contactEmail}`}>{brand.contactEmail}</a></p>}
           {brand.contactWhatsapp && <p>WhatsApp {brand.contactWhatsapp}</p>}
           <p><Link className={l} href="/aksesibilitas">Pernyataan aksesibilitas</Link></p>

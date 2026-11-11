@@ -3,6 +3,8 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { Reveal } from "./reveal";
 import type { PublicStats } from "@/services/campaigns.service";
+import { CAMPAIGN_CATEGORIES, type CampaignCategory } from "@/db/schema";
+import type { BrandDTO } from "@/services/brand.service";
 import { formatIDR } from "@/lib/utils/format";
 import { CATEGORY_META, IconArrow, IconCard, IconCheck, IconChevron, IconFile, IconLock, IconPointer, IconShield, IconChart } from "./icons";
 
@@ -61,11 +63,13 @@ export function Hero({ ctaLabel, stats }: { ctaLabel: string; stats: PublicStats
   );
 }
 
-export function CategoryLinks() {
-  const keys = ["PENDIDIKAN", "KESEHATAN", "BENCANA", "SOSIAL"] as const;
+export function CategoryLinks({ counts }: { counts: Partial<Record<CampaignCategory, number>> }) {
+  // Same source as the filter chips on /campaigns: every category that has campaigns, with its count.
+  const keys = CAMPAIGN_CATEGORIES.filter((k) => (counts[k] ?? 0) > 0);
+  if (keys.length === 0) return <div className="py-6" />;
   return (
-    <section aria-label="Kategori campaign" className="py-12">
-      <ul className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+    <section aria-label="Kategori kampanye" className="py-12">
+      <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
         {keys.map((k, idx) => {
           const { label, Icon } = CATEGORY_META[k];
           return (
@@ -73,6 +77,7 @@ export function CategoryLinks() {
               <Link href={`/campaigns?kategori=${k}`} className="group flex h-full flex-col items-center gap-3 card-hover rounded-2xl border border-slate-200 bg-card p-6 text-center shadow-sm">
                 <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-soft text-brand-ink transition-colors duration-300 ease-out group-hover:bg-brand group-hover:text-white"><Icon width={28} height={28} /></span>
                 <span className="font-bold text-slate-900">{label}</span>
+                <span className="-mt-2 text-xs text-slate-600">{counts[k]} kampanye</span>
               </Link>
             </Reveal></li>
           );
@@ -87,14 +92,14 @@ export function StatsBand({ stats }: { stats: PublicStats }) {
   const items = [
     { v: formatIDR(stats.totalRaised), l: "Donasi terkumpul" },
     { v: stats.donorCount.toLocaleString("id-ID"), l: "Donatur berpartisipasi" },
-    { v: stats.activeCampaigns.toLocaleString("id-ID"), l: "Campaign aktif" },
+    { v: stats.activeCampaigns.toLocaleString("id-ID"), l: "Kampanye aktif" },
   ];
   return (
     <Reveal><section aria-label="Ringkasan" className="band-blue rounded-3xl text-white shadow-xl shadow-brand/15">
       <div className="px-6 py-10 sm:px-10">
         {empty ? (
           <div className="text-center">
-            <p className="text-2xl font-extrabold sm:text-3xl">Jadilah donatur pertama</p>
+            <h2 className="text-2xl font-extrabold sm:text-3xl">Jadilah donatur pertama</h2>
             <p className="mx-auto mt-2 max-w-xl text-white/80">Setiap donasi tercatat transparan dan langsung menambah progres campaign. Mulai dari nominal berapa pun.</p>
           </div>
         ) : (
@@ -111,7 +116,7 @@ export function StatsBand({ stats }: { stats: PublicStats }) {
 
 export function HowItWorks() {
   const steps = [
-    { Icon: IconPointer, t: "Pilih campaign", d: "Telusuri campaign dan pilih yang ingin Anda dukung. Baca tujuan, target, dan perkembangannya." },
+    { Icon: IconPointer, t: "Pilih kampanye", d: "Telusuri kampanye dan pilih yang ingin Anda dukung. Baca tujuan, target, dan perkembangannya." },
     { Icon: IconCard, t: "Tentukan nominal & bayar", d: "Isi data singkat tanpa perlu akun, lalu bayar lewat QRIS, e-wallet, atau virtual account." },
     { Icon: IconFile, t: "Terima konfirmasi", d: "Notifikasi dikirim lewat email/WhatsApp. Login Google untuk mengunduh bukti donasi PDF." },
   ];
@@ -161,19 +166,45 @@ export function TrustSection() {
   );
 }
 
+/** Who runs the platform, where donations go and how it is reported. Facts come from Brand Config and the Terms. */
+export function TransparencySection({ brand }: { brand: BrandDTO }) {
+  const operator = brand.legalName ?? brand.brandName;
+  const cols = [
+    { t: "Siapa penyelenggara", d: `${operator}${brand.legalForm ? ` (${brand.legalForm})` : ""} mengelola platform ini.${brand.registrationNumber ? ` Nomor pengesahan: ${brand.registrationNumber}.` : ""}`, href: "/tentang", cta: "Identitas & kontak" },
+    { t: "Ke mana dana mengalir", d: "Donasi ditujukan untuk kampanye yang Anda pilih. Tidak ada biaya admin: yang Anda bayar sama dengan nominal donasi.", href: "/terms#campaign", cta: "Syarat Layanan" },
+    { t: "Bagaimana dilaporkan", d: "Progres diperbarui otomatis dari pembayaran yang terkonfirmasi, dan perkembangan penyaluran dipublikasikan sebagai kabar kampanye.", href: "/news", cta: "Baca kabar terbaru" },
+  ];
+  return (
+    <section aria-labelledby="h-transparansi" className="py-12">
+      <Reveal><SectionHeading eyebrow="Transparansi" title="Jelas siapa, ke mana, dan bagaimana" center><span id="h-transparansi" className="sr-only">Transparansi</span></SectionHeading></Reveal>
+      <ul className="mt-8 grid gap-6 md:grid-cols-3">
+        {cols.map((c, i) => (
+          <li key={c.t}><Reveal delay={i * 100} className="h-full">
+            <div className="card-hover flex h-full flex-col rounded-2xl border border-slate-200 bg-card p-4 shadow-sm sm:p-6">
+              <h3 className="font-bold text-slate-900">{c.t}</h3>
+              <p className="mt-2 flex-1 text-sm text-slate-600">{c.d}</p>
+              <Link href={c.href} className="mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-brand-ink hover:underline">{c.cta} <IconArrow width={16} height={16} /></Link>
+            </div>
+          </Reveal></li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
 const FAQ: Array<[string, string]> = [
   ["Apakah saya harus membuat akun untuk berdonasi?", "Tidak. Anda cukup mengisi nama, email, dan nomor WhatsApp. Login Google bersifat opsional, hanya untuk melihat riwayat dan mengunduh bukti donasi."],
   ["Metode pembayaran apa yang tersedia?", "Metode yang aktif tampil di halaman pembayaran, misalnya QRIS, e-wallet, dan virtual account melalui Midtrans atau Xendit. Pilihan dapat berbeda antar waktu."],
   ["Kapan donasi saya dinyatakan berhasil?", "Setelah penyedia pembayaran mengirim konfirmasi resmi ke sistem kami. Halaman status selalu membaca data terbaru; Anda juga bisa menekan tombol cek status."],
   ["Apakah nama saya ditampilkan ke publik?", "Tidak ada data kontak yang ditampilkan. Anda juga bisa memilih donasi anonim saat mengisi formulir."],
-  ["Bagaimana jika campaign sudah mencapai target atau ditutup?", "Campaign tidak lagi menerima donasi baru. Pembayaran yang sudah dibuat sebelum penutupan tetap diproses."],
+  ["Bagaimana jika kampanye sudah mencapai target atau ditutup?", "Kampanye tidak lagi menerima donasi baru. Pembayaran yang sudah dibuat sebelum penutupan tetap diproses."],
   ["Apakah bukti donasi bisa dipakai untuk pengurang pajak?", "Dokumen yang kami terbitkan adalah bukti donasi, bukan kuitansi pajak. Konsultasikan kebutuhan pajak Anda dengan pihak terkait."],
 ];
 
 export function Faq() {
   return (
     <section id="faq" className="scroll-mt-24 py-16">
-      <Reveal><SectionHeading eyebrow="FAQ" title="Pertanyaan yang sering diajukan" center /></Reveal>
+      <Reveal><SectionHeading eyebrow="Tanya jawab" title="Pertanyaan yang sering diajukan" center /></Reveal>
       <div className="mx-auto mt-8 max-w-3xl space-y-4">
         {FAQ.map(([q, a], idx) => (
           <Reveal key={q} delay={idx * 60}><details className="group rounded-2xl border border-slate-200 bg-gradient-to-r from-card to-brand-soft p-4 transition-colors duration-300 hover:border-slate-400 open:border-brand sm:px-6">
@@ -194,7 +225,7 @@ export function CtaBand({ ctaLabel }: { ctaLabel: string }) {
     <Reveal><section className="band-navy rounded-3xl shadow-xl shadow-brand/15">
       <div className="flex flex-col items-center gap-6 px-6 py-12 text-center sm:px-10">
         <h2 className="max-w-2xl text-3xl font-extrabold tracking-tight text-white sm:text-4xl">Satu donasi kecil bisa jadi awal perubahan besar</h2>
-        <p className="max-w-xl text-white/80">Pilih campaign yang menyentuh hati Anda hari ini.</p>
+        <p className="max-w-xl text-white/80">Pilih kampanye yang menyentuh hati Anda hari ini.</p>
         <Link href="/campaigns" className="inline-flex items-center gap-2 rounded-xl bg-brand-accent px-7 py-3.5 text-base font-bold text-on-accent transition-all duration-300 ease-out hover:-translate-y-0.5 hover:brightness-95 active:scale-[0.99]">
           {ctaLabel} <IconArrow width={18} height={18} />
         </Link>

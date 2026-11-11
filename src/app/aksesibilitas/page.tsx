@@ -47,7 +47,7 @@ export default async function AccessibilityPage() {
       <LegalSection id="batasan" title="4. Batasan yang kami ketahui">
         <ul>
           <li>Halaman pembayaran Midtrans/Xendit dan login Google dikelola pihak ketiga; aksesibilitasnya mengikuti mereka.</li>
-          <li>Konten campaign dan berita ditulis admin; kualitas teks alternatif gambar bergantung pada pengisian admin.</li>
+          <li>Konten kampanye dan berita ditulis admin; kualitas teks alternatif gambar bergantung pada pengisian admin.</li>
         </ul>
       </LegalSection>
       <LegalSection id="umpan-balik" title="5. Umpan balik">

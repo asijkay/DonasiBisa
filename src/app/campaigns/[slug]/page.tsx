@@ -28,13 +28,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 function closedCopy(status: CampaignDetailDTO["status"]): { title: string; body: string } {
   switch (status) {
     case "PAUSED":
-      return { title: "Donasi dijeda sementara", body: "Campaign ini belum menerima donasi baru. Pembayaran yang sudah dibuat sebelumnya tetap diproses." };
+      return { title: "Donasi dijeda sementara", body: "Kampanye ini belum menerima donasi baru. Pembayaran yang sudah dibuat sebelumnya tetap diproses." };
     case "COMPLETED":
-      return { title: "Campaign selesai", body: "Terima kasih para donatur. Campaign ini tidak menerima donasi baru; pembayaran yang sudah dibuat sebelumnya tetap diproses." };
+      return { title: "Kampanye selesai", body: "Terima kasih para donatur. Kampanye ini tidak menerima donasi baru; pembayaran yang sudah dibuat sebelumnya tetap diproses." };
     case "CLOSED":
-      return { title: "Donasi ditutup", body: "Campaign ini tidak menerima donasi baru. Pembayaran yang sudah dibuat sebelumnya tetap diproses." };
+      return { title: "Donasi ditutup", body: "Kampanye ini tidak menerima donasi baru. Pembayaran yang sudah dibuat sebelumnya tetap diproses." };
     default:
-      return { title: "Donasi belum tersedia", body: "Campaign ini sedang tidak menerima donasi baru." };
+      return { title: "Donasi belum tersedia", body: "Kampanye ini sedang tidak menerima donasi baru." };
   }
 }
 
@@ -57,17 +57,17 @@ export default async function CampaignPage({ params }: Props) {
         <span data-testid="donor-count" className="font-semibold text-slate-900">{c.donorCount.toLocaleString("id-ID")}</span> donatur · {pct}% tercapai
         {left !== null ? ` · sisa ${left} hari` : c.endsAt ? ` · berakhir ${formatDate(c.endsAt)}` : ""}
       </p>
-      {c.isDemo && <p className="text-xs text-slate-500">Angka pada campaign demo adalah data contoh, bukan donasi nyata.</p>}
+      {c.isDemo && <p className="text-xs text-slate-500">Angka pada kampanye demo adalah data contoh, bukan donasi nyata.</p>}
     </div>
   );
 
   return (
     <div className="pb-24 lg:pb-0">
-      <PageNav crumbs={[{ label: "Beranda", href: "/" }, { label: "Campaign", href: "/campaigns" }, { label: c.title }]} />
+      <PageNav crumbs={[{ label: "Beranda", href: "/" }, { label: "Kampanye", href: "/campaigns" }, { label: c.title }]} />
       <div className="grid gap-8 lg:grid-cols-[1fr_360px]">
         <article>
           <figure>
-            <CoverImage src={c.coverImageUrl} alt={c.coverImageAlt ?? `Foto sampul campaign: ${c.title}`} sizes="(min-width: 1024px) 720px, 100vw" priority className="h-56 w-full rounded-2xl sm:h-80" />
+            <CoverImage src={c.coverImageUrl} alt={c.coverImageAlt ?? `Foto sampul kampanye: ${c.title}`} sizes="(min-width: 1024px) 720px, 100vw" priority className="h-56 w-full rounded-2xl sm:h-80" />
             {c.isDemo && c.coverImageUrl && <figcaption className="mt-2 text-xs text-slate-500">Foto ilustrasi · sumber di halaman <Link className="underline" href="/kredit-foto">Kredit foto</Link></figcaption>}
           </figure>
           <div className="mt-6 flex flex-wrap items-center gap-2">
@@ -84,7 +84,7 @@ export default async function CampaignPage({ params }: Props) {
               {!c.isOpen && (
                 <>
                   <Alert tone="warning" title={closed.title}>{closed.body}</Alert>
-                  <ButtonLink href="/campaigns" variant="secondary" className="w-full">Lihat campaign lainnya</ButtonLink>
+                  <ButtonLink href="/campaigns" variant="secondary" className="w-full">Lihat kampanye lainnya</ButtonLink>
                 </>
               )}
             </Card>
@@ -92,10 +92,30 @@ export default async function CampaignPage({ params }: Props) {
 
           <div className="mt-6"><Markdown>{c.descriptionMd}</Markdown></div>
 
+          <section aria-labelledby="h-penggalang" className="mt-10 rounded-2xl border border-slate-200 bg-card p-4 sm:p-6">
+            <h2 id="h-penggalang" className="text-xl font-bold">Penyelenggara &amp; transparansi</h2>
+            <dl className="mt-4 grid gap-4 text-sm sm:grid-cols-2">
+              <div>
+                <dt className="font-semibold text-slate-900">Diselenggarakan oleh</dt>
+                <dd className="mt-1 text-slate-700">{brand.legalName ?? brand.brandName}{brand.legalForm ? ` (${brand.legalForm})` : ""}{brand.registrationNumber ? <span className="block text-xs text-slate-500">No. pengesahan: {brand.registrationNumber}</span> : null}</dd>
+              </div>
+              <div>
+                <dt className="font-semibold text-slate-900">Kontak</dt>
+                <dd className="mt-1 text-slate-700">{brand.contactEmail ? <a className="text-brand-ink underline" href={`mailto:${brand.contactEmail}`}>{brand.contactEmail}</a> : <Link className="text-brand-ink underline" href="/tentang">Tentang &amp; Kontak</Link>}</dd>
+              </div>
+            </dl>
+            <ul className="mt-4 list-disc space-y-2 pl-5 text-sm text-slate-700">
+              <li>Pembayaran diproses penyedia pembayaran resmi; donasi dinyatakan berhasil hanya setelah ada konfirmasi tervalidasi.</li>
+              <li>Tidak ada biaya admin: total yang Anda bayar sama dengan nominal donasi.</li>
+              <li>Perkembangan penyaluran dipublikasikan pada bagian <a className="text-brand-ink underline" href="#h-updates">Kabar terbaru</a>. Lihat juga <Link className="text-brand-ink underline" href="/refund">kebijakan pengembalian dana</Link>.</li>
+              {c.isDemo && <li><strong>Kampanye demo:</strong> tidak ada dana nyata yang dikumpulkan atau disalurkan.</li>}
+            </ul>
+          </section>
+
           <section aria-labelledby="h-updates" className="mt-10">
-            <h2 id="h-updates" className="mb-4 text-xl font-bold">Update campaign</h2>
+            <h2 id="h-updates" className="mb-4 text-xl font-bold">Kabar terbaru</h2>
             {c.updates.length === 0 ? (
-              <p className="text-sm text-slate-600">Belum ada update.</p>
+              <p className="text-sm text-slate-600">Belum ada kabar terbaru.</p>
             ) : (
               <ul className="space-y-4">
                 {c.updates.map((u) => (
@@ -121,7 +141,7 @@ export default async function CampaignPage({ params }: Props) {
             ) : (
               <>
                 <Alert tone="warning" title={closed.title}>{closed.body}</Alert>
-                <ButtonLink href="/campaigns" variant="secondary" className="w-full">Lihat campaign lainnya</ButtonLink>
+                <ButtonLink href="/campaigns" variant="secondary" className="w-full">Lihat kampanye lainnya</ButtonLink>
               </>
             )}
           </Card>

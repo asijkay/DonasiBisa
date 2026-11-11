@@ -45,7 +45,7 @@ export async function createDonation(input: DonationInput, ctx: { idempotencyKey
   }
 
   const loaded = await getCampaignForCheckout(input.campaignSlug);
-  if (!loaded) throw new DomainError("Campaign tidak ditemukan.", "CAMPAIGN_NOT_FOUND", 404);
+  if (!loaded) throw new DomainError("Kampanye tidak ditemukan.", "CAMPAIGN_NOT_FOUND", 404);
   const { campaign, options } = loaded;
   const block = getDonationBlockReason(campaign);
   if (block) throw new DomainError(BLOCK_MESSAGES[block], `CAMPAIGN_${block}`, 409);
@@ -53,7 +53,7 @@ export async function createDonation(input: DonationInput, ctx: { idempotencyKey
   const env = getEnv();
   // Demo campaigns are fiction: they must never collect real money.
   if (campaign.isDemo && liveMoneyEnabled()) {
-    throw new DomainError("Campaign contoh (demo) tidak menerima donasi sungguhan.", "CAMPAIGN_DEMO", 409);
+    throw new DomainError("Kampanye contoh (demo) tidak menerima donasi sungguhan.", "CAMPAIGN_DEMO", 409);
   }
   const amount = resolveDonationAmount(campaign, options, input, { min: env.MIN_DONATION_AMOUNT, max: env.MAX_DONATION_AMOUNT });
   // Data minimisation: keep the phone number only if the donor opted in to WhatsApp messages.

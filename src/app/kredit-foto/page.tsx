@@ -10,7 +10,7 @@ export default function CreditsPage() {
     <div className="mx-auto max-w-4xl">
       <PageNav crumbs={[{ label: "Beranda", href: "/" }, { label: "Kredit foto" }]} />
       <PageHeading title="Kredit foto" />
-      <p className="mb-4 text-sm text-slate-600">Foto ilustrasi pada landing page dan sampul campaign contoh (demo) bersumber dari Wikimedia Commons berlisensi bebas (domain publik atau CC0). Foto bersifat ilustratif: pada campaign demo, foto tidak menggambarkan peristiwa atau penerima manfaat yang sebenarnya.</p>
+      <p className="mb-4 text-sm text-slate-600">Foto ilustrasi pada halaman utama dan sampul kampanye contoh (demo) bersumber dari Wikimedia Commons berlisensi bebas (domain publik atau CC0). Foto bersifat ilustratif: pada kampanye demo, foto tidak menggambarkan peristiwa atau penerima manfaat yang sebenarnya.</p>
       <Table>
         <thead><tr><Th>Foto</Th><Th>Karya</Th><Th>Pembuat</Th><Th>Lisensi</Th></tr></thead>
         <tbody>

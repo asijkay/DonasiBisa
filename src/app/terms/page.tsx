@@ -34,8 +34,8 @@ export default async function TermsPage() {
       <LegalSection id="donasi" title="3. Sifat donasi">
         <ul>
           <li>Donasi bersifat <strong>sukarela</strong>, bukan investasi, jual beli, atau pinjaman, dan tidak memberikan imbalan finansial.</li>
-          <li>Donasi digunakan untuk tujuan campaign yang Anda pilih, sesuai informasi yang tampil pada halaman campaign tersebut.</li>
-          <li>Jika target tercapai atau campaign ditutup, donasi yang sudah dibuat sebelum penutupan tetap diproses.</li>
+          <li>Donasi digunakan untuk tujuan kampanye yang Anda pilih, sesuai informasi yang tampil pada halaman kampanye tersebut.</li>
+          <li>Jika target tercapai atau kampanye ditutup, donasi yang sudah dibuat sebelum penutupan tetap diproses.</li>
         </ul>
       </LegalSection>
       <LegalSection id="biaya" title="4. Biaya: tidak ada biaya tersembunyi">
@@ -45,7 +45,7 @@ export default async function TermsPage() {
         <p>Pembayaran diproses penyedia pembayaran pihak ketiga (Midtrans dan/atau Xendit). Donasi dinyatakan <strong>berhasil</strong> hanya setelah penyedia mengonfirmasi pembayaran ke sistem kami; tampilan di browser saja tidak cukup. Pembayaran yang tidak diselesaikan sebelum batas waktu akan kedaluwarsa. Ketentuan pengembalian dana ada di <Link href="/refund">Kebijakan Pengembalian Dana</Link>.</p>
       </LegalSection>
       <LegalSection id="campaign" title="6. Informasi campaign">
-        <p>Kami berupaya agar informasi campaign akurat dan memperbarui progres setiap pembayaran terkonfirmasi. Campaign bertanda <strong>DEMO</strong> adalah contoh untuk demonstrasi dan bukan penggalangan dana nyata.</p>
+        <p>Kami berupaya agar informasi kampanye akurat dan memperbarui progres setiap pembayaran terkonfirmasi. Kampanye bertanda <strong>DEMO</strong> adalah contoh untuk demonstrasi dan bukan penggalangan dana nyata.</p>
       </LegalSection>
       <LegalSection id="bukti" title="7. Bukti donasi">
         <p>Dokumen &quot;Bukti Donasi&quot; adalah catatan transaksi, <strong>bukan kuitansi pajak</strong> atau bukti pengurang pajak. Hubungi penasihat pajak Anda untuk kebutuhan tersebut.</p>
