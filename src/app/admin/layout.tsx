@@ -69,7 +69,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
           <Image src="/brand/logo-dark.png" alt={brand.brandName} width={1600} height={425} sizes="180px" className="h-9 w-auto" priority />
         )}
         <span className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-white/10 px-2.5 py-0.5 text-[0.68rem] font-semibold uppercase tracking-[0.12em] text-white/80">
-          <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-[#ff6b57]" /> Panel admin
+          <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-accent-fixed" /> Panel admin
         </span>
       </Link>
 

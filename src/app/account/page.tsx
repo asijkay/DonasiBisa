@@ -34,7 +34,7 @@ export default async function AccountPage({ searchParams }: { searchParams: Prom
     <div className="mx-auto max-w-5xl">
       <PageNav crumbs={[{ label: "Beranda", href: "/" }, { label: "Akun" }]} />
 
-      <section className="band-blue relative overflow-hidden rounded-3xl px-6 pb-14 pt-8 text-white shadow-[0_28px_60px_-30px_rgba(0,73,176,0.7)] sm:px-10 sm:pt-10">
+      <section className="band-blue relative overflow-hidden rounded-2xl px-6 pb-14 pt-8 text-white sm:px-10 sm:pt-10">
         <div className="flex flex-wrap items-center gap-5">
           <span className="rounded-full bg-white/20 p-1 ring-1 ring-white/40"><Avatar src={user.image} name={user.name} size={76} /></span>
           <div className="min-w-0 flex-1">
@@ -61,9 +61,9 @@ export default async function AccountPage({ searchParams }: { searchParams: Prom
       </section>
 
       <div className="relative z-10 -mt-9 grid gap-4 px-2 sm:grid-cols-3 sm:px-6">
-        <Stat label="Total donasi berhasil" value={formatIDR(summary?.totalSucceeded ?? 0)} icon={<IconHand width={20} height={20} />} tone="bg-gradient-to-br from-[#ff6b57] to-[#ff9a6b]" />
+        <Stat label="Total donasi berhasil" value={formatIDR(summary?.totalSucceeded ?? 0)} icon={<IconHand width={20} height={20} />} tone="bg-gradient-to-br from-accent-fixed to-accent-fixed-light" />
         <Stat label="Donasi berhasil" value={summary?.succeededCount ?? 0} icon={<IconCheck width={20} height={20} />} tone="bg-gradient-to-br from-emerald-600 to-emerald-400" />
-        <Stat label="Semua transaksi" value={summary?.transactionCount ?? 0} icon={<IconChart width={20} height={20} />} tone="bg-gradient-to-br from-[#0064db] to-[#2a8cff]" />
+        <Stat label="Semua transaksi" value={summary?.transactionCount ?? 0} icon={<IconChart width={20} height={20} />} tone="bg-gradient-to-br from-brand to-brand-light" />
       </div>
 
       {!donor && (

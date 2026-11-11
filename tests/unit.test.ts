@@ -231,3 +231,17 @@ describe("utils", () => {
     });
   });
 });
+
+describe("dashboard series helpers", () => {
+  it("zero-fills a continuous daily window", async () => {
+    const { fillDailySeries, compactIDR } = await import("../src/lib/utils/series");
+    const end = new Date("2026-03-10T05:00:00Z");
+    const out = fillDailySeries([{ date: "2026-03-10", amount: 50_000, count: 2 }], 30, end);
+    expect(out).toHaveLength(30);
+    expect(out[29]).toEqual({ date: "2026-03-10", amount: 50_000, count: 2 });
+    expect(out[0].date).toBe("2026-02-09");
+    expect(out.filter((d) => d.count === 0)).toHaveLength(29);
+    expect(compactIDR(1_500_000)).toBe("1,5 jt");
+    expect(compactIDR(250_000)).toBe("250 rb");
+  });
+});

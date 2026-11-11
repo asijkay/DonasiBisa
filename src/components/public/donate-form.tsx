@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Alert, Button, FieldError, Input, Label, Textarea, cn } from "@/components/ui";
+import { Alert, Button, FieldError, Input, Label, Spinner, Textarea, cn } from "@/components/ui";
 import { formatIDR } from "@/lib/utils/format";
 
 type Props = {
@@ -13,6 +13,10 @@ type Props = {
   min: number;
   max: number;
 };
+
+const AMOUNT_BTN = "rounded-xl border transition-all duration-200";
+const AMOUNT_OFF = "border-slate-200 bg-card text-slate-700 hover:border-slate-400";
+const AMOUNT_ON = "border-brand bg-brand/5 text-brand-ink";
 
 type Issue = { path: string; message: string };
 
@@ -82,11 +86,11 @@ export function DonateForm({ slug, amountMode, options, min, max }: Props) {
       {error && <Alert tone="danger">{error}</Alert>}
 
       <fieldset>
-        <legend className="mb-2 text-sm font-semibold">Nominal donasi</legend>
+        <legend className="mb-4 text-sm font-semibold">Nominal donasi</legend>
         {amountMode === "CLOSED_AMOUNT" ? (
-          <div className="grid gap-2 sm:grid-cols-3" role="radiogroup" aria-label="Pilih nominal">
+          <div className="grid gap-4 sm:grid-cols-3" role="radiogroup" aria-label="Pilih nominal">
             {options.map((o) => (
-              <label key={o.id} className={cn("cursor-pointer rounded-lg border p-3 text-center text-sm transition", optionId === o.id ? "border-brand bg-brand/10 ring-2 ring-brand" : "border-slate-300 hover:bg-slate-50")}>
+              <label key={o.id} className={cn(AMOUNT_BTN, "block cursor-pointer p-4 text-center text-sm has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-brand/30", optionId === o.id ? AMOUNT_ON : AMOUNT_OFF)}>
                 <input type="radio" name="amountOption" value={o.id} checked={optionId === o.id} onChange={() => setOptionId(o.id)} className="sr-only" />
                 <span className="block font-semibold">{formatIDR(o.amount)}</span>
                 {o.label && <span className="text-xs text-slate-600">{o.label}</span>}
@@ -97,9 +101,9 @@ export function DonateForm({ slug, amountMode, options, min, max }: Props) {
           <div>
             <Label htmlFor="amount" hint={`(min ${formatIDR(min)}, maks ${formatIDR(max)})`}>Nominal (Rp)</Label>
             <Input id="amount" inputMode="numeric" autoComplete="off" placeholder="50000" value={amount} onChange={(e) => setAmount(e.target.value.replace(/[^\d]/g, ""))} aria-invalid={!!fieldError("amount")} />
-            <div className="mt-2 flex flex-wrap gap-2">
+            <div className="mt-4 flex flex-wrap gap-2">
               {[25000, 50000, 100000, 250000].map((v) => (
-                <button key={v} type="button" onClick={() => setAmount(String(v))} className="rounded-full border border-slate-300 px-3 py-1 text-xs hover:bg-slate-50">
+                <button key={v} type="button" aria-pressed={amount === String(v)} onClick={() => setAmount(String(v))} className={cn(AMOUNT_BTN, "px-4 py-2 text-xs", amount === String(v) ? AMOUNT_ON : AMOUNT_OFF)}>
                   {formatIDR(v)}
                 </button>
               ))}
@@ -127,12 +131,12 @@ export function DonateForm({ slug, amountMode, options, min, max }: Props) {
         <Textarea id="message" name="message" rows={3} maxLength={500} />
       </div>
 
-      <div className="space-y-3 text-sm">
+      <div className="space-y-4 text-sm">
         <label className="flex items-start gap-2">
           <input type="checkbox" name="isAnonymous" className="mt-1 h-4 w-4" />
           <span>Sembunyikan nama saya dari tampilan publik (donasi anonim).</span>
         </label>
-        <div className="space-y-2">
+        <div className="space-y-4">
           <label className="flex items-start gap-2">
             <input type="checkbox" checked={wa} onChange={(e) => setWa(e.target.checked)} className="mt-1 h-4 w-4" aria-controls="wa-field" aria-expanded={wa} />
             <span>Kirimi saya notifikasi transaksi lewat WhatsApp <span className="text-slate-600">(opsional; nomor hanya diminta jika Anda memilih ini)</span>.</span>
@@ -147,7 +151,7 @@ export function DonateForm({ slug, amountMode, options, min, max }: Props) {
         </div>
       </div>
 
-      <fieldset className="space-y-3 rounded-xl border border-slate-200 p-4 text-sm">
+      <fieldset className="space-y-4 rounded-xl border border-slate-200 p-4 text-sm">
         <legend className="px-2 font-semibold">Persetujuan (wajib)</legend>
         <label className="flex items-start gap-2">
           <input type="checkbox" name="ageConfirmed" required className="mt-1 h-4 w-4" aria-invalid={!!fieldError("ageConfirmed")} />
@@ -164,13 +168,13 @@ export function DonateForm({ slug, amountMode, options, min, max }: Props) {
         <FieldError>{fieldError("acceptedTerms")}</FieldError>
       </fieldset>
 
-      <div className="rounded-xl bg-brand-soft p-4 text-sm" aria-live="polite">
+      <div className="rounded-xl border border-slate-200 bg-brand-soft p-4 text-sm" aria-live="polite">
         <p className="font-semibold text-slate-900">Total yang Anda bayar: {totalLabel}</p>
         <p className="mt-0.5 text-slate-700">Sama dengan nominal donasi. Tidak ada biaya admin atau biaya tersembunyi dari kami.</p>
       </div>
 
-      <Button type="submit" disabled={submitting} aria-busy={submitting} className="w-full sm:w-auto">
-        {submitting ? "Memproses…" : "Lanjut ke pembayaran"}
+      <Button type="submit" disabled={submitting} aria-busy={submitting} className="w-full py-3">
+        {submitting ? (<><Spinner />Memproses donasi aman…</>) : "Lanjut ke pembayaran"}
       </Button>
     </form>
   );

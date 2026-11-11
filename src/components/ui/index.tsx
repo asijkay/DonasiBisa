@@ -6,11 +6,11 @@ export function cn(...parts: Array<string | false | null | undefined>): string {
 }
 
 const btnBase =
-  "inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-50";
+  "inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-200 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60 disabled:active:scale-100";
 const btnVariants = {
-  primary: "bg-brand-accent text-on-accent shadow-sm hover:brightness-105 active:brightness-95",
-  secondary: "border border-slate-300 bg-card text-slate-800 hover:bg-slate-50",
-  blue: "bg-brand text-white hover:brightness-110",
+  primary: "bg-brand-accent text-on-accent hover:brightness-95",
+  secondary: "border border-slate-200 bg-card text-slate-800 hover:border-slate-400",
+  blue: "bg-brand text-white hover:brightness-95",
   danger: "bg-red-600 text-white hover:bg-red-700",
   ghost: "text-slate-700 hover:bg-slate-100",
 } as const;
@@ -24,13 +24,22 @@ export function ButtonLink({ variant = "primary", className, href, ...props }: A
   return <Link href={href} className={cn(btnBase, btnVariants[variant], className)} {...props} />;
 }
 
+export function Spinner({ className }: { className?: string }) {
+  return (
+    <svg aria-hidden viewBox="0 0 24 24" fill="none" className={cn("h-4 w-4 animate-spin", className)}>
+      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeOpacity="0.25" strokeWidth="3" />
+      <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 export function Card({ className, children }: { className?: string; children: ReactNode }) {
-  return <div className={cn("rounded-xl border border-slate-200 bg-card p-5 shadow-sm", className)}>{children}</div>;
+  return <div className={cn("rounded-2xl border border-slate-200 bg-card p-4 sm:p-6", className)}>{children}</div>;
 }
 
 export function Label({ htmlFor, children, hint }: { htmlFor: string; children: ReactNode; hint?: string }) {
   return (
-    <label htmlFor={htmlFor} className="mb-1 block text-sm font-medium text-slate-800">
+    <label htmlFor={htmlFor} className="mb-2 block text-sm font-medium text-slate-800">
       {children}
       {hint && <span className="ml-1 font-normal text-slate-500">{hint}</span>}
     </label>
@@ -38,7 +47,7 @@ export function Label({ htmlFor, children, hint }: { htmlFor: string; children: 
 }
 
 const field =
-  "w-full rounded-lg border border-slate-300 bg-card px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-brand";
+  "w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3 py-2.5 text-sm text-slate-900 transition-all duration-200 placeholder:text-slate-400 hover:border-slate-300 focus:border-brand focus:bg-card focus:outline-none focus:ring-2 focus:ring-brand/15";
 
 export function Input({ className, ...props }: InputHTMLAttributes<HTMLInputElement>) {
   return <input className={cn(field, className)} {...props} />;
@@ -132,7 +141,7 @@ export function Alert({ tone = "info", title, children }: { tone?: "info" | "suc
     danger: "border-red-200 bg-red-50 text-red-900",
   } as const;
   return (
-    <div role={tone === "danger" ? "alert" : "status"} className={cn("rounded-lg border p-4 text-sm", styles[tone])}>
+    <div role={tone === "danger" ? "alert" : "status"} className={cn("rounded-xl border p-4 text-sm", styles[tone])}>
       {title && <p className="mb-1 font-semibold">{title}</p>}
       {children}
     </div>
@@ -141,7 +150,7 @@ export function Alert({ tone = "info", title, children }: { tone?: "info" | "suc
 
 export function EmptyState({ title, children }: { title: string; children?: ReactNode }) {
   return (
-    <div className="rounded-xl border border-dashed border-slate-300 p-8 text-center">
+    <div className="rounded-2xl border border-dashed border-slate-300 p-8 text-center">
       <p className="font-semibold text-slate-800">{title}</p>
       {children && <div className="mt-1 text-sm text-slate-600">{children}</div>}
     </div>
@@ -159,7 +168,7 @@ export function PageHeading({ title, children }: { title: string; children?: Rea
 
 export function Table({ children }: { children: ReactNode }) {
   return (
-    <div className="overflow-x-auto rounded-xl border border-slate-200 bg-card">
+    <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-card">
       <table className="w-full min-w-[640px] text-left text-sm">{children}</table>
     </div>
   );

@@ -11,9 +11,13 @@
   --brand-bg: #ffffff; /* 60% — white */
   --card: #ffffff;
   --accent-eff: var(--brand-accent);
-  --on-accent: #0b1b3a;
+  --on-accent: #0b1b3a; /* overridden per request with a contrast-checked value in layout.tsx */
   --blue-ink: var(--brand-primary);
   --blue-soft: color-mix(in srgb, var(--brand-primary) 8%, white);
+  /* Derived tints: every gradient in the app is computed from the admin brand colors, never hardcoded. */
+  --brand-primary-light: color-mix(in srgb, var(--brand-primary) 55%, white);
+  --brand-primary-deep: color-mix(in srgb, var(--brand-primary) 72%, black);
+  --brand-accent-light: color-mix(in srgb, var(--brand-accent) 60%, white);
 }
 
 @theme inline {
@@ -22,6 +26,10 @@
   --color-brand-soft: var(--blue-soft);
   --color-brand-secondary: var(--brand-secondary);
   --color-brand-accent: var(--accent-eff);
+  --color-brand-light: var(--brand-primary-light);
+  --color-brand-deep: var(--brand-primary-deep);
+  --color-accent-fixed: var(--brand-accent);
+  --color-accent-fixed-light: var(--brand-accent-light);
   --color-on-accent: var(--on-accent);
   --color-surface: var(--brand-bg);
   --color-card: var(--card);
@@ -56,33 +64,41 @@ body {
 .prose-md table { border-collapse: collapse; }
 .prose-md th, .prose-md td { border: 1px solid #e2e8f0; padding: 0.4em 0.7em; }
 
-/* Dark mode — 60% black, 30% blue, 10% crisp white. Neutral palette is remapped so utilities adapt. */
+/* Dark mode: every neutral is derived from the brand colors (admin panel), never a fixed palette. */
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --card: #0f1726;
-  --accent-eff: #ffffff;
-  --on-accent: #05070b;
-  --blue-ink: #6db2ff;
-  --blue-soft: color-mix(in srgb, var(--brand-primary) 24%, #05070b);
-  --color-slate-50: #0b111d;
-  --color-slate-100: #18223a;
-  --color-slate-200: #2a3650;
-  --color-slate-300: #3d4b6b;
-  --color-slate-400: #8493ad;
-  --color-slate-500: #9fadc3;
-  --color-slate-600: #b9c4d6;
-  --color-slate-700: #cfd8e6;
-  --color-slate-800: #e4eaf3;
-  --color-slate-900: #f8fafc;
+  --dk-bg: color-mix(in srgb, var(--brand-secondary) 26%, #04060a);
+  --card: color-mix(in srgb, var(--brand-secondary) 50%, #05070a);
+  --accent-eff: var(--brand-accent);
+  --blue-ink: color-mix(in srgb, var(--brand-primary) 50%, white);
+  --blue-soft: color-mix(in srgb, var(--brand-primary) 22%, var(--dk-bg));
+  --color-slate-50: color-mix(in srgb, black 25%, var(--dk-bg));
+  --color-slate-100: color-mix(in srgb, white 7%, var(--dk-bg));
+  --color-slate-200: color-mix(in srgb, white 14%, var(--dk-bg));
+  --color-slate-300: color-mix(in srgb, white 24%, var(--dk-bg));
+  --color-slate-400: color-mix(in srgb, white 52%, var(--dk-bg));
+  --color-slate-500: color-mix(in srgb, white 64%, var(--dk-bg));
+  --color-slate-600: color-mix(in srgb, white 75%, var(--dk-bg));
+  --color-slate-700: color-mix(in srgb, white 84%, var(--dk-bg));
+  --color-slate-800: color-mix(in srgb, white 91%, var(--dk-bg));
+  --color-slate-900: color-mix(in srgb, white 97%, var(--dk-bg));
 }
 :root[data-theme="light"] { color-scheme: light; }
-html[data-theme="dark"] { background: #05070b; color: #e7ecf4; }
-:root[data-theme="dark"] .prose-md blockquote { border-left-color: #3d4b6b; color: #b9c4d6; }
-:root[data-theme="dark"] .prose-md th, :root[data-theme="dark"] .prose-md td { border-color: #2a3650; }
+html[data-theme="dark"] { background: var(--dk-bg); color: var(--color-slate-800); }
+:root[data-theme="dark"] .prose-md blockquote { border-left-color: var(--color-slate-300); color: var(--color-slate-600); }
+:root[data-theme="dark"] .prose-md th, :root[data-theme="dark"] .prose-md td { border-color: var(--color-slate-200); }
 
 /* Gradient surfaces (blue = 30%, coral/white glow = 10%). */
 /* App-wide animated gradient (see components/public/app-background.tsx). --p = scroll progress 0..1. */
-:root { --p: 0; --bg-top: #eef5ff; --bg-bottom: #ffffff; --blob-1: rgba(0, 100, 219, 0.2); --blob-2: rgba(255, 107, 87, 0.17); --blob-3: rgba(0, 100, 219, 0.12); --color-slate-500: #4b5a70; /* keeps muted text AA even over gradient peaks */ }
+:root {
+  --p: 0;
+  --bg-top: color-mix(in srgb, var(--brand-primary) 7%, var(--brand-bg));
+  --bg-bottom: var(--brand-bg);
+  --blob-1: color-mix(in srgb, var(--brand-primary) 20%, transparent);
+  --blob-2: color-mix(in srgb, var(--brand-accent) 17%, transparent);
+  --blob-3: color-mix(in srgb, var(--brand-primary) 12%, transparent);
+  --color-slate-500: #4b5a70; /* keeps muted text AA even over gradient peaks */
+}
 .app-bg {
   position: fixed;
   inset: 0;
@@ -108,33 +124,97 @@ html[data-theme="dark"] { background: #05070b; color: #e7ecf4; }
   transform: translate3d(calc(var(--p) * 25vw - 12vw), calc(var(--p) * -30vh), 0) scale(calc(1 + var(--p) * 0.35));
 }
 @media (prefers-reduced-motion: reduce) { .app-bg span { transform: none !important; } }
-:root[data-theme="dark"] { --bg-top: #06132e; --bg-bottom: #05070b; --blob-1: rgba(0, 100, 219, 0.5); --blob-2: rgba(255, 255, 255, 0.07); --blob-3: rgba(0, 100, 219, 0.28); }
+:root[data-theme="dark"] {
+  --bg-top: color-mix(in srgb, var(--brand-primary) 22%, var(--dk-bg));
+  --bg-bottom: var(--dk-bg);
+  --blob-1: color-mix(in srgb, var(--brand-primary) 45%, transparent);
+  --blob-2: color-mix(in srgb, var(--brand-accent) 14%, transparent);
+  --blob-3: color-mix(in srgb, var(--brand-primary) 28%, transparent);
+}
 .band-blue {
   background:
-    radial-gradient(34rem 16rem at 88% 0%, rgba(255, 107, 87, 0.3), transparent 62%),
-    linear-gradient(115deg, #0049b0 0%, #0064db 48%, #2a8cff 100%);
+    radial-gradient(34rem 16rem at 88% 0%, color-mix(in srgb, var(--brand-accent) 30%, transparent), transparent 62%),
+    linear-gradient(115deg, var(--brand-primary-deep) 0%, var(--brand-primary) 48%, var(--brand-primary-light) 100%);
 }
 .band-navy {
   background:
-    radial-gradient(32rem 16rem at 90% 10%, rgba(255, 107, 87, 0.28), transparent 62%),
-    linear-gradient(135deg, #062246 0%, #0a3a8a 62%, #0064db 100%);
+    radial-gradient(32rem 16rem at 90% 10%, color-mix(in srgb, var(--brand-accent) 28%, transparent), transparent 62%),
+    linear-gradient(135deg, color-mix(in srgb, var(--brand-secondary) 70%, black) 0%, var(--brand-secondary) 62%, var(--brand-primary) 100%);
 }
 :root[data-theme="dark"] .band-blue {
   background:
     radial-gradient(34rem 16rem at 88% 0%, rgba(255, 255, 255, 0.16), transparent 62%),
-    linear-gradient(115deg, #03275c 0%, #0752b8 52%, #1a73e8 100%);
+    linear-gradient(115deg, color-mix(in srgb, var(--brand-primary) 45%, black) 0%, color-mix(in srgb, var(--brand-primary) 85%, black) 52%, var(--brand-primary) 100%);
 }
 :root[data-theme="dark"] .band-navy {
   background:
     radial-gradient(32rem 16rem at 90% 10%, rgba(255, 255, 255, 0.14), transparent 62%),
-    linear-gradient(135deg, #020b1c 0%, #06254f 60%, #0a4fb5 100%);
+    linear-gradient(135deg, color-mix(in srgb, var(--brand-secondary) 40%, black) 0%, color-mix(in srgb, var(--brand-secondary) 80%, black) 60%, color-mix(in srgb, var(--brand-primary) 80%, black) 100%);
+}
+
+/* Moving gradient. Colors come only from brand tokens. Two oversized color fields drift by exactly one tile period
+   (seamless loop, transform-only = GPU composited). A top glow scales in over 2s on load, then breathes. */
+:root {
+  --grad-a: var(--brand-primary);
+  --grad-b: var(--brand-accent);
+  --grad-c: var(--brand-primary-light);
+  --grad-d: color-mix(in srgb, var(--brand-secondary) 55%, var(--brand-primary));
+  --field-opacity: 0.55;
+}
+:root[data-theme="dark"] {
+  --grad-a: var(--brand-primary-light);
+  --grad-c: var(--brand-primary);
+  --field-opacity: 0.7;
+}
+.ambient {
+  position: absolute; inset: 0; pointer-events: none;
+  -webkit-mask-image: radial-gradient(130% 100% at 50% 18%, #000 20%, transparent 82%);
+  mask-image: radial-gradient(130% 100% at 50% 18%, #000 20%, transparent 82%);
+  animation: ambient-in 2s cubic-bezier(0.25, 0.1, 0.25, 1) both;
+}
+.ambient-glow {
+  position: absolute; inset: 0; transform-origin: 50% 18%;
+  background: radial-gradient(125% 90% at 50% 18%, color-mix(in srgb, var(--brand-primary) 16%, transparent) 0%, color-mix(in srgb, var(--brand-accent) 9%, transparent) 42%, transparent 70%);
+  animation: breathe 14s ease-in-out infinite alternate;
+}
+.ambient-fields { position: absolute; inset: 0; overflow: hidden; opacity: var(--field-opacity); }
+.ambient-fields i { position: absolute; left: 0; top: 0; width: 200%; height: 200%; background-size: 50% 50%; will-change: transform; }
+.ambient-fields .f1 {
+  background-image:
+    radial-gradient(ellipse closest-side at 35% 40%, var(--grad-a), transparent),
+    radial-gradient(ellipse closest-side at 72% 68%, var(--grad-b), transparent);
+  animation: flow-diag 24s linear infinite;
+}
+.ambient-fields .f2 {
+  background-image:
+    radial-gradient(ellipse closest-side at 60% 35%, var(--grad-c), transparent),
+    radial-gradient(ellipse closest-side at 30% 72%, var(--grad-d), transparent);
+  animation: flow-up 32s linear infinite reverse;
+}
+@keyframes flow-diag { to { transform: translate3d(-50%, -50%, 0); } }
+@keyframes flow-up { to { transform: translate3d(0, -50%, 0); } }
+@keyframes breathe { to { transform: scale(1.08); } }
+@keyframes ambient-in { from { opacity: 0; transform: scale(1.5); } to { opacity: 1; transform: scale(1); } }
+@media (prefers-reduced-motion: reduce) { .ambient, .ambient-glow, .ambient-fields i { animation: none; } }
+
+/* Premium hover micro-interaction for cards/blocks: 2px lift + deeper border tint, no scaling or colored shadows. */
+@utility card-hover {
+  transition: transform 300ms ease-out, border-color 300ms ease-out, box-shadow 300ms ease-out;
+  &:hover { transform: translateY(-0.125rem); border-color: color-mix(in srgb, var(--color-slate-400) 70%, transparent); box-shadow: 0 14px 28px -18px rgba(15, 23, 42, 0.28); }
+}
+@media (prefers-reduced-motion: reduce) { .card-hover:hover { transform: none; } }
+
+/* Scroll reveal (see components/public/reveal.tsx). Only hidden when JS can run, so no-JS visitors still see content. */
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  .sr { opacity: 0; transform: translateY(1rem); transition: opacity 700ms cubic-bezier(0.16, 1, 0.3, 1), transform 700ms cubic-bezier(0.16, 1, 0.3, 1); transition-delay: var(--d, 0ms); }
+  .sr.in { opacity: 1; transform: translateY(0); }
 }
 
 /* Motion: gentle reveal, disabled for reduced-motion users. */
-@keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
-.reveal { animation: rise 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
-.reveal-2 { animation-delay: 0.12s; }
-.reveal-3 { animation-delay: 0.24s; }
+@keyframes rise { from { opacity: 0; transform: translateY(1rem); } to { opacity: 1; transform: translateY(0); } }
+.reveal { animation: rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.reveal-2 { animation-delay: 100ms; }
+.reveal-3 { animation-delay: 200ms; }
 @media (prefers-reduced-motion: reduce) { .reveal { animation: none; } * { scroll-behavior: auto !important; } }
 html { scroll-behavior: smooth; }
 details > summary { list-style: none; }
@@ -154,9 +234,9 @@ body { overflow-x: clip; }
 .admin-side {
   color: #cdd9ee;
   background:
-    radial-gradient(22rem 16rem at 0% 0%, rgba(42, 140, 255, 0.3), transparent 65%),
-    radial-gradient(20rem 16rem at 100% 100%, rgba(255, 107, 87, 0.16), transparent 60%),
-    linear-gradient(180deg, #071b3d 0%, #04122b 100%);
+    radial-gradient(22rem 16rem at 0% 0%, color-mix(in srgb, var(--brand-primary) 55%, transparent), transparent 65%),
+    radial-gradient(20rem 16rem at 100% 100%, color-mix(in srgb, var(--brand-accent) 16%, transparent), transparent 60%),
+    linear-gradient(180deg, var(--brand-secondary) 0%, color-mix(in srgb, var(--brand-secondary) 55%, black) 100%);
   border-right: 1px solid rgba(255, 255, 255, 0.06);
 }
 .admin-topbar {
@@ -179,7 +259,7 @@ body { overflow-x: clip; }
 }
 .admin-shell main table tbody tr { transition: background 0.15s; }
 .admin-shell main table tbody tr:hover td { background: var(--blue-soft); }
-.admin-shell main :is(input, select, textarea):focus-visible { outline: 3px solid color-mix(in srgb, var(--brand-primary) 45%, transparent); outline-offset: 1px; border-color: var(--brand-primary); }
+.admin-shell main :is(input, select, textarea):focus-visible { outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-primary) 18%, transparent); border-color: var(--brand-primary); }
 .sortable-item { transition: box-shadow 0.15s, transform 0.15s, border-color 0.15s; }
 .sortable-item[data-dragging="true"] { opacity: 0.55; }
 .sortable-item[data-over="true"] { border-color: var(--brand-primary); box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-primary) 22%, transparent); }

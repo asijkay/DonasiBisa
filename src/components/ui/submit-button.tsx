@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import { useFormStatus } from "react-dom";
-import { Button } from "./index";
+import { Button, Spinner } from "./index";
 
 type Props = Omit<React.ComponentProps<typeof Button>, "type" | "disabled"> & { pendingLabel?: ReactNode; disabled?: boolean };
 
@@ -14,7 +14,7 @@ export function SubmitButton({ children, pendingLabel, disabled, ...props }: Pro
   const { pending } = useFormStatus();
   return (
     <Button type="submit" disabled={pending || disabled} aria-disabled={pending || disabled} aria-busy={pending} {...props}>
-      {pending ? (pendingLabel ?? "Memproses…") : children}
+      {pending ? (<><Spinner />{pendingLabel ?? "Memproses…"}</>) : children}
     </Button>
   );
 }

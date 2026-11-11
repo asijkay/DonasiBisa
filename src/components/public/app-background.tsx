@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 /**
  * App-wide animated gradient. Three soft blobs sit in a fixed layer behind every page; their position follows
  * the scroll progress (--p: 0 at top → 1 at bottom), so the gradient "moves forward" as you scroll.
- * Reduced-motion users get the static layout. The layer is decorative (aria-hidden, no pointer events).
+ * On top sits the moving gradient (see .ambient in globals.css). Reduced-motion users get the static layout. The layer is decorative (aria-hidden, no pointer events).
  */
 export function AppBackground() {
   const pathname = usePathname();
@@ -45,6 +45,11 @@ export function AppBackground() {
       <span className="b1" />
       <span className="b2" />
       <span className="b3" />
+      {/* Moving gradient: brand color fields drift slowly; a top glow scales in on load and "breathes". */}
+      <div className="ambient">
+        <div className="ambient-glow" />
+        <div className="ambient-fields"><i className="f1" /><i className="f2" /></div>
+      </div>
     </div>
   );
 }

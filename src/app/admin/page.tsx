@@ -3,8 +3,9 @@ import type { ReactNode } from "react";
 import { Alert, StatusBadge } from "@/components/ui";
 import { requireAdminUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/auth/permissions";
-import { dashboardStats } from "@/services/admin.service";
+import { dashboardCharts, dashboardStats } from "@/services/admin.service";
 import { campaignStatusCounts } from "@/services/campaigns.service";
+import { BarList, DailyChart, StatusMix } from "@/components/admin/charts";
 import { formatIDR } from "@/lib/utils/format";
 import { IconCard, IconChart, IconClock, IconHand, IconNews, IconPlus } from "@/components/public/icons";
 
@@ -14,7 +15,7 @@ const STATUS_COLOR: Record<string, string> = {
 
 function Stat({ label, value, icon, tone }: { label: string; value: ReactNode; icon: ReactNode; tone: string }) {
   return (
-    <div className="rounded-xl border bg-card p-5">
+    <div className="rounded-2xl border bg-card p-4 sm:p-6">
       <div className="flex items-start justify-between gap-3">
         <p className="text-sm font-medium text-slate-600">{label}</p>
         <span className={`inline-flex h-10 w-10 items-center justify-center rounded-xl text-white shadow-sm ${tone}`}>{icon}</span>
@@ -28,7 +29,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: P
   const user = await requireAdminUser();
   const { forbidden } = await searchParams;
   const canSeeMoney = hasPermission(user.roles, "transaction:read") || hasPermission(user.roles, "campaign:read");
-  const [stats, counts] = canSeeMoney ? await Promise.all([dashboardStats(), campaignStatusCounts()]) : [null, {} as Record<string, number>];
+  const [stats, counts, charts] = canSeeMoney ? await Promise.all([dashboardStats(), campaignStatusCounts(), dashboardCharts()]) : [null, {} as Record<string, number>, null];
   const totalCampaigns = Object.values(counts).reduce((a, b) => a + b, 0);
   const firstName = (user.name ?? user.email ?? "Admin").split(" ")[0];
 
@@ -42,7 +43,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: P
     <div className="space-y-8">
       {forbidden && <Alert tone="warning">Anda tidak memiliki izin untuk halaman tersebut.</Alert>}
 
-      <section className="band-navy relative overflow-hidden rounded-3xl p-7 text-white shadow-[0_24px_50px_-28px_rgba(6,34,70,0.8)] sm:p-9">
+      <section className="reveal band-navy relative overflow-hidden rounded-2xl p-6 text-white sm:p-8">
         <p className="text-sm font-medium text-white/70">Selamat datang kembali</p>
         <h1 className="mt-1 text-3xl font-extrabold tracking-tight text-white sm:text-4xl">Halo, {firstName}</h1>
         <p className="mt-2 max-w-xl text-sm text-white/75">Ringkasan penggalangan dana dan transaksi terbaru. Kelola campaign, metode pembayaran, dan notifikasi dari menu di kiri.</p>
@@ -59,14 +60,40 @@ export default async function AdminDashboard({ searchParams }: { searchParams: P
 
       {stats && (
         <>
-          <section aria-label="Statistik utama" className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            <Stat label="Campaign aktif" value={stats.activeCampaigns} icon={<IconHand width={20} height={20} />} tone="bg-gradient-to-br from-[#0064db] to-[#2a8cff]" />
+          <section aria-label="Statistik utama" className="reveal reveal-2 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <Stat label="Campaign aktif" value={stats.activeCampaigns} icon={<IconHand width={20} height={20} />} tone="bg-gradient-to-br from-brand to-brand-light" />
             <Stat label="Donasi berhasil" value={stats.succeededDonations} icon={<IconChart width={20} height={20} />} tone="bg-gradient-to-br from-emerald-600 to-emerald-400" />
-            <Stat label="Nilai donasi berhasil" value={formatIDR(stats.succeededValue)} icon={<IconCard width={20} height={20} />} tone="bg-gradient-to-br from-[#ff6b57] to-[#ff9a6b]" />
+            <Stat label="Nilai donasi berhasil" value={formatIDR(stats.succeededValue)} icon={<IconCard width={20} height={20} />} tone="bg-gradient-to-br from-accent-fixed to-accent-fixed-light" />
             <Stat label="Transaksi pending" value={stats.pendingTransactions} icon={<IconClock width={20} height={20} />} tone="bg-gradient-to-br from-amber-500 to-amber-300" />
           </section>
 
-          <section aria-labelledby="h-status" className="rounded-xl border bg-card p-6">
+          {charts && (
+            <>
+              <section aria-labelledby="h-trend" className="reveal reveal-3 rounded-2xl border bg-card p-4 sm:p-6">
+                <h2 id="h-trend" className="text-lg font-bold">Donasi 30 hari terakhir</h2>
+                <p className="mb-4 text-sm text-slate-600">Nilai donasi berhasil per hari (WIB).</p>
+                <DailyChart data={charts.daily} />
+              </section>
+              <div className="grid gap-6 lg:grid-cols-3">
+                <section aria-labelledby="h-top" className="rounded-2xl border bg-card p-4 sm:p-6 lg:col-span-2">
+                  <h2 id="h-top" className="mb-4 text-lg font-bold">Campaign teratas</h2>
+                  <BarList empty="Belum ada donasi berhasil." rows={charts.topCampaigns.map((c) => ({ label: c.title, value: c.amount, sub: `${c.count} donasi` }))} />
+                </section>
+                <section aria-labelledby="h-mix" className="rounded-2xl border bg-card p-4 sm:p-6">
+                  <h2 id="h-mix" className="mb-4 text-lg font-bold">Hasil transaksi</h2>
+                  <StatusMix rows={charts.statuses} />
+                </section>
+              </div>
+              {charts.providers.length > 0 && (
+                <section aria-labelledby="h-prov" className="rounded-2xl border bg-card p-4 sm:p-6">
+                  <h2 id="h-prov" className="mb-4 text-lg font-bold">Nilai per penyedia pembayaran</h2>
+                  <BarList empty="" rows={charts.providers.map((p) => ({ label: p.provider, value: p.amount, sub: `${p.count} pembayaran` }))} />
+                </section>
+              )}
+            </>
+          )}
+
+          <section aria-labelledby="h-status" className="rounded-2xl border bg-card p-4 sm:p-6">
             <div className="flex flex-wrap items-end justify-between gap-2">
               <h2 id="h-status" className="text-lg font-bold">Campaign per status</h2>
               <p className="text-sm text-slate-600">{totalCampaigns} campaign</p>

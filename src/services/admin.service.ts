@@ -20,6 +20,7 @@ import {
 import { getAdapter } from "@/lib/payments/registry";
 import { findUnknownPlaceholders } from "@/lib/notifications/render";
 import { DomainError } from "./campaigns.service";
+import { fillDailySeries } from "@/lib/utils/series";
 import { writeAudit } from "./audit.service";
 
 export async function dashboardStats() {
@@ -34,6 +35,47 @@ export async function dashboardStats() {
     })
     .from(donations);
   return { activeCampaigns: c.active, succeededDonations: d.succeeded, pendingTransactions: d.pending, succeededValue: Number(d.value) };
+}
+
+/** Data for the dashboard charts: 30-day trend, top campaigns, donation outcomes and payment provider split. */
+export async function dashboardCharts() {
+  const when = sql`coalesce(${donations.paidAt}, ${donations.createdAt})`;
+  const [daily, top, statuses, providers] = await Promise.all([
+    db
+      .select({
+        date: sql<string>`to_char(date_trunc('day', ${when} at time zone 'Asia/Jakarta'), 'YYYY-MM-DD')`,
+        amount: sql<number>`coalesce(sum(${donations.amount}), 0)::bigint`,
+        count: sql<number>`count(*)::int`,
+      })
+      .from(donations)
+      .where(and(eq(donations.status, "SUCCEEDED"), sql`${when} >= now() - interval '31 days'`))
+      .groupBy(sql`1`),
+    db
+      .select({
+        title: campaigns.title,
+        amount: sql<number>`coalesce(sum(${donations.amount}), 0)::bigint`,
+        count: sql<number>`count(*)::int`,
+      })
+      .from(donations)
+      .innerJoin(campaigns, eq(campaigns.id, donations.campaignId))
+      .where(eq(donations.status, "SUCCEEDED"))
+      .groupBy(campaigns.id, campaigns.title)
+      .orderBy(desc(sql`2`))
+      .limit(5),
+    db.select({ status: donations.status, count: sql<number>`count(*)::int` }).from(donations).groupBy(donations.status),
+    db
+      .select({ provider: payments.provider, amount: sql<number>`coalesce(sum(${donations.amount}), 0)::bigint`, count: sql<number>`count(*)::int` })
+      .from(payments)
+      .innerJoin(donations, eq(donations.id, payments.donationId))
+      .where(and(eq(donations.status, "SUCCEEDED"), eq(payments.status, "SUCCEEDED")))
+      .groupBy(payments.provider),
+  ]);
+  return {
+    daily: fillDailySeries(daily.map((r) => ({ date: r.date, amount: Number(r.amount), count: r.count })), 30),
+    topCampaigns: top.map((r) => ({ title: r.title, amount: Number(r.amount), count: r.count })),
+    statuses: statuses.map((r) => ({ status: r.status as string, count: r.count })),
+    providers: providers.map((r) => ({ provider: r.provider as string, amount: Number(r.amount), count: r.count })),
+  };
 }
 
 export async function listTransactions(filter: { status?: DonationStatus; provider?: Provider; page?: number; pageSize?: number } = {}) {

@@ -22,16 +22,16 @@ export default async function DonatePage({ params }: { params: Promise<{ slug: s
   return (
     <div className="mx-auto max-w-2xl">
       <PageNav crumbs={[{ label: "Beranda", href: "/" }, { label: "Campaign", href: "/campaigns" }, { label: campaign.title, href: `/campaigns/${slug}` }, { label: "Donasi" }]} />
-      <PageHeading title="Donasi" />
-      <p className="-mt-3 mb-6 text-slate-600">
+      <div className="reveal"><PageHeading title="Donasi" /></div>
+      <p className="reveal reveal-2 -mt-2 mb-6 text-slate-600">
         untuk <Link href={`/campaigns/${slug}`} className="font-medium text-brand-ink hover:underline">{campaign.title}</Link>
       </p>
       {block ? (
         <Alert tone="warning" title="Donasi tidak tersedia">{BLOCK_MESSAGES[block]}</Alert>
       ) : (
-        <Card>
+        <div className="reveal reveal-3"><Card>
           <DonateForm slug={slug} amountMode={campaign.amountMode} options={detail?.options ?? []} min={env.MIN_DONATION_AMOUNT} max={env.MAX_DONATION_AMOUNT} />
-        </Card>
+        </Card></div>
       )}
     </div>
   );

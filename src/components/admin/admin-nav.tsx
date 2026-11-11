@@ -36,8 +36,8 @@ export function AdminNavLinks({ groups }: { groups: NavGroup[] }): ReactNode {
                       active ? "bg-white/12 text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.12)]" : "text-white/70 hover:bg-white/8 hover:text-white"
                     }`}
                   >
-                    {active && <span aria-hidden className="absolute -left-3 top-2 bottom-2 w-1 rounded-r-full bg-[#ff6b57]" />}
-                    <Icon width={18} height={18} className={active ? "text-[#7db8ff]" : "text-white/55 group-hover:text-white/85"} />
+                    {active && <span aria-hidden className="absolute -left-3 top-2 bottom-2 w-1 rounded-r-full bg-accent-fixed" />}
+                    <Icon width={18} height={18} className={active ? "text-brand-light" : "text-white/55 group-hover:text-white/85"} />
                     {i.label}
                   </Link>
                 </li>
