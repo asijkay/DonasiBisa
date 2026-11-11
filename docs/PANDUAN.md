@@ -64,7 +64,7 @@ Anda hanya bisa membuka donasi milik sendiri. Donasi orang lain mengembalikan ha
 
 ### A.6 Privasi dan data pribadi
 
-Di **Akun → Privasi** (`/account/privacy`) Anda bisa:
+Di bagian **Privasi & data saya** pada halaman **Akun** (`/account#privasi`) Anda bisa:
 - **Mengunduh** data pribadi Anda (format JSON).
 - **Menghapus akun**. Data donasi dianonimkan; catatan keuangan tetap disimpan tanpa identitas.
 

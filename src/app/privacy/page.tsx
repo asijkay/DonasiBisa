@@ -87,7 +87,7 @@ export default async function PrivacyPage() {
       <LegalSection id="hak" title="7. Hak Anda">
         <p>Anda berhak mengakses, memperbaiki, membatasi, menarik persetujuan, memindahkan, serta meminta penghapusan data pribadi Anda.</p>
         <ul>
-          <li><strong>Sudah masuk dengan Google:</strong> buka <Link href="/account/privacy">Akun → Privasi</Link> untuk mengunduh data (JSON) atau menghapus data dan akun secara mandiri.</li>
+          <li><strong>Sudah masuk dengan Google:</strong> buka <Link href="/account#privasi">Akun → Privasi &amp; data</Link> untuk mengunduh data (JSON) atau menghapus data dan akun secara mandiri.</li>
           <li><strong>Donasi sebagai tamu:</strong> ajukan lewat <Link href="/permintaan-data">formulir permintaan data</Link>. Kami memverifikasi kepemilikan email sebelum memproses.</li>
           <li><strong>Berhenti menerima pesan:</strong> klik tautan &quot;Berhenti menerima pesan&quot; di setiap email atau WhatsApp.</li>
         </ul>

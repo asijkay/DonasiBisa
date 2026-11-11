@@ -6,6 +6,7 @@ import { getCurrentUser } from "@/lib/auth/session";
 import { AppBackground } from "@/components/public/app-background";
 import { CookieBanner } from "@/components/public/cookie-banner";
 import { SiteFooter, SiteHeader } from "@/components/public/site-chrome";
+import { ChromeGate } from "@/components/public/chrome-gate";
 
 // Pages read live data (campaigns, sessions); never prerender them at build time.
 export const dynamic = "force-dynamic";
@@ -42,11 +43,9 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
         <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-50 focus:rounded focus:bg-card focus:px-3 focus:py-2">
           Lewati ke konten
         </a>
-        <SiteHeader brand={brand} user={user} />
-        <main id="main" tabIndex={-1} className="mx-auto outline-none min-h-[60vh] max-w-6xl px-4 pb-16 pt-8">
+        <ChromeGate header={<SiteHeader brand={brand} user={user} />} footer={<SiteFooter brand={brand} />}>
           {children}
-        </main>
-        <SiteFooter brand={brand} />
+        </ChromeGate>
         <CookieBanner />
       </body>
     </html>

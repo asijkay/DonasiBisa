@@ -39,12 +39,12 @@ export async function submitDataRequestAction(fd: FormData): Promise<void> {
 /** Self-service erasure for a signed-in donor: anonymise donor data and delete the login account. */
 export async function eraseAccountAction(fd: FormData): Promise<void> {
   const user = await getCurrentUser();
-  if (!user) redirect("/login?callbackUrl=%2Faccount%2Fprivacy");
-  if (String(fd.get("confirm") ?? "").trim().toUpperCase() !== "HAPUS") redirect("/account/privacy?error=" + encodeURIComponent('Ketik "HAPUS" untuk mengonfirmasi.'));
+  if (!user) redirect("/login?callbackUrl=%2Faccount");
+  if (String(fd.get("confirm") ?? "").trim().toUpperCase() !== "HAPUS") redirect("/account?error=" + encodeURIComponent('Ketik "HAPUS" untuk mengonfirmasi.') + "#privasi");
   try {
     await eraseAccount(user.id);
   } catch (e) {
-    if (e instanceof DomainError) redirect("/account/privacy?error=" + encodeURIComponent(e.message));
+    if (e instanceof DomainError) redirect("/account?error=" + encodeURIComponent(e.message) + "#privasi");
     throw e;
   }
   await signOut({ redirectTo: "/?deleted=1" });

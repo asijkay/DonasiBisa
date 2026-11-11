@@ -25,8 +25,9 @@ export function AdminBreadcrumbs() {
   const path = usePathname();
   const parts = path.split("/").filter(Boolean);
   if (parts.length <= 1) return null; // dashboard needs no trail
-  const crumbs: Crumb[] = [{ label: "Beranda", href: "/" }];
+  const crumbs: Crumb[] = [{ label: "Panel admin", href: "/admin" }];
   parts.forEach((seg, i) => {
+    if (i === 0) return; // "admin" is the root crumb above
     crumbs.push({ label: LABELS[seg] ?? "Detail", href: `/${parts.slice(0, i + 1).join("/")}` });
   });
   return <PageNav crumbs={crumbs} />;

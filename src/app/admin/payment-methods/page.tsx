@@ -1,12 +1,13 @@
 import { SubmitButton } from "@/components/ui/submit-button";
-import { Alert, Badge, Card, Input, PageHeading } from "@/components/ui";
+import { Alert, Badge, Card, PageHeading } from "@/components/ui";
+import { SortableMethods } from "@/components/admin/sortable-methods";
 import { Flash } from "@/components/admin/flash";
 import { requirePermission } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/auth/permissions";
 import { listPaymentConfig } from "@/services/admin.service";
 import { getEnv } from "@/lib/env";
 import { simulatorEnabled } from "@/lib/payments/simulator";
-import { toggleProviderAction, updateMethodAction } from "@/app/admin/actions";
+import { toggleProviderAction } from "@/app/admin/actions";
 
 export default async function PaymentMethodsPage({ searchParams }: { searchParams: Promise<{ ok?: string; error?: string }> }) {
   const user = await requirePermission("payment:read");
@@ -14,7 +15,7 @@ export default async function PaymentMethodsPage({ searchParams }: { searchParam
   const providers = await listPaymentConfig();
   const sandboxEnv = getEnv().APP_ENV;
   return (
-    <div className="max-w-4xl space-y-6">
+    <div className="max-w-5xl space-y-6">
       <PageHeading title="Metode pembayaran" />
       <Flash {...(await searchParams)} />
       {simulatorEnabled() && <Alert tone="warning" title="Simulator gateway aktif (DEV)">Provider memakai simulator lokal, bukan Midtrans/Xendit sungguhan. Kredensial rahasia tidak pernah ditampilkan atau disimpan di database.</Alert>}
@@ -33,18 +34,11 @@ export default async function PaymentMethodsPage({ searchParams }: { searchParam
               </form>
             )}
           </div>
-          <div className="space-y-2">
-            {p.methods.map((m) => (
-              <form key={m.id} action={updateMethodAction.bind(null, m.id)} className="grid items-end gap-2 rounded-lg border border-slate-200 p-3 sm:grid-cols-[1fr_1fr_80px_auto_auto]">
-                <div><span className="text-xs text-slate-500">Kode channel</span><p className="font-mono text-sm">{m.channelCode}</p></div>
-                <label className="text-xs text-slate-500">Nama tampilan<Input name="displayName" defaultValue={m.displayName} disabled={!canConfigure} /></label>
-                <label className="text-xs text-slate-500">Urutan<Input name="sortOrder" type="number" defaultValue={m.sortOrder} disabled={!canConfigure} /></label>
-                <label className="flex items-center gap-2 pb-2 text-sm"><input type="checkbox" name="isEnabled" defaultChecked={m.isEnabled} disabled={!canConfigure} className="h-4 w-4" /> Aktif</label>
-                {canConfigure && <SubmitButton variant="secondary">Simpan</SubmitButton>}
-                <input type="hidden" name="description" value={m.description ?? ""} />
-              </form>
-            ))}
-          </div>
+          <SortableMethods
+            provider={p.provider}
+            canConfigure={canConfigure}
+            methods={p.methods.map((m) => ({ id: m.id, channelCode: m.channelCode, displayName: m.displayName, description: m.description, isEnabled: m.isEnabled }))}
+          />
         </Card>
       ))}
     </div>

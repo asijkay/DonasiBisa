@@ -13,7 +13,7 @@ export default async function DataRequestPage({ searchParams }: { searchParams: 
     <div className="mx-auto max-w-xl">
       <PageNav crumbs={[{ label: "Beranda", href: "/" }, { label: "Kebijakan Privasi", href: "/privacy" }, { label: "Permintaan data" }]} />
       <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">Permintaan data pribadi</h1>
-      <p className="mt-3 text-slate-700">Ajukan permintaan akses atau penghapusan data pribadi untuk donasi yang Anda buat sebagai tamu. Jika Anda sudah masuk dengan Google, lebih cepat memakai <Link className="text-brand-ink underline" href="/account/privacy">Akun → Privasi</Link>.</p>
+      <p className="mt-3 text-slate-700">Ajukan permintaan akses atau penghapusan data pribadi untuk donasi yang Anda buat sebagai tamu. Jika Anda sudah masuk dengan Google, lebih cepat memakai <Link className="text-brand-ink underline" href="/account#privasi">Akun → Privasi &amp; data</Link>.</p>
       <div className="mt-6 space-y-4">
         {sent && <Alert tone="success" title="Permintaan diterima">Kami akan memverifikasi kepemilikan email Anda sebelum memproses. Penghapusan menganonimkan data identitas; catatan transaksi tanpa identitas tetap disimpan untuk keperluan pencatatan keuangan.</Alert>}
         {error && <Alert tone="danger">{error}</Alert>}

@@ -16,7 +16,7 @@ import { createCampaign, DomainError, setCampaignStatus, updateCampaign } from "
 import { deleteNews, saveNews } from "@/services/news.service";
 import { saveBrand } from "@/services/brand.service";
 import { resolveDataRequest } from "@/services/privacy.service";
-import { grantRole, revokeRole, saveTemplate, setProviderEnabled, updateMethod } from "@/services/admin.service";
+import { grantRole, reorderMethods, revokeRole, saveTemplate, setProviderEnabled, updateMethod } from "@/services/admin.service";
 
 /** Runs an admin mutation: server-side permission check, domain errors → flash message, then redirect. */
 async function run(permission: Permission, back: string, work: (actorId: string) => Promise<string | void>): Promise<never> {
@@ -124,6 +124,25 @@ export async function updateMethodAction(id: string, fd: FormData): Promise<neve
       actor,
     ),
   );
+}
+
+/** Drag-and-drop reorder. Returns a result (no redirect) so the list can stay in place while saving. */
+export async function reorderMethodsAction(provider: Provider, orderedIds: string[]): Promise<{ ok: boolean; message: string }> {
+  if (!PROVIDERS.includes(provider) || !Array.isArray(orderedIds) || orderedIds.some((id) => typeof id !== "string")) {
+    return { ok: false, message: "Permintaan tidak valid." };
+  }
+  try {
+    const user = await assertPermission("payment:configure");
+    await reorderMethods(provider, orderedIds, user.id);
+    revalidatePath("/admin/payment-methods");
+    return { ok: true, message: "Urutan tersimpan." };
+  } catch (e) {
+    unstable_rethrow(e);
+    if (e instanceof AuthzError) return { ok: false, message: e.status === 401 ? "Sesi berakhir. Silakan login." : "Anda tidak memiliki izin." };
+    if (e instanceof DomainError) return { ok: false, message: e.message };
+    console.error("[admin action]", e instanceof Error ? e.message : e);
+    return { ok: false, message: "Terjadi kesalahan." };
+  }
 }
 
 export async function saveTemplateAction(id: string, fd: FormData): Promise<never> {

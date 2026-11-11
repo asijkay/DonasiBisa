@@ -28,8 +28,8 @@ Rate-limit memakai hash pengenal (bukan IP/email mentah) di Redis dengan TTL pen
 - Cookie: banner dengan dua tombol setara ("Hanya yang diperlukan" / "Terima preferensi"); cookie preferensi (tema) hanya ke `localStorage` bila disetujui, jika tidak ke `sessionStorage`. Pilihan kedaluwarsa 12 bulan; dapat dibuka lagi dari footer.
 
 ## 3. Hak subjek data & retensi
-- **Akses/portabilitas:** `/account/privacy` → unduh JSON (`/api/account/export`).
-- **Penghapusan:** `/account/privacy` (mandiri; mengetik HAPUS) atau `/permintaan-data` (tamu → tinjauan admin di `/admin/data-requests`).
+- **Akses/portabilitas:** `/account#privasi` → unduh JSON (`/api/account/export`).
+- **Penghapusan:** `/account#privasi` (mandiri; mengetik HAPUS) atau `/permintaan-data` (tamu → tinjauan admin di `/admin/data-requests`).
   Penghapusan = **anonimisasi**: nama/email/WA/pesan diganti penanda, payload webhook dibuang, akun login dihapus. Baris transaksi (nominal, status, tanggal, kode) tetap karena kewajiban pencatatan keuangan.
   Super Admin terakhir tidak dapat menghapus dirinya.
 - **Berhenti berlangganan:** setiap email & WhatsApp memuat tautan; email memuat header `List-Unsubscribe` + `List-Unsubscribe-Post` (RFC 8058, endpoint POST `/api/unsubscribe`). GET tidak mengubah status. Setelah opt-out hanya **bukti transaksi** (pembayaran berhasil) yang tetap dikirim.

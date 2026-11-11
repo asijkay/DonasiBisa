@@ -1,5 +1,5 @@
 import "server-only";
-import { and, count, desc, eq, ilike, or, sql } from "drizzle-orm";
+import { and, count, desc, eq, ilike, inArray, or, sql } from "drizzle-orm";
 import { db } from "@/db";
 import {
   auditLogs,
@@ -121,6 +121,27 @@ export async function updateMethod(
 ): Promise<void> {
   await db.update(paymentMethodConfigs).set({ ...patch, updatedAt: new Date() }).where(eq(paymentMethodConfigs.id, id));
   await writeAudit(db, actorId, "payment.method.update", "payment_method", id, null, patch);
+}
+
+/** Persists a drag-and-drop order for one provider's channels (position in the list becomes sort_order). */
+export async function reorderMethods(provider: Provider, orderedIds: string[], actorId: string): Promise<void> {
+  if (orderedIds.length === 0 || new Set(orderedIds).size !== orderedIds.length) {
+    throw new DomainError("Urutan tidak valid.", "INVALID_ORDER", 400);
+  }
+  await db.transaction(async (tx) => {
+    const [row] = await tx.select({ id: paymentProviders.id }).from(paymentProviders).where(eq(paymentProviders.provider, provider)).limit(1);
+    if (!row) throw new DomainError("Provider tidak ditemukan.", "NOT_FOUND", 404);
+    const owned = await tx
+      .select({ id: paymentMethodConfigs.id })
+      .from(paymentMethodConfigs)
+      .where(and(eq(paymentMethodConfigs.providerId, row.id), inArray(paymentMethodConfigs.id, orderedIds)));
+    if (owned.length !== orderedIds.length) throw new DomainError("Urutan tidak valid.", "INVALID_ORDER", 400);
+    const now = new Date();
+    for (const [index, id] of orderedIds.entries()) {
+      await tx.update(paymentMethodConfigs).set({ sortOrder: index, updatedAt: now }).where(eq(paymentMethodConfigs.id, id));
+    }
+    await writeAudit(tx, actorId, "payment.method.reorder", "payment_provider", provider, null, { order: orderedIds });
+  });
 }
 
 /* ---- Notification templates ---- */
