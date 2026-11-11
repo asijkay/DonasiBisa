@@ -22,7 +22,7 @@ export default async function DonatePage({ params }: { params: Promise<{ slug: s
     <div className="mx-auto max-w-2xl">
       <PageHeading title="Donasi" />
       <p className="-mt-3 mb-6 text-slate-600">
-        untuk <Link href={`/campaigns/${slug}`} className="font-medium text-brand hover:underline">{campaign.title}</Link>
+        untuk <Link href={`/campaigns/${slug}`} className="font-medium text-brand-ink hover:underline">{campaign.title}</Link>
       </p>
       {block ? (
         <Alert tone="warning" title="Donasi tidak tersedia">{BLOCK_MESSAGES[block]}</Alert>

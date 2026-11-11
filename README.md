@@ -85,6 +85,9 @@ npm run jobs:run       # jalankan job lifecycle/expire/retry secara lokal
 ## Deploy ke Vercel
 Workflow `.github/workflows/deploy.yml` men-deploy tanpa Vercel GitHub App (repo di akun GitHub A, project Vercel di akun B). Tambahkan secret di GitHub → Settings → Secrets and variables → Actions: `VERCEL_TOKEN` (buat di Vercel → Account Settings → Tokens), `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID` (dari `.vercel/project.json` setelah `vercel link`). Tanpa secret, workflow melewati deploy. Push ke `main` = production, PR = preview.
 
+## Desain & landing page
+Palet **60-30-10**: terang = 60% putih, 30% biru (`#0064db`), 10% coral (`#ff6b57`); gelap = 60% hitam, 30% biru, 10% putih tegas (CTA putih). Token ada di `src/app/globals.css` (`--accent-eff`, `--on-accent`, `--blue-ink`); warna brand tetap bisa diubah di `/admin/brand`. Landing (`src/app/page.tsx`, `components/public/landing-sections.tsx`) memuat hero, kategori, campaign pilihan, statistik nyata (dari database, tidak dikarang), cara kerja, kepercayaan, berita, FAQ, dan CTA. Campaign punya kategori (`PENDIDIKAN|KESEHATAN|BENCANA|SOSIAL|LAINNYA`) dan halaman `/campaigns?kategori=`. Foto ilustrasi dari Wikimedia Commons (domain publik/CC0), kredit di `docs/IMAGE-CREDITS.md` dan `/kredit-foto`. **Deploy: jalankan `npm run db:migrate` ke database production sebelum merge (ada kolom `category` baru).**
+
 ## Aset brand
 Logo bawaan ada di `public/brand/` (`logo-light|dark` PNG 1600px + `@1x` + WebP, `icon-192|512`, `icon-maskable-512`, `apple-touch-icon`, `placeholder`). Favicon/ikon memakai konvensi Next (`src/app/favicon.ico` 16/32/48, `icon.png`, `apple-icon.png`, `opengraph-image.png`, `manifest.ts`). Varian terang/gelap dipilih otomatis lewat `prefers-color-scheme`; jika `Logo URL` diisi di `/admin/brand`, gambar itu menggantikan logo bawaan. Ikon saja dipakai sebagai favicon dan placeholder foto profil/gambar (`Avatar`, `CoverImage`).
 

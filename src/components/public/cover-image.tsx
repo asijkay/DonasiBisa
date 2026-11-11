@@ -6,7 +6,7 @@ import { cn } from "@/components/ui";
 export function CoverImage({ src, alt, className }: { src?: string | null; alt: string; className?: string }) {
   if (!src) {
     return (
-      <div aria-hidden className={cn("flex items-center justify-center bg-gradient-to-br from-brand/15 to-brand-accent/20", className)}>
+      <div aria-hidden className={cn("flex items-center justify-center bg-gradient-to-br from-brand-soft to-brand/20", className)}>
         <Image src="/brand/icon-192.png" alt="" width={96} height={96} className="h-16 w-16 opacity-70" />
       </div>
     );

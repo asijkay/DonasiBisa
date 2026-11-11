@@ -10,7 +10,7 @@ export const brandConfig = pgTable("brand_config", {
   faviconUrl: text("favicon_url"),
   primaryColor: text("primary_color").notNull().default("#0f766e"),
   secondaryColor: text("secondary_color").notNull().default("#334155"),
-  accentColor: text("accent_color").notNull().default("#f59e0b"),
+  accentColor: text("accent_color").notNull().default("#ff6b57"),
   backgroundColor: text("background_color").notNull().default("#ffffff"),
   contactEmail: text("contact_email"),
   contactWhatsapp: text("contact_whatsapp"),

@@ -1,4 +1,5 @@
 import { Button, Input, Label, Select, Textarea } from "@/components/ui";
+import { CAMPAIGN_CATEGORIES } from "@/db/schema/enums";
 import type { CampaignRow } from "@/services/campaigns.service";
 import { saveCampaignAction } from "@/app/admin/actions";
 
@@ -27,10 +28,16 @@ export function CampaignForm({ campaign, options, canWrite }: { campaign?: Campa
               <option value="CLOSED_AMOUNT">Paket nominal (preset)</option>
             </Select>
           </div>
+          <div>
+            <Label htmlFor="category">Kategori</Label>
+            <Select id="category" name="category" defaultValue={campaign?.category ?? "LAINNYA"}>
+              {CAMPAIGN_CATEGORIES.map((c) => (<option key={c} value={c}>{c.charAt(0) + c.slice(1).toLowerCase()}</option>))}
+            </Select>
+          </div>
           <div><Label htmlFor="startsAt" hint="(WIB)">Mulai</Label><Input id="startsAt" name="startsAt" type="datetime-local" defaultValue={toLocal(campaign?.startsAt)} /></div>
           <div><Label htmlFor="endsAt" hint="(WIB)">Berakhir</Label><Input id="endsAt" name="endsAt" type="datetime-local" defaultValue={toLocal(campaign?.endsAt)} /></div>
         </div>
-        <div><Label htmlFor="coverImageUrl" hint="(URL https)">Gambar sampul</Label><Input id="coverImageUrl" name="coverImageUrl" type="url" defaultValue={campaign?.coverImageUrl ?? ""} /></div>
+        <div><Label htmlFor="coverImageUrl" hint="(URL https atau /images/…)">Gambar sampul</Label><Input id="coverImageUrl" name="coverImageUrl" type="text" defaultValue={campaign?.coverImageUrl ?? ""} /></div>
         <div>
           <Label htmlFor="amountOptions" hint="(satu per baris: nominal|label — untuk mode paket nominal)">Pilihan nominal</Label>
           <Textarea id="amountOptions" name="amountOptions" rows={4} defaultValue={(options ?? []).map((o) => `${o.amount}${o.label ? `|${o.label}` : ""}`).join("\n")} placeholder={"25000|Paket Hemat\n50000|Paket Berbagi"} />

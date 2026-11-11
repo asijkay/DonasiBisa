@@ -4,8 +4,10 @@ import { db, type Tx } from "@/db";
 import {
   campaignAmountOptions,
   campaigns,
+  donations,
   newsPosts,
   type CampaignStatus,
+  type CampaignCategory,
   type CloseReason,
 } from "@/db/schema";
 import { cached, cacheDel, cacheDelPrefix } from "@/lib/cache/redis";
@@ -120,6 +122,7 @@ export type CampaignCardDTO = {
   raisedAmount: number;
   status: CampaignStatus;
   amountMode: "OPEN_AMOUNT" | "CLOSED_AMOUNT";
+  category: CampaignCategory;
   endsAt: string | null;
   isDemo: boolean;
   isOpen: boolean;
@@ -143,6 +146,7 @@ function toCard(c: CampaignRow): CampaignCardDTO {
     raisedAmount: c.raisedAmount,
     status: c.status,
     amountMode: c.amountMode,
+    category: c.category,
     endsAt: c.endsAt?.toISOString() ?? null,
     isDemo: c.isDemo,
     isOpen: getDonationBlockReason(c) === null,
@@ -151,8 +155,8 @@ function toCard(c: CampaignRow): CampaignCardDTO {
 
 const json = <T>(v: unknown): T => JSON.parse(JSON.stringify(v)) as T;
 
-export async function listPublicCampaigns(opts: { featured?: boolean; limit?: number } = {}): Promise<CampaignCardDTO[]> {
-  const key = opts.featured ? CacheKeys.featuredCampaigns : `${CacheKeys.campaignList}:${opts.limit ?? 24}`;
+export async function listPublicCampaigns(opts: { featured?: boolean; limit?: number; category?: CampaignCategory } = {}): Promise<CampaignCardDTO[]> {
+  const key = opts.featured ? CacheKeys.featuredCampaigns : `${CacheKeys.campaignList}:${opts.limit ?? 24}:${opts.category ?? "all"}`;
   return cached(key, CACHE_TTL_SECONDS, async () => {
     const now = new Date();
     const rows = await db
@@ -162,6 +166,7 @@ export async function listPublicCampaigns(opts: { featured?: boolean; limit?: nu
         and(
           eq(campaigns.status, "PUBLISHED"),
           opts.featured ? eq(campaigns.isFeatured, true) : undefined,
+          opts.category ? eq(campaigns.category, opts.category) : undefined,
           or(sql`${campaigns.endsAt} is null`, gt(campaigns.endsAt, now)),
           or(sql`${campaigns.startsAt} is null`, lte(campaigns.startsAt, now)),
         ),
@@ -241,6 +246,7 @@ export async function createCampaign(input: CampaignInput, actor: Actor): Promis
         descriptionMd: input.descriptionMd,
         targetAmount: input.targetAmount,
         amountMode: input.amountMode,
+        category: input.category,
         autoCloseOnTarget: input.autoCloseOnTarget,
         isFeatured: input.isFeatured,
         startsAt: input.startsAt ?? null,
@@ -274,6 +280,7 @@ export async function updateCampaign(id: string, input: CampaignInput, actor: Ac
         descriptionMd: input.descriptionMd,
         targetAmount: input.targetAmount,
         amountMode: input.amountMode,
+        category: input.category,
         autoCloseOnTarget: input.autoCloseOnTarget,
         isFeatured: input.isFeatured,
         startsAt: input.startsAt ?? null,
@@ -380,4 +387,22 @@ export async function campaignStatusCounts(): Promise<Record<string, number>> {
     .where(inArray(campaigns.status, ["PUBLISHED", "DRAFT", "PAUSED", "COMPLETED", "CLOSED"]))
     .groupBy(campaigns.status);
   return Object.fromEntries(rows.map((r) => [r.status, r.n]));
+}
+
+/* ---------- Public aggregate stats (no PII) ---------- */
+
+export type PublicStats = { totalRaised: number; donorCount: number; donationCount: number; activeCampaigns: number };
+
+export async function getPublicStats(): Promise<PublicStats> {
+  return cached("stats:public:v1", CACHE_TTL_SECONDS, async () => {
+    const [raised] = await db
+      .select({ total: sql<number>`coalesce(sum(${campaigns.raisedAmount}), 0)::bigint`, active: sql<number>`count(*) filter (where ${campaigns.status} = 'PUBLISHED')::int` })
+      .from(campaigns)
+      .where(inArray(campaigns.status, ["PUBLISHED", "PAUSED", "COMPLETED", "CLOSED"]));
+    const [d] = await db
+      .select({ donors: sql<number>`count(distinct ${donations.donorId})::int`, n: sql<number>`count(*)::int` })
+      .from(donations)
+      .where(eq(donations.status, "SUCCEEDED"));
+    return { totalRaised: Number(raised.total), donorCount: d.donors, donationCount: d.n, activeCampaigns: raised.active };
+  });
 }

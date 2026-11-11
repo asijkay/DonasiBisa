@@ -1,73 +1,67 @@
-import { ButtonLink, EmptyState } from "@/components/ui";
+import Link from "next/link";
+import { EmptyState } from "@/components/ui";
 import { CampaignCard } from "@/components/public/campaign-card";
+import { CategoryLinks, CtaBand, Faq, Hero, HowItWorks, SectionHeading, StatsBand, TrustSection } from "@/components/public/landing-sections";
+import { IconArrow } from "@/components/public/icons";
 import { getBrand } from "@/services/brand.service";
-import { listPublicCampaigns } from "@/services/campaigns.service";
+import { getPublicStats, listPublicCampaigns } from "@/services/campaigns.service";
 import { listPublishedNews } from "@/services/news.service";
 import { formatDate } from "@/lib/utils/format";
-import Link from "next/link";
 
 export default async function HomePage() {
-  const [brand, featured, active, news] = await Promise.all([
+  const [brand, stats, featured, active, news] = await Promise.all([
     getBrand(),
+    getPublicStats(),
     listPublicCampaigns({ featured: true, limit: 3 }),
-    listPublicCampaigns({ limit: 12 }),
+    listPublicCampaigns({ limit: 6 }),
     listPublishedNews(6),
   ]);
   const featuredIds = new Set(featured.map((c) => c.id));
-  const others = active.filter((c) => !featuredIds.has(c.id));
+  const campaigns = [...featured, ...active.filter((c) => !featuredIds.has(c.id))].slice(0, 6);
 
   return (
-    <div className="space-y-14">
-      <section className="rounded-2xl bg-gradient-to-br from-brand/10 via-card to-brand-accent/10 px-6 py-12 sm:px-12">
-        <h1 className="max-w-2xl text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">{brand.tagline ?? `Berdonasi bersama ${brand.brandName}`}</h1>
-        <p className="mt-3 max-w-xl text-slate-600">Pilih campaign, donasi tanpa perlu membuat akun, dan pantau perkembangannya.</p>
-        <ButtonLink href="#campaign" className="mt-6">{brand.ctaLabel}</ButtonLink>
-      </section>
+    <div>
+      <Hero ctaLabel={brand.ctaLabel} stats={stats} />
+      <CategoryLinks />
 
-      <section id="campaign" aria-labelledby="h-campaign" className="scroll-mt-20">
-        <h2 id="h-campaign" className="mb-4 text-xl font-bold">Campaign unggulan &amp; aktif</h2>
-        {featured.length + others.length === 0 ? (
-          <EmptyState title="Belum ada campaign aktif">Campaign yang dipublikasikan admin akan tampil di sini.</EmptyState>
+      <section id="campaign" aria-labelledby="h-campaign" className="scroll-mt-24 pb-14">
+        <div className="mb-8 flex flex-wrap items-end justify-between gap-3">
+          <SectionHeading eyebrow="Campaign pilihan" title="Dukung mereka yang membutuhkan"><span id="h-campaign" className="sr-only">Campaign pilihan</span></SectionHeading>
+          <Link href="/campaigns" className="inline-flex items-center gap-1.5 text-sm font-bold text-brand-ink hover:underline">Lihat semua <IconArrow width={16} height={16} /></Link>
+        </div>
+        {campaigns.length === 0 ? (
+          <EmptyState title="Campaign akan segera hadir">Campaign yang dipublikasikan admin akan tampil di sini.</EmptyState>
         ) : (
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {[...featured, ...others].map((c) => (
-              <CampaignCard key={c.id} c={c} />
-            ))}
-          </div>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">{campaigns.map((c) => (<CampaignCard key={c.id} c={c} />))}</div>
         )}
       </section>
 
-      <section aria-labelledby="h-how">
-        <h2 id="h-how" className="mb-4 text-xl font-bold">Cara berdonasi</h2>
-        <ol className="grid gap-4 sm:grid-cols-3">
-          {["Pilih campaign dan nominal", "Isi data singkat dan pilih metode pembayaran", "Selesaikan pembayaran; konfirmasi dikirim lewat email/WhatsApp"].map((t, i) => (
-            <li key={t} className="rounded-xl border border-slate-200 bg-card p-4">
-              <span className="mb-2 flex h-8 w-8 items-center justify-center rounded-full bg-brand text-sm font-bold text-white">{i + 1}</span>
-              <p className="text-sm text-slate-700">{t}</p>
-            </li>
-          ))}
-        </ol>
-      </section>
+      <StatsBand stats={stats} />
+      <HowItWorks />
+      <TrustSection />
 
-      <section aria-labelledby="h-news">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 id="h-news" className="text-xl font-bold">Berita terbaru</h2>
-          <Link href="/news" className="text-sm font-medium text-brand hover:underline">Semua berita</Link>
+      <section aria-labelledby="h-news" className="py-16">
+        <div className="mb-8 flex flex-wrap items-end justify-between gap-3">
+          <SectionHeading eyebrow="Berita" title="Kabar &amp; update terbaru"><span id="h-news" className="sr-only">Berita terbaru</span></SectionHeading>
+          <Link href="/news" className="inline-flex items-center gap-1.5 text-sm font-bold text-brand-ink hover:underline">Semua berita <IconArrow width={16} height={16} /></Link>
         </div>
         {news.length === 0 ? (
           <EmptyState title="Belum ada berita" />
         ) : (
-          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {news.map((n) => (
-              <li key={n.slug} className="rounded-xl border border-slate-200 bg-card p-4">
-                <p className="text-xs text-slate-500">{formatDate(n.publishedAt)}{n.campaignTitle ? ` · Update: ${n.campaignTitle}` : ""}</p>
-                <h3 className="mt-1 font-semibold"><Link href={`/news/${n.slug}`} className="hover:underline">{n.title}</Link></h3>
-                <p className="mt-1 line-clamp-2 text-sm text-slate-600">{n.excerpt}</p>
+          <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {news.slice(0, 3).map((n) => (
+              <li key={n.slug} className="rounded-2xl border border-slate-200 bg-card p-5 transition hover:-translate-y-1 hover:shadow-lg hover:shadow-brand/10">
+                <p className="text-xs font-medium text-brand-ink">{formatDate(n.publishedAt)}{n.campaignTitle ? ` · Update: ${n.campaignTitle}` : ""}</p>
+                <h3 className="mt-2 text-lg font-bold text-slate-900"><Link href={`/news/${n.slug}`} className="hover:text-brand-ink">{n.title}</Link></h3>
+                <p className="mt-1.5 line-clamp-3 text-sm text-slate-600">{n.excerpt}</p>
               </li>
             ))}
           </ul>
         )}
       </section>
+
+      <Faq />
+      <CtaBand ctaLabel={brand.ctaLabel} />
     </div>
   );
 }

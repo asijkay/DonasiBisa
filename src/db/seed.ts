@@ -24,7 +24,7 @@ async function seed(): Promise<void> {
       brandName: "DonasiBisa",
       primaryColor: "#0064db",
       secondaryColor: "#062246",
-      accentColor: "#fc9f27",
+      accentColor: "#ff6b57",
       tagline: "Berbagi kebaikan, satu donasi pada satu waktu.",
       footerText: "© DonasiBisa.",
       contactEmail: "halo@example.com",
@@ -60,17 +60,25 @@ async function seed(): Promise<void> {
 }
 
 async function seedDemo(): Promise<void> {
-  const demoCampaigns = [
-    { slug: "demo-nominal-bebas", title: "[DEMO] Campaign Nominal Bebas", amountMode: "OPEN_AMOUNT" as const, status: "PUBLISHED" as const, featured: true, target: 10_000_000 },
-    { slug: "demo-nominal-paket", title: "[DEMO] Campaign Paket Nominal", amountMode: "CLOSED_AMOUNT" as const, status: "PUBLISHED" as const, featured: true, target: 5_000_000 },
-    { slug: "demo-draft", title: "[DEMO] Campaign Draft (tidak tampil publik)", amountMode: "OPEN_AMOUNT" as const, status: "DRAFT" as const, featured: false, target: 1_000_000 },
+  type Cat = "PENDIDIKAN" | "KESEHATAN" | "BENCANA" | "SOSIAL" | "LAINNYA";
+  const demoCampaigns: Array<{ slug: string; title: string; amountMode: "OPEN_AMOUNT" | "CLOSED_AMOUNT"; status: "PUBLISHED" | "DRAFT"; featured: boolean; target: number; category: Cat; cover: string | null }> = [
+    { slug: "demo-nominal-bebas", title: "[DEMO] Beasiswa Anak Sekolah (nominal bebas)", amountMode: "OPEN_AMOUNT", status: "PUBLISHED", featured: true, target: 10_000_000, category: "PENDIDIKAN", cover: "/images/landing/education.webp" },
+    { slug: "demo-nominal-paket", title: "[DEMO] Layanan Kesehatan Ibu & Anak (paket nominal)", amountMode: "CLOSED_AMOUNT", status: "PUBLISHED", featured: true, target: 5_000_000, category: "KESEHATAN", cover: "/images/landing/health.webp" },
+    { slug: "demo-bencana", title: "[DEMO] Bantuan Darurat Bencana", amountMode: "OPEN_AMOUNT", status: "PUBLISHED", featured: true, target: 25_000_000, category: "BENCANA", cover: "/images/landing/disaster.webp" },
+    { slug: "demo-draft", title: "[DEMO] Campaign Draft (tidak tampil publik)", amountMode: "OPEN_AMOUNT", status: "DRAFT", featured: false, target: 1_000_000, category: "SOSIAL", cover: "/images/landing/community.webp" },
   ];
   for (const c of demoCampaigns) {
     const [existing] = await db.select({ id: campaigns.id }).from(campaigns).where(eq(campaigns.slug, c.slug));
-    if (existing) continue;
+    if (existing) {
+      // Backfill presentation fields on previously seeded demo rows (never touches amounts/status).
+      await db.update(campaigns).set({ category: c.category, coverImageUrl: c.cover, title: c.title }).where(eq(campaigns.id, existing.id));
+      continue;
+    }
     const [row] = await db
       .insert(campaigns)
       .values({
+        category: c.category,
+        coverImageUrl: c.cover,
         slug: c.slug,
         title: c.title,
         summary: "Contoh campaign untuk demo. Bukan penggalangan dana nyata dan tidak terverifikasi.",

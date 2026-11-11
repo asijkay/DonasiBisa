@@ -27,7 +27,7 @@ export default async function AccountPage() {
       <section aria-labelledby="h-recent">
         <div className="mb-3 flex items-center justify-between">
           <h2 id="h-recent" className="text-lg font-bold">Transaksi terbaru</h2>
-          <Link href="/account/transactions" className="text-sm font-medium text-brand hover:underline">Lihat semua</Link>
+          <Link href="/account/transactions" className="text-sm font-medium text-brand-ink hover:underline">Lihat semua</Link>
         </div>
         {recent.length === 0 ? <EmptyState title="Belum ada transaksi" /> : (
           <ul className="divide-y divide-slate-200 rounded-xl border border-slate-200 bg-card">

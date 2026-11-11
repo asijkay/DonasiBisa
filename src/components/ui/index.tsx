@@ -8,8 +8,9 @@ export function cn(...parts: Array<string | false | null | undefined>): string {
 const btnBase =
   "inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-50";
 const btnVariants = {
-  primary: "bg-brand text-white hover:brightness-110",
+  primary: "bg-brand-accent text-on-accent shadow-sm hover:brightness-105 active:brightness-95",
   secondary: "border border-slate-300 bg-card text-slate-800 hover:bg-slate-50",
+  blue: "bg-brand text-white hover:brightness-110",
   danger: "bg-red-600 text-white hover:bg-red-700",
   ghost: "text-slate-700 hover:bg-slate-100",
 } as const;

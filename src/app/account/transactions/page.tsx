@@ -24,7 +24,7 @@ export default async function TransactionsPage() {
                 <Td>{campaignTitle}</Td>
                 <Td>{formatIDR(d.amount)}</Td>
                 <Td><StatusBadge status={d.status} /></Td>
-                <Td><Link className="text-brand hover:underline" href={`/account/transactions/${d.donationCode}`}>Detail</Link></Td>
+                <Td><Link className="text-brand-ink hover:underline" href={`/account/transactions/${d.donationCode}`}>Detail</Link></Td>
               </tr>
             ))}
           </tbody>

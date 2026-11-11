@@ -2,17 +2,24 @@
 
 /* Brand tokens are injected at runtime from brand_config (see app/layout.tsx). */
 :root {
-  --brand-primary: #0f766e;
-  --brand-secondary: #334155;
-  --brand-accent: #f59e0b;
-  --brand-bg: #ffffff;
+  --brand-primary: #0064db; /* 30% — blue */
+  --brand-secondary: #062246;
+  --brand-accent: #ff6b57; /* 10% — coral */
+  --brand-bg: #ffffff; /* 60% — white */
   --card: #ffffff;
+  --accent-eff: var(--brand-accent);
+  --on-accent: #0b1b3a;
+  --blue-ink: var(--brand-primary);
+  --blue-soft: color-mix(in srgb, var(--brand-primary) 8%, white);
 }
 
 @theme inline {
   --color-brand: var(--brand-primary);
+  --color-brand-ink: var(--blue-ink);
+  --color-brand-soft: var(--blue-soft);
   --color-brand-secondary: var(--brand-secondary);
-  --color-brand-accent: var(--brand-accent);
+  --color-brand-accent: var(--accent-eff);
+  --color-on-accent: var(--on-accent);
   --color-surface: var(--brand-bg);
   --color-card: var(--card);
   --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -46,14 +53,18 @@ body {
 .prose-md table { border-collapse: collapse; }
 .prose-md th, .prose-md td { border: 1px solid #e2e8f0; padding: 0.4em 0.7em; }
 
-/* Dark mode: remap the neutral palette so existing utilities adapt; brand colors stay as configured. */
+/* Dark mode — 60% black, 30% blue, 10% crisp white. Neutral palette is remapped so utilities adapt. */
 @media (prefers-color-scheme: dark) {
   :root {
-    --card: #0f1a2e;
-    --color-slate-50: #0d1628;
-    --color-slate-100: #172238;
-    --color-slate-200: #273550;
-    --color-slate-300: #3a4a68;
+    --card: #0c1018;
+    --accent-eff: #ffffff;
+    --on-accent: #05070b;
+    --blue-ink: #5aa9ff;
+    --blue-soft: color-mix(in srgb, var(--brand-primary) 22%, #05070b);
+    --color-slate-50: #0a0e15;
+    --color-slate-100: #141a26;
+    --color-slate-200: #232b3b;
+    --color-slate-300: #34405a;
     --color-slate-400: #7d8ba5;
     --color-slate-500: #98a5bb;
     --color-slate-600: #b4bfd1;
@@ -61,7 +72,21 @@ body {
     --color-slate-800: #e2e8f0;
     --color-slate-900: #f8fafc;
   }
-  html { background: #0a1220; color: #e2e8f0; }
-  .prose-md blockquote { border-left-color: #3a4a68; color: #b4bfd1; }
-  .prose-md th, .prose-md td { border-color: #273550; }
+  html { background: #05070b; color: #e7ecf4; }
+  .prose-md blockquote { border-left-color: #34405a; color: #b4bfd1; }
+  .prose-md th, .prose-md td { border-color: #232b3b; }
 }
+
+/* Motion: gentle reveal, disabled for reduced-motion users. */
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+.reveal { animation: rise 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+.reveal-2 { animation-delay: 0.12s; }
+.reveal-3 { animation-delay: 0.24s; }
+@media (prefers-reduced-motion: reduce) { .reveal { animation: none; } * { scroll-behavior: auto !important; } }
+html { scroll-behavior: smooth; }
+details > summary { list-style: none; }
+details > summary::-webkit-details-marker { display: none; }
+
+/* Full-bleed bands inside the centered <main> container (landing page). */
+.full-bleed { margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw); }
+body { overflow-x: clip; }

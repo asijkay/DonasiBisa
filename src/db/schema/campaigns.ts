@@ -1,7 +1,7 @@
 import { bigint, boolean, check, index, integer, pgTable, text, timestamp, unique, uuid } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 import { users } from "./auth";
-import { amountModeEnum, campaignStatusEnum, closeReasonEnum } from "./enums";
+import { amountModeEnum, campaignCategoryEnum, campaignStatusEnum, closeReasonEnum } from "./enums";
 
 export const campaigns = pgTable(
   "campaigns",
@@ -14,6 +14,7 @@ export const campaigns = pgTable(
     targetAmount: bigint("target_amount", { mode: "number" }).notNull(),
     raisedAmount: bigint("raised_amount", { mode: "number" }).notNull().default(0),
     amountMode: amountModeEnum("amount_mode").notNull(),
+    category: campaignCategoryEnum("category").notNull().default("LAINNYA"),
     status: campaignStatusEnum("status").notNull().default("DRAFT"),
     closeReason: closeReasonEnum("close_reason"),
     autoCloseOnTarget: boolean("auto_close_on_target").notNull().default(true),

@@ -17,7 +17,7 @@ export default async function AdminNews() {
           <tbody>
             {rows.map((n) => (
               <tr key={n.id}>
-                <Td><Link className="font-medium text-brand hover:underline" href={`/admin/news/${n.id}`}>{n.title}</Link></Td>
+                <Td><Link className="font-medium text-brand-ink hover:underline" href={`/admin/news/${n.id}`}>{n.title}</Link></Td>
                 <Td>{n.campaignId ? "Update campaign" : "Berita umum"}</Td>
                 <Td><StatusBadge status={n.status} /></Td>
                 <Td>{formatDateTime(n.publishedAt)}</Td>

@@ -52,7 +52,7 @@ export default async function EditCampaign({ params, searchParams }: { params: P
       <section>
         <h2 className="mb-2 text-lg font-bold">Berita &amp; update terkait</h2>
         {related.length === 0 ? <p className="text-sm text-slate-600">Belum ada.</p> : (
-          <ul className="space-y-1 text-sm">{related.map((n) => (<li key={n.id}><Link className="text-brand hover:underline" href={`/admin/news/${n.id}`}>{n.title}</Link> <StatusBadge status={n.status} /></li>))}</ul>
+          <ul className="space-y-1 text-sm">{related.map((n) => (<li key={n.id}><Link className="text-brand-ink hover:underline" href={`/admin/news/${n.id}`}>{n.title}</Link> <StatusBadge status={n.status} /></li>))}</ul>
         )}
       </section>
     </div>

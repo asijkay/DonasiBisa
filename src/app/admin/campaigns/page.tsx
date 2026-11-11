@@ -17,7 +17,7 @@ export default async function AdminCampaigns() {
           <tbody>
             {rows.map((c) => (
               <tr key={c.id}>
-                <Td><Link className="font-medium text-brand hover:underline" href={`/admin/campaigns/${c.id}`}>{c.title}</Link>{c.isDemo && <span className="ml-2 text-xs text-amber-700">DEMO</span>}</Td>
+                <Td><Link className="font-medium text-brand-ink hover:underline" href={`/admin/campaigns/${c.id}`}>{c.title}</Link>{c.isDemo && <span className="ml-2 text-xs text-amber-700">DEMO</span>}</Td>
                 <Td>{c.amountMode === "OPEN_AMOUNT" ? "Nominal bebas" : "Paket nominal"}</Td>
                 <Td>{formatIDR(c.raisedAmount)} / {formatIDR(c.targetAmount)}</Td>
                 <Td><StatusBadge status={c.status} /></Td>

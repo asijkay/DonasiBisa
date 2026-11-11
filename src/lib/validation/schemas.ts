@@ -1,11 +1,12 @@
 import { z } from "zod";
-import { AMOUNT_MODES, NEWS_STATUSES, PROVIDERS } from "@/db/schema/enums";
+import { AMOUNT_MODES, CAMPAIGN_CATEGORIES, NEWS_STATUSES, PROVIDERS } from "@/db/schema/enums";
 import { isSafeHttpUrl } from "@/lib/utils/security";
 
+/** HTTPS URL, or a same-origin path such as /images/x.webp (never protocol-relative //host). */
 const httpUrl = z
   .string()
   .trim()
-  .refine((v) => isSafeHttpUrl(v, { allowLocalhostHttp: true }), "URL harus diawali https://");
+  .refine((v) => isSafeHttpUrl(v, { allowLocalhostHttp: true }) || (v.startsWith("/") && !v.startsWith("//")), "URL harus diawali https://");
 
 const optionalUrl = z
   .string()
@@ -48,6 +49,7 @@ export const campaignInputSchema = z.object({
   descriptionMd: z.string().trim().min(10).max(20000),
   targetAmount: z.number().int().positive(),
   amountMode: z.enum(AMOUNT_MODES),
+  category: z.enum(CAMPAIGN_CATEGORIES).default("LAINNYA"),
   autoCloseOnTarget: z.boolean().default(true),
   isFeatured: z.boolean().default(false),
   startsAt: z.date().nullish(),

@@ -23,7 +23,7 @@ export default async function NewsDetailPage({ params }: Props) {
       <p className="text-sm text-slate-500">
         {formatDate(n.publishedAt)}
         {row.campaignSlug && (
-          <> · Update campaign: <Link className="text-brand hover:underline" href={`/campaigns/${row.campaignSlug}`}>{row.campaignTitle}</Link></>
+          <> · Update campaign: <Link className="text-brand-ink hover:underline" href={`/campaigns/${row.campaignSlug}`}>{row.campaignTitle}</Link></>
         )}
       </p>
       <h1 className="mt-2 text-3xl font-bold tracking-tight">{n.title}</h1>

@@ -44,7 +44,7 @@ export function PaymentSummary({ s }: { s: DonationStatusView }) {
             </Card>
           )}
           <div className="flex flex-wrap items-center gap-3">
-            {pay?.checkoutUrl && <a href={pay.checkoutUrl} className="inline-flex rounded-lg bg-brand px-4 py-2.5 text-sm font-semibold text-white hover:brightness-110">Lanjutkan pembayaran</a>}
+            {pay?.checkoutUrl && <a href={pay.checkoutUrl} className="inline-flex rounded-lg bg-brand-accent px-4 py-2.5 text-sm font-semibold text-on-accent hover:brightness-105">Lanjutkan pembayaran</a>}
             <StatusPoller donationCode={s.donationCode} currentStatus={s.status} />
           </div>
         </>

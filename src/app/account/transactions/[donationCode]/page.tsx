@@ -26,7 +26,7 @@ export default async function TransactionDetailPage({ params }: { params: Promis
           <dt className="text-slate-600">Dibayar</dt><dd>{formatDateTime(d.paidAt)}</dd>
           {d.message && (<><dt className="text-slate-600">Pesan</dt><dd>{d.message}</dd></>)}
         </dl>
-        {d.status === "SUCCEEDED" && <a href={`/api/receipts/${d.donationCode}`} className="inline-flex rounded-lg bg-brand px-4 py-2.5 text-sm font-semibold text-white hover:brightness-110">Unduh bukti donasi (PDF)</a>}
+        {d.status === "SUCCEEDED" && <a href={`/api/receipts/${d.donationCode}`} className="inline-flex rounded-lg bg-brand-accent px-4 py-2.5 text-sm font-semibold text-on-accent hover:brightness-105">Unduh bukti donasi (PDF)</a>}
         {d.status === "PENDING" && <ButtonLink variant="secondary" href={`/payment/${d.donationCode}`}>Lihat status pembayaran</ButtonLink>}
       </Card>
     </div>

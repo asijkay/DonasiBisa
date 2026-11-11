@@ -41,8 +41,8 @@ export default async function TransactionsPage({ searchParams }: { searchParams:
         </Table>
       )}
       <div className="mt-4 flex gap-3 text-sm">
-        {page > 1 && <Link className="text-brand hover:underline" href={`?${qs(page - 1)}`}>← Sebelumnya</Link>}
-        {rows.length === pageSize && <Link className="text-brand hover:underline" href={`?${qs(page + 1)}`}>Berikutnya →</Link>}
+        {page > 1 && <Link className="text-brand-ink hover:underline" href={`?${qs(page - 1)}`}>← Sebelumnya</Link>}
+        {rows.length === pageSize && <Link className="text-brand-ink hover:underline" href={`?${qs(page + 1)}`}>Berikutnya →</Link>}
       </div>
     </div>
   );

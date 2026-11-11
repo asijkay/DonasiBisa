@@ -33,7 +33,7 @@ const FALLBACK: BrandDTO = {
   faviconUrl: null,
   primaryColor: "#0064db",
   secondaryColor: "#062246",
-  accentColor: "#fc9f27",
+  accentColor: "#ff6b57",
   backgroundColor: "#ffffff",
   contactEmail: null,
   contactWhatsapp: null,

@@ -60,6 +60,7 @@ function parseCampaign(fd: FormData) {
     descriptionMd: str(fd, "descriptionMd"),
     targetAmount: Number(str(fd, "targetAmount").replace(/\D/g, "")),
     amountMode: str(fd, "amountMode"),
+    category: str(fd, "category") || "LAINNYA",
     autoCloseOnTarget: bool(fd, "autoCloseOnTarget"),
     isFeatured: bool(fd, "isFeatured"),
     startsAt: jakartaDate(str(fd, "startsAt")),

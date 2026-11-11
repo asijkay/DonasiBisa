@@ -18,7 +18,7 @@ export default async function DonorsPage({ searchParams }: { searchParams: Promi
           <tbody>
             {rows.map(({ donor, total, count }) => (
               <tr key={donor.id}>
-                <Td><Link className="font-medium text-brand hover:underline" href={`/admin/donors/${donor.id}`}>{donor.fullName}</Link></Td>
+                <Td><Link className="font-medium text-brand-ink hover:underline" href={`/admin/donors/${donor.id}`}>{donor.fullName}</Link></Td>
                 <Td>{donor.email}</Td>
                 <Td>{donor.whatsappNumber ?? "-"}{donor.whatsappNumber && !donor.whatsappOptIn ? " (tanpa consent)" : ""}</Td>
                 <Td>{count}</Td>
