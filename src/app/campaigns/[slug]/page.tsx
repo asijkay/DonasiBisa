@@ -27,7 +27,7 @@ export default async function CampaignPage({ params }: Props) {
     <PageNav crumbs={[{ label: "Beranda", href: "/" }, { label: "Campaign", href: "/campaigns" }, { label: c.title }]} />
     <div className="grid gap-8 lg:grid-cols-[1fr_360px]">
       <article>
-        <CoverImage src={c.coverImageUrl} alt={c.title} className="h-56 w-full rounded-xl sm:h-80" />
+        <CoverImage src={c.coverImageUrl} alt={c.coverImageAlt ?? `Foto sampul campaign: ${c.title}`} className="h-56 w-full rounded-xl sm:h-80" />
         <div className="mt-5 flex flex-wrap items-center gap-2">
           <StatusBadge status={c.status} />
           {c.isDemo && <Badge tone="warning">DEMO — bukan penggalangan dana nyata</Badge>}

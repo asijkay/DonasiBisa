@@ -3,7 +3,8 @@ import Image from "next/image";
 import { redirect } from "next/navigation";
 import { Alert } from "@/components/ui";
 import { PageNav } from "@/components/public/page-nav";
-import { IconCheck, IconGoogle, IconLock } from "@/components/public/icons";
+import { GoogleButton } from "@/components/public/google-button";
+import { IconCheck, IconLock } from "@/components/public/icons";
 import { getCurrentUser } from "@/lib/auth/session";
 import { getBrand } from "@/services/brand.service";
 import { signInWithGoogleAction } from "@/app/actions/auth";
@@ -43,9 +44,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
           {error && <Alert tone="danger">Login gagal. Pastikan email Google Anda terverifikasi, lalu coba lagi.</Alert>}
           <form action={signInWithGoogleAction}>
             <input type="hidden" name="callbackUrl" value={next} />
-            <button type="submit" className="flex w-full items-center justify-center gap-3 rounded-xl border border-[#dadce0] bg-white px-5 py-3.5 text-base font-semibold text-[#1f2937] shadow-sm transition hover:-translate-y-0.5 hover:border-brand hover:shadow-md">
-              <IconGoogle /> Lanjutkan dengan Google
-            </button>
+            <GoogleButton />
           </form>
           <p className="flex items-start gap-2 text-xs text-slate-500"><IconLock width={14} height={14} className="mt-0.5 shrink-0" /> Kami hanya menerima nama, email, dan foto profil Anda. Kami tidak menyimpan password Google.</p>
         </section>

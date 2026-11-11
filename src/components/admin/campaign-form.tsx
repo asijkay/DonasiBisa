@@ -1,4 +1,5 @@
-import { Button, Input, Label, Select, Textarea } from "@/components/ui";
+import { SubmitButton } from "@/components/ui/submit-button";
+import { Input, Label, Select, Textarea } from "@/components/ui";
 import { CAMPAIGN_CATEGORIES } from "@/db/schema/enums";
 import type { CampaignRow } from "@/services/campaigns.service";
 import { saveCampaignAction } from "@/app/admin/actions";
@@ -38,6 +39,7 @@ export function CampaignForm({ campaign, options, canWrite }: { campaign?: Campa
           <div><Label htmlFor="endsAt" hint="(WIB)">Berakhir</Label><Input id="endsAt" name="endsAt" type="datetime-local" defaultValue={toLocal(campaign?.endsAt)} /></div>
         </div>
         <div><Label htmlFor="coverImageUrl" hint="(URL https atau /images/…)">Gambar sampul</Label><Input id="coverImageUrl" name="coverImageUrl" type="text" defaultValue={campaign?.coverImageUrl ?? ""} /></div>
+        <div><Label htmlFor="coverImageAlt" hint="(deskripsi gambar untuk pembaca layar; wajib jika gambar bermakna)">Teks alternatif gambar sampul</Label><Input id="coverImageAlt" name="coverImageAlt" defaultValue={campaign?.coverImageAlt ?? ""} maxLength={200} /></div>
         <div>
           <Label htmlFor="amountOptions" hint="(satu per baris: nominal|label — untuk mode paket nominal)">Pilihan nominal</Label>
           <Textarea id="amountOptions" name="amountOptions" rows={4} defaultValue={(options ?? []).map((o) => `${o.amount}${o.label ? `|${o.label}` : ""}`).join("\n")} placeholder={"25000|Paket Hemat\n50000|Paket Berbagi"} />
@@ -47,7 +49,7 @@ export function CampaignForm({ campaign, options, canWrite }: { campaign?: Campa
           <label className="flex items-center gap-2"><input type="checkbox" name="isFeatured" defaultChecked={campaign?.isFeatured ?? false} className="h-4 w-4" /> Campaign unggulan</label>
         </div>
       </fieldset>
-      {canWrite && <Button type="submit">Simpan</Button>}
+      {canWrite && <SubmitButton>Simpan</SubmitButton>}
     </form>
   );
 }

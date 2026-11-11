@@ -3,6 +3,7 @@
 import { useEffect, useSyncExternalStore } from "react";
 import { IconMonitor, IconMoon, IconSun } from "./icons";
 import { cn } from "@/components/ui";
+import { readThemePreference, storeThemePreference } from "@/lib/consent-client";
 
 type Pref = "system" | "light" | "dark";
 const OPTIONS: Array<{ value: Pref; label: string; Icon: typeof IconSun }> = [
@@ -20,19 +21,16 @@ function apply(pref: Pref): void {
 function subscribe(cb: () => void): () => void {
   window.addEventListener("storage", cb);
   window.addEventListener("theme-change", cb);
+  window.addEventListener("consent-change", cb);
   return () => {
     window.removeEventListener("storage", cb);
     window.removeEventListener("theme-change", cb);
+    window.removeEventListener("consent-change", cb);
   };
 }
 
 function readPref(): Pref {
-  try {
-    const v = localStorage.getItem("theme");
-    return v === "light" || v === "dark" ? v : "system";
-  } catch {
-    return "system"; // storage unavailable
-  }
+  return readThemePreference();
 }
 
 export function ThemeToggle({ className }: { className?: string }) {
@@ -47,11 +45,7 @@ export function ThemeToggle({ className }: { className?: string }) {
   }, [pref]);
 
   function choose(next: Pref) {
-    try {
-      localStorage.setItem("theme", next);
-    } catch {
-      /* ignore */
-    }
+    storeThemePreference(next);
     apply(next);
     window.dispatchEvent(new Event("theme-change"));
   }

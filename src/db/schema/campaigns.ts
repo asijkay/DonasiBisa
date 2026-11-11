@@ -23,6 +23,7 @@ export const campaigns = pgTable(
     startsAt: timestamp("starts_at", { withTimezone: true }),
     endsAt: timestamp("ends_at", { withTimezone: true }),
     coverImageUrl: text("cover_image_url"),
+    coverImageAlt: text("cover_image_alt"),
     createdBy: text("created_by").references(() => users.id, { onDelete: "set null" }),
     publishedAt: timestamp("published_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),

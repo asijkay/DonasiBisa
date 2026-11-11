@@ -13,6 +13,7 @@ import {
 } from "@/db/schema";
 import { getEnv, liveMoneyEnabled } from "@/lib/env";
 import { normalizeWhatsapp } from "@/lib/utils/contact";
+import { CONSENT_VERSION } from "@/lib/consent";
 import { generateDonationCode } from "@/lib/utils/security";
 import { getAdapter } from "@/lib/payments/registry";
 import { isSafeHttpUrl, sanitizePayload } from "@/lib/utils/security";
@@ -55,8 +56,12 @@ export async function createDonation(input: DonationInput, ctx: { idempotencyKey
     throw new DomainError("Campaign contoh (demo) tidak menerima donasi sungguhan.", "CAMPAIGN_DEMO", 409);
   }
   const amount = resolveDonationAmount(campaign, options, input, { min: env.MIN_DONATION_AMOUNT, max: env.MAX_DONATION_AMOUNT });
-  const whatsapp = normalizeWhatsapp(input.donor.whatsapp);
-  if (!whatsapp) throw new DomainError("Nomor WhatsApp tidak valid.", "WHATSAPP_INVALID");
+  // Data minimisation: keep the phone number only if the donor opted in to WhatsApp messages.
+  let whatsapp: string | null = null;
+  if (input.donor.whatsappOptIn) {
+    whatsapp = normalizeWhatsapp(input.donor.whatsapp ?? "");
+    if (!whatsapp) throw new DomainError("Nomor WhatsApp tidak valid.", "WHATSAPP_INVALID");
+  }
 
   try {
     return await db.transaction(async (tx) => {
@@ -81,6 +86,9 @@ export async function createDonation(input: DonationInput, ctx: { idempotencyKey
           message: input.message || null,
           isAnonymous: input.isAnonymous,
           whatsappOptInSnapshot: input.donor.whatsappOptIn,
+          termsAcceptedAt: new Date(),
+          consentVersion: CONSENT_VERSION,
+          ageConfirmed: input.ageConfirmed,
           expiresAt: new Date(Date.now() + DONATION_TTL_MS),
         })
         .returning();

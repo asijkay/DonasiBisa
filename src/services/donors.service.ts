@@ -6,6 +6,8 @@ import { normalizeEmail } from "@/lib/utils/contact";
 
 type DonorInput = { name: string; email: string; whatsapp: string | null; whatsappOptIn: boolean };
 
+/** `whatsapp` must already be null unless the donor opted in (see createDonation). */
+
 /** One donor profile per normalized email; latest contact details win. */
 export async function upsertDonor(tx: Tx, input: DonorInput) {
   const normalized = normalizeEmail(input.email);

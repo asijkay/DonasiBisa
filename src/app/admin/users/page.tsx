@@ -1,4 +1,5 @@
-import { Badge, Button, Card, Input, Label, PageHeading, Select, Table, Td, Th } from "@/components/ui";
+import { SubmitButton } from "@/components/ui/submit-button";
+import { Badge, Card, Input, Label, PageHeading, Select, Table, Td, Th } from "@/components/ui";
 import { Flash } from "@/components/admin/flash";
 import { requirePermission } from "@/lib/auth/session";
 import { listAdminUsers } from "@/services/admin.service";
@@ -16,7 +17,7 @@ export default async function UsersPage({ searchParams }: { searchParams: Promis
         <form action={grantRoleAction} className="flex flex-wrap items-end gap-3">
           <div><Label htmlFor="email">Email pengguna (sudah pernah login)</Label><Input id="email" name="email" type="email" required className="min-w-64" /></div>
           <div><Label htmlFor="role">Role</Label><Select id="role" name="role">{ROLES.map((r) => (<option key={r} value={r}>{r}</option>))}</Select></div>
-          <Button type="submit">Berikan role</Button>
+          <SubmitButton>Berikan role</SubmitButton>
         </form>
       </Card>
       <Table>

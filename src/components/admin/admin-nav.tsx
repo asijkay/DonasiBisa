@@ -12,6 +12,7 @@ const ITEMS: Array<{ href: string; label: string; perm: Permission | null }> = [
   { href: "/admin/notification-templates", label: "Template notifikasi", perm: "notification:read" },
   { href: "/admin/notification-logs", label: "Log notifikasi", perm: "notification:read" },
   { href: "/admin/payment-logs", label: "Log pembayaran", perm: "payment:read" },
+  { href: "/admin/data-requests", label: "Permintaan data", perm: "admin:manage" },
   { href: "/admin/audit-logs", label: "Audit log", perm: "admin:manage" },
   { href: "/admin/brand", label: "Brand", perm: "brand:configure" },
   { href: "/admin/users", label: "Pengguna admin", perm: "admin:manage" },

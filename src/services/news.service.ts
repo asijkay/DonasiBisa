@@ -69,6 +69,7 @@ export async function saveNews(id: string | null, input: NewsInput, actorId: str
     excerpt: input.excerpt,
     bodyMd: input.bodyMd,
     coverImageUrl: input.coverImageUrl ?? null,
+    coverImageAlt: input.coverImageAlt ?? null,
     campaignId: input.campaignId ?? null,
     status: input.status,
     updatedAt: now,

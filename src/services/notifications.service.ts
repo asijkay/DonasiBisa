@@ -16,6 +16,9 @@ import { renderTemplate, type TemplateVars } from "@/lib/notifications/render";
 import { emailConfigured, getEmailProvider, type EmailProvider } from "@/lib/notifications/email";
 import { fonnteProvider, NotificationSendError, whatsappConfigured, type WhatsappProvider } from "@/lib/notifications/whatsapp";
 import { formatIDR } from "@/lib/utils/format";
+import { unsubscribeApiUrl, unsubscribeUrl } from "@/lib/unsubscribe";
+import { escapeHtml } from "@/lib/notifications/render";
+import { donors } from "@/db/schema";
 
 const MAX_ATTEMPTS = 3;
 
@@ -68,9 +71,10 @@ export type DispatchDeps = { email?: EmailProvider; whatsapp?: WhatsappProvider 
 
 async function loadContext(donationId: string) {
   const [row] = await db
-    .select({ donation: donations, campaignTitle: campaigns.title })
+    .select({ donation: donations, campaignTitle: campaigns.title, donorOptOut: donors.emailOptOut })
     .from(donations)
     .innerJoin(campaigns, eq(campaigns.id, donations.campaignId))
+    .innerJoin(donors, eq(donors.id, donations.donorId))
     .where(eq(donations.id, donationId))
     .limit(1);
   const [brand] = await db.select().from(brandConfig).limit(1);
@@ -112,10 +116,21 @@ export async function dispatchNotification(logId: string, deps: DispatchDeps = {
       receipt_url: `${base}/account/transactions/${row.donation.donationCode}`,
       brand_name: brandName,
     };
-    const text = renderTemplate(template.bodyText, vars, "text");
+    // Every message carries a working unsubscribe link (also exposed as List-Unsubscribe headers).
+    const unsub = unsubscribeUrl(row.donation.donorId);
+    const transactionalNote = log.eventKey === "PAYMENT_SUCCEEDED" ? "Pesan ini adalah bukti transaksi dan tetap dikirim. " : "";
+    const text = `${renderTemplate(template.bodyText, vars, "text")}\n\n—\n${transactionalNote}Berhenti menerima pesan selain bukti transaksi: ${unsub}`;
     const subject = template.subject ? renderTemplate(template.subject, vars, "text") : "Notifikasi donasi";
-    const html = template.bodyHtml ? renderTemplate(template.bodyHtml, vars, "html") : undefined;
+    const html = template.bodyHtml
+      ? `${renderTemplate(template.bodyHtml, vars, "html")}<hr style="border:none;border-top:1px solid #ddd;margin:24px 0 12px"/><p style="font-size:12px;color:#555">${transactionalNote}<a href="${escapeHtml(unsub)}">Berhenti menerima pesan selain bukti transaksi</a></p>`
+      : undefined;
+    const headers = { "List-Unsubscribe": `<${unsubscribeApiUrl(row.donation.donorId)}>`, "List-Unsubscribe-Post": "List-Unsubscribe=One-Click" };
 
+    // Unsubscribed donors still get the payment receipt (transactional) but nothing else.
+    if (row.donorOptOut && log.eventKey !== "PAYMENT_SUCCEEDED") {
+      await mark({ status: "SKIPPED", errorMessage: "UNSUBSCRIBED", templateId: template.id });
+      return;
+    }
     // Defence in depth: WhatsApp only ever goes out with a true consent snapshot.
     if (channel === "WHATSAPP" && !row.donation.whatsappOptInSnapshot) {
       await mark({ status: "SKIPPED", errorMessage: "NO_WHATSAPP_CONSENT", templateId: template.id });
@@ -134,7 +149,7 @@ export async function dispatchNotification(logId: string, deps: DispatchDeps = {
     const attempts = log.attempts + 1;
     const result =
       channel === "EMAIL"
-        ? await (deps.email ?? getEmailProvider()).send({ to: log.recipient, subject, text, html })
+        ? await (deps.email ?? getEmailProvider()).send({ to: log.recipient, subject, text, html, headers })
         : await (deps.whatsapp ?? fonnteProvider).send({ to: log.recipient, message: text });
     await mark({ status: "SENT", attempts, templateId: template.id, providerMessageId: result.messageId ?? null, sentAt: new Date(), errorMessage: null });
   } catch (e) {

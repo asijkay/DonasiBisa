@@ -15,6 +15,12 @@ export const brandConfig = pgTable("brand_config", {
   contactEmail: text("contact_email"),
   contactWhatsapp: text("contact_whatsapp"),
   address: text("address"),
+  // Business details shown on legal pages, in the footer and on the About/Contact page.
+  legalName: text("legal_name"),
+  legalForm: text("legal_form"),
+  registrationNumber: text("registration_number"),
+  taxId: text("tax_id"),
+  privacyContactEmail: text("privacy_contact_email"),
   website: text("website"),
   ctaLabel: text("cta_label").notNull().default("Donasi Sekarang"),
   socialLinks: jsonb("social_links").$type<Record<string, string>>().notNull().default({}),

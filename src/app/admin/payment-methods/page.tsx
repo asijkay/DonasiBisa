@@ -1,4 +1,5 @@
-import { Alert, Badge, Button, Card, Input, PageHeading } from "@/components/ui";
+import { SubmitButton } from "@/components/ui/submit-button";
+import { Alert, Badge, Card, Input, PageHeading } from "@/components/ui";
 import { Flash } from "@/components/admin/flash";
 import { requirePermission } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/auth/permissions";
@@ -28,7 +29,7 @@ export default async function PaymentMethodsPage({ searchParams }: { searchParam
             </div>
             {canConfigure && (
               <form action={toggleProviderAction.bind(null, p.provider, !p.isEnabled)}>
-                <Button type="submit" variant={p.isEnabled ? "secondary" : "primary"}>{p.isEnabled ? "Nonaktifkan" : "Aktifkan"}</Button>
+                <SubmitButton variant={p.isEnabled ? "secondary" : "primary"}>{p.isEnabled ? "Nonaktifkan" : "Aktifkan"}</SubmitButton>
               </form>
             )}
           </div>
@@ -39,7 +40,7 @@ export default async function PaymentMethodsPage({ searchParams }: { searchParam
                 <label className="text-xs text-slate-500">Nama tampilan<Input name="displayName" defaultValue={m.displayName} disabled={!canConfigure} /></label>
                 <label className="text-xs text-slate-500">Urutan<Input name="sortOrder" type="number" defaultValue={m.sortOrder} disabled={!canConfigure} /></label>
                 <label className="flex items-center gap-2 pb-2 text-sm"><input type="checkbox" name="isEnabled" defaultChecked={m.isEnabled} disabled={!canConfigure} className="h-4 w-4" /> Aktif</label>
-                {canConfigure && <Button type="submit" variant="secondary">Simpan</Button>}
+                {canConfigure && <SubmitButton variant="secondary">Simpan</SubmitButton>}
                 <input type="hidden" name="description" value={m.description ?? ""} />
               </form>
             ))}

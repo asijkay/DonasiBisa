@@ -15,6 +15,7 @@ import { PROVIDERS, ROLES, type CampaignStatus, type Provider, type Role } from 
 import { createCampaign, DomainError, setCampaignStatus, updateCampaign } from "@/services/campaigns.service";
 import { deleteNews, saveNews } from "@/services/news.service";
 import { saveBrand } from "@/services/brand.service";
+import { resolveDataRequest } from "@/services/privacy.service";
 import { grantRole, revokeRole, saveTemplate, setProviderEnabled, updateMethod } from "@/services/admin.service";
 
 /** Runs an admin mutation: server-side permission check, domain errors → flash message, then redirect. */
@@ -66,6 +67,7 @@ function parseCampaign(fd: FormData) {
     startsAt: jakartaDate(str(fd, "startsAt")),
     endsAt: jakartaDate(str(fd, "endsAt")),
     coverImageUrl: str(fd, "coverImageUrl"),
+    coverImageAlt: str(fd, "coverImageAlt"),
     amountOptions: options,
   });
 }
@@ -94,6 +96,7 @@ export async function saveNewsAction(id: string | null, fd: FormData): Promise<n
       excerpt: str(fd, "excerpt"),
       bodyMd: str(fd, "bodyMd"),
       coverImageUrl: str(fd, "coverImageUrl"),
+      coverImageAlt: str(fd, "coverImageAlt"),
       campaignId: str(fd, "campaignId") || null,
       status: str(fd, "status"),
     });
@@ -150,6 +153,11 @@ export async function saveBrandAction(fd: FormData): Promise<never> {
         contactEmail: str(fd, "contactEmail") || undefined,
         contactWhatsapp: str(fd, "contactWhatsapp") || undefined,
         address: str(fd, "address") || undefined,
+        legalName: str(fd, "legalName") || undefined,
+        legalForm: str(fd, "legalForm") || undefined,
+        registrationNumber: str(fd, "registrationNumber") || undefined,
+        taxId: str(fd, "taxId") || undefined,
+        privacyContactEmail: str(fd, "privacyContactEmail") || undefined,
         website: str(fd, "website"),
         ctaLabel: str(fd, "ctaLabel"),
         footerText: str(fd, "footerText") || undefined,
@@ -170,4 +178,11 @@ export async function grantRoleAction(fd: FormData): Promise<never> {
 
 export async function revokeRoleAction(userId: string, role: Role): Promise<never> {
   return run("admin:manage", "/admin/users", (actor) => revokeRole(userId, role, actor));
+}
+
+/** Close a guest data request. `anonymize` performs the erasure (only for DELETE requests, after verifying the e-mail owner). */
+export async function resolveDataRequestAction(id: string, outcome: "DONE" | "REJECTED", anonymize: boolean): Promise<never> {
+  return run("admin:manage", "/admin/data-requests", async (actor) => {
+    await resolveDataRequest(id, outcome, actor, { anonymize });
+  });
 }

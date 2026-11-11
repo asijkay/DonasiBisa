@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import "./globals.css";
 import { getBrand } from "@/services/brand.service";
 import { getCurrentUser } from "@/lib/auth/session";
+import { CookieBanner } from "@/components/public/cookie-banner";
 import { SiteFooter, SiteHeader } from "@/components/public/site-chrome";
 
 // Pages read live data (campaigns, sessions); never prerender them at build time.
@@ -19,7 +20,7 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-const THEME_SCRIPT = `(function(){try{var p=localStorage.getItem("theme")||"system";var d=p==="dark"||(p==="system"&&window.matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.dataset.theme=d?"dark":"light"}catch(e){}})()`;
+const THEME_SCRIPT = `(function(){try{var p=localStorage.getItem("theme")||sessionStorage.getItem("theme")||"system";var d=p==="dark"||(p==="system"&&window.matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.dataset.theme=d?"dark":"light"}catch(e){}})()`;
 
 const HEX = /^#[0-9a-fA-F]{6}$/;
 const safeColor = (v: string, fallback: string) => (HEX.test(v) ? v : fallback);
@@ -40,10 +41,11 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
           Lewati ke konten
         </a>
         <SiteHeader brand={brand} user={user} />
-        <main id="main" className="mx-auto min-h-[60vh] max-w-6xl px-4 pb-16 pt-8">
+        <main id="main" tabIndex={-1} className="mx-auto outline-none min-h-[60vh] max-w-6xl px-4 pb-16 pt-8">
           {children}
         </main>
         <SiteFooter brand={brand} />
+        <CookieBanner />
       </body>
     </html>
   );

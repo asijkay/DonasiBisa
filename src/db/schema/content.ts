@@ -13,6 +13,7 @@ export const newsPosts = pgTable(
     excerpt: text("excerpt").notNull(),
     bodyMd: text("body_md").notNull(),
     coverImageUrl: text("cover_image_url"),
+    coverImageAlt: text("cover_image_alt"),
     status: newsStatusEnum("status").notNull().default("DRAFT"),
     authorId: text("author_id").references(() => users.id, { onDelete: "set null" }),
     publishedAt: timestamp("published_at", { withTimezone: true }),

@@ -1,7 +1,8 @@
-import { Button, Input, Label, Select, Textarea } from "@/components/ui";
+import { SubmitButton } from "@/components/ui/submit-button";
+import { Input, Label, Select, Textarea } from "@/components/ui";
 import { deleteNewsAction, saveNewsAction } from "@/app/admin/actions";
 
-type N = { id: string; title: string; slug: string; excerpt: string; bodyMd: string; coverImageUrl: string | null; campaignId: string | null; status: string };
+type N = { coverImageAlt?: string | null; id: string; title: string; slug: string; excerpt: string; bodyMd: string; coverImageUrl: string | null; campaignId: string | null; status: string };
 
 export function NewsForm({ news, campaigns, canWrite, canPublish }: { news?: N; campaigns: Array<{ id: string; title: string }>; canWrite: boolean; canPublish: boolean }) {
   return (
@@ -13,6 +14,7 @@ export function NewsForm({ news, campaigns, canWrite, canPublish }: { news?: N; 
           <div><Label htmlFor="excerpt">Kutipan</Label><Textarea id="excerpt" name="excerpt" rows={2} defaultValue={news?.excerpt} required maxLength={300} /></div>
           <div><Label htmlFor="bodyMd" hint="(Markdown)">Isi</Label><Textarea id="bodyMd" name="bodyMd" rows={10} defaultValue={news?.bodyMd} required /></div>
           <div><Label htmlFor="coverImageUrl" hint="(URL https)">Gambar sampul</Label><Input id="coverImageUrl" name="coverImageUrl" type="url" defaultValue={news?.coverImageUrl ?? ""} /></div>
+          <div><Label htmlFor="coverImageAlt" hint="(deskripsi gambar untuk pembaca layar)">Teks alternatif gambar sampul</Label><Input id="coverImageAlt" name="coverImageAlt" defaultValue={news?.coverImageAlt ?? ""} maxLength={200} /></div>
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <Label htmlFor="campaignId">Campaign terkait</Label>
@@ -31,10 +33,10 @@ export function NewsForm({ news, campaigns, canWrite, canPublish }: { news?: N; 
             </div>
           </div>
         </fieldset>
-        {canWrite && <Button type="submit">Simpan</Button>}
+        {canWrite && <SubmitButton>Simpan</SubmitButton>}
       </form>
       {news && canWrite && (
-        <form action={deleteNewsAction.bind(null, news.id)}><Button type="submit" variant="danger">Hapus berita</Button></form>
+        <form action={deleteNewsAction.bind(null, news.id)}><SubmitButton variant="danger">Hapus berita</SubmitButton></form>
       )}
     </div>
   );

@@ -19,6 +19,11 @@ export type BrandDTO = {
   contactEmail: string | null;
   contactWhatsapp: string | null;
   address: string | null;
+  legalName: string | null;
+  legalForm: string | null;
+  registrationNumber: string | null;
+  taxId: string | null;
+  privacyContactEmail: string | null;
   website: string | null;
   ctaLabel: string;
   socialLinks: Record<string, string>;
@@ -38,6 +43,11 @@ const FALLBACK: BrandDTO = {
   contactEmail: null,
   contactWhatsapp: null,
   address: null,
+  legalName: null,
+  legalForm: null,
+  registrationNumber: null,
+  taxId: null,
+  privacyContactEmail: null,
   website: null,
   ctaLabel: "Donasi Sekarang",
   socialLinks: {},
@@ -70,6 +80,11 @@ export async function saveBrand(input: z.infer<typeof brandInputSchema>, actorId
     contactEmail: input.contactEmail ?? null,
     contactWhatsapp: input.contactWhatsapp ?? null,
     address: input.address ?? null,
+    legalName: input.legalName ?? null,
+    legalForm: input.legalForm ?? null,
+    registrationNumber: input.registrationNumber ?? null,
+    taxId: input.taxId ?? null,
+    privacyContactEmail: input.privacyContactEmail ?? null,
     website: input.website ?? null,
     ctaLabel: input.ctaLabel,
     footerText: input.footerText ?? null,

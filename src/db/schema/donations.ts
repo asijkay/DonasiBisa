@@ -20,6 +20,10 @@ export const donations = pgTable(
     message: text("message"),
     isAnonymous: boolean("is_anonymous").notNull().default(false),
     whatsappOptInSnapshot: boolean("whatsapp_opt_in_snapshot").notNull().default(false),
+    // Proof of consent at checkout (version of the legal texts + timestamp). No IP address is stored.
+    termsAcceptedAt: timestamp("terms_accepted_at", { withTimezone: true }),
+    consentVersion: text("consent_version"),
+    ageConfirmed: boolean("age_confirmed").notNull().default(false),
     paidAt: timestamp("paid_at", { withTimezone: true }),
     expiresAt: timestamp("expires_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),

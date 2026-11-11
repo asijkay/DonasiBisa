@@ -29,11 +29,19 @@ export const donationInputSchema = z.object({
   donor: z.object({
     name: z.string().trim().min(2, "Nama minimal 2 karakter").max(100),
     email: z.string().trim().max(254).pipe(z.email("Email tidak valid")),
-    whatsapp: z.string().trim().min(8, "Nomor WhatsApp wajib diisi").max(20),
+    // Data minimisation: the phone number is collected ONLY when the donor opts in to WhatsApp.
+    whatsapp: z.string().trim().max(20).nullish(),
     whatsappOptIn: z.boolean().default(false),
   }),
   message: z.string().trim().max(500).nullish(),
   isAnonymous: z.boolean().default(false),
+  // Explicit, unticked-by-default consents (must be affirmatively true).
+  acceptedTerms: z.literal(true, { error: "Anda harus menyetujui Syarat Layanan dan Kebijakan Privasi." }),
+  ageConfirmed: z.literal(true, { error: "Konfirmasi usia atau persetujuan orang tua/wali diperlukan." }),
+}).superRefine((v, ctx) => {
+  if (v.donor.whatsappOptIn && (!v.donor.whatsapp || v.donor.whatsapp.trim().length < 8)) {
+    ctx.addIssue({ code: "custom", path: ["donor", "whatsapp"], message: "Isi nomor WhatsApp untuk menerima notifikasi WhatsApp." });
+  }
 });
 export type DonationInput = z.infer<typeof donationInputSchema>;
 
@@ -55,6 +63,7 @@ export const campaignInputSchema = z.object({
   startsAt: z.date().nullish(),
   endsAt: z.date().nullish(),
   coverImageUrl: optionalUrl,
+  coverImageAlt: z.string().trim().max(200).optional().transform((v) => v || undefined),
   amountOptions: z
     .array(z.object({ amount: z.number().int().positive(), label: z.string().trim().max(60).optional() }))
     .max(12)
@@ -68,6 +77,7 @@ export const newsInputSchema = z.object({
   excerpt: z.string().trim().min(10).max(300),
   bodyMd: z.string().trim().min(10).max(50000),
   coverImageUrl: optionalUrl,
+  coverImageAlt: z.string().trim().max(200).optional().transform((v) => v || undefined),
   campaignId: z.string().uuid().nullish(),
   status: z.enum(NEWS_STATUSES),
 });
@@ -86,6 +96,11 @@ export const brandInputSchema = z.object({
   contactEmail: z.string().trim().pipe(z.email()).optional().or(z.literal("").transform(() => undefined)),
   contactWhatsapp: z.string().trim().max(20).optional(),
   address: z.string().trim().max(300).optional(),
+  legalName: z.string().trim().max(150).optional(),
+  legalForm: z.string().trim().max(60).optional(),
+  registrationNumber: z.string().trim().max(80).optional(),
+  taxId: z.string().trim().max(40).optional(),
+  privacyContactEmail: z.string().trim().pipe(z.email()).optional().or(z.literal("").transform(() => undefined)),
   website: optionalUrl,
   ctaLabel: z.string().trim().min(2).max(40),
   footerText: z.string().trim().max(300).optional(),

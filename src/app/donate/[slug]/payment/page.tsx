@@ -25,6 +25,7 @@ export default async function SelectPaymentPage({ params, searchParams }: { para
         <p className="text-sm text-slate-600">{status.campaignTitle}</p>
         <p className="text-2xl font-bold">{formatIDR(status.amount)}</p>
         <p className="text-xs text-slate-500">Kode donasi {status.donationCode}</p>
+        <p className="mt-2 text-sm text-slate-700">Total yang dibayar sama dengan nominal ini. Tidak ada biaya tambahan dari kami.</p>
       </Card>
       {methods.length === 0 ? (
         <Alert tone="warning" title="Belum ada metode pembayaran aktif">Admin belum mengaktifkan penyedia pembayaran. Silakan coba lagi nanti.</Alert>

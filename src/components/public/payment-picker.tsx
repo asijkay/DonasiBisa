@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Alert, Button, cn } from "@/components/ui";
 
@@ -11,11 +11,13 @@ export function PaymentPicker({ donationCode, methods }: { donationCode: string;
   const [selected, setSelected] = useState<string>("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const inFlight = useRef(false);
   const key = (m: Method) => `${m.provider}:${m.channelCode}`;
 
   async function submit() {
     const m = methods.find((x) => key(x) === selected);
-    if (!m || submitting) return;
+    if (!m || inFlight.current || submitting) return;
+    inFlight.current = true;
     setSubmitting(true);
     setError(null);
     try {
@@ -27,6 +29,7 @@ export function PaymentPicker({ donationCode, methods }: { donationCode: string;
       const json = (await res.json()) as { payment?: { checkoutUrl: string | null }; message?: string };
       if (!res.ok || !json.payment) {
         setError(json.message ?? "Gagal membuat pembayaran.");
+        inFlight.current = false;
         setSubmitting(false);
         return;
       }
@@ -34,6 +37,7 @@ export function PaymentPicker({ donationCode, methods }: { donationCode: string;
       else router.push(`/payment/${donationCode}`);
     } catch {
       setError("Koneksi bermasalah. Silakan coba lagi.");
+      inFlight.current = false;
       setSubmitting(false);
     }
   }

@@ -12,6 +12,8 @@ export const PROVIDER_ENVIRONMENTS = ["SANDBOX", "PRODUCTION"] as const;
 export const NOTIFICATION_CHANNELS = ["EMAIL", "WHATSAPP"] as const;
 export const NOTIFICATION_STATUSES = ["QUEUED", "SENT", "FAILED", "SKIPPED"] as const;
 export const NEWS_STATUSES = ["DRAFT", "PUBLISHED", "ARCHIVED"] as const;
+export const DATA_REQUEST_TYPES = ["ACCESS", "DELETE"] as const;
+export const DATA_REQUEST_STATUSES = ["OPEN", "DONE", "REJECTED"] as const;
 export const WEBHOOK_PROCESSING_STATUSES = ["RECEIVED", "PROCESSED", "IGNORED", "FAILED"] as const;
 
 export type Role = (typeof ROLES)[number];
@@ -36,4 +38,6 @@ export const providerEnvironmentEnum = pgEnum("provider_environment", PROVIDER_E
 export const notificationChannelEnum = pgEnum("notification_channel", NOTIFICATION_CHANNELS);
 export const notificationStatusEnum = pgEnum("notification_status", NOTIFICATION_STATUSES);
 export const newsStatusEnum = pgEnum("news_status", NEWS_STATUSES);
+export const dataRequestTypeEnum = pgEnum("data_request_type", DATA_REQUEST_TYPES);
+export const dataRequestStatusEnum = pgEnum("data_request_status", DATA_REQUEST_STATUSES);
 export const webhookProcessingStatusEnum = pgEnum("webhook_processing_status", WEBHOOK_PROCESSING_STATUSES);

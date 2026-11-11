@@ -14,6 +14,7 @@ const LABELS: Record<string, string> = {
   "notification-logs": "Log notifikasi",
   "payment-logs": "Log pembayaran",
   "audit-logs": "Audit log",
+  "data-requests": "Permintaan data",
   brand: "Brand",
   users: "Pengguna admin",
   new: "Baru",

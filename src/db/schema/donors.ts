@@ -9,6 +9,10 @@ export const donors = pgTable("donors", {
   normalizedEmail: text("normalized_email").notNull().unique(),
   whatsappNumber: text("whatsapp_number"),
   whatsappOptIn: boolean("whatsapp_opt_in").notNull().default(false),
+  /** Set via the unsubscribe link: suppresses every non-essential (non-receipt) message. */
+  emailOptOut: boolean("email_opt_out").notNull().default(false),
+  /** Set when the donor exercised the right to erasure; PII is replaced, financial rows are kept. */
+  anonymizedAt: timestamp("anonymized_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });

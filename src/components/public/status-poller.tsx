@@ -13,6 +13,7 @@ export function StatusPoller({ donationCode, currentStatus }: { donationCode: st
   const [checking, setChecking] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const tries = useRef(0);
+  const busy = useRef(false);
 
   async function read(verify: boolean): Promise<string | null> {
     const res = await fetch(`/api/donations/${encodeURIComponent(donationCode)}/status${verify ? "?verify=1" : ""}`, { cache: "no-store" });
@@ -35,9 +36,12 @@ export function StatusPoller({ donationCode, currentStatus }: { donationCode: st
   if (currentStatus !== "PENDING") return null;
 
   async function check() {
+    if (busy.current) return;
+    busy.current = true;
     setChecking(true);
     setMessage(null);
     const s = await read(true).catch(() => null);
+    busy.current = false;
     setChecking(false);
     if (s && s !== "PENDING") router.refresh();
     else setMessage("Pembayaran belum terkonfirmasi. Jika Anda sudah membayar, tunggu beberapa saat lalu cek kembali.");

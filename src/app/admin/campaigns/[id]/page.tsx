@@ -1,6 +1,7 @@
+import { SubmitButton } from "@/components/ui/submit-button";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { Button, Card, PageHeading, StatusBadge } from "@/components/ui";
+import { Card, PageHeading, StatusBadge } from "@/components/ui";
 import { CampaignForm } from "@/components/admin/campaign-form";
 import { Flash } from "@/components/admin/flash";
 import { requirePermission } from "@/lib/auth/session";
@@ -42,7 +43,7 @@ export default async function EditCampaign({ params, searchParams }: { params: P
           <div className="flex flex-wrap gap-2">
             {NEXT[campaign.status].map((n) => (
               <form key={n.to} action={campaignStatusAction.bind(null, campaign.id, n.to)}>
-                <Button type="submit" variant={n.danger ? "danger" : "secondary"}>{n.label}</Button>
+                <SubmitButton variant={n.danger ? "danger" : "secondary"}>{n.label}</SubmitButton>
               </form>
             ))}
           </div>

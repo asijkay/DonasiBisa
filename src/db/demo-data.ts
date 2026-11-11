@@ -17,6 +17,7 @@ export type DemoCampaign = {
   status: "PUBLISHED" | "COMPLETED" | "DRAFT";
   featured: boolean;
   cover: string;
+  coverAlt: string;
   endsInDays: number | null;
   presets?: Array<[number, string]>;
 };
@@ -35,6 +36,7 @@ export const DEMO_CAMPAIGNS: DemoCampaign[] = [
     status: "PUBLISHED",
     featured: true,
     cover: "/images/landing/hero.webp",
+    coverAlt: "Anak-anak sekolah dasar tersenyum ceria sambil memegang buku tulis",
     endsInDays: 38,
     description: `## Latar belakang
 
@@ -73,6 +75,7 @@ Perkembangan campaign diperbarui pada bagian *Update*. Setiap tahap pembelian da
     status: "PUBLISHED",
     featured: true,
     cover: "/images/landing/education.webp",
+    coverAlt: "Sekelompok siswa berseragam putih belajar bersama dan membahas sebuah model",
     endsInDays: 52,
     presets: [[100_000, "Paket Modul"], [250_000, "Paket Praktik"], [500_000, "Paket Sertifikasi"], [1_000_000, "Beasiswa Penuh"]],
     description: `## Mengapa penting
@@ -103,6 +106,7 @@ Siswa kelas XII yang dipilih berdasarkan prestasi dan kebutuhan, melalui seleksi
     status: "PUBLISHED",
     featured: true,
     cover: "/images/landing/health.webp",
+    coverAlt: "Kader kesehatan dan ibu-ibu berfoto bersama di depan bangunan posyandu",
     endsInDays: 24,
     presets: [[25_000, "Satu paket makanan tambahan"], [50_000, "Pemeriksaan dua balita"], [100_000, "Satu bulan vitamin"], [250_000, "Satu kali kunjungan"]],
     description: `## Kondisi di lapangan
@@ -133,6 +137,7 @@ Balita yang terpantau rutin dan ibu yang lebih paham gizi. Laporan kunjungan aka
     status: "PUBLISHED",
     featured: true,
     cover: "/images/landing/disaster.webp",
+    coverAlt: "Truk logistik berisi bantuan kemanusiaan dengan petugas yang melepas keberangkatan",
     endsInDays: 14,
     description: `## Situasi
 
@@ -162,6 +167,7 @@ Setiap donasi, berapa pun nominalnya, langsung menambah progres campaign.${NOTE}
     status: "PUBLISHED",
     featured: false,
     cover: "/images/landing/community.webp",
+    coverAlt: "Anak-anak sekolah mencuci tangan berdampingan di fasilitas cuci tangan bersama",
     endsInDays: 75,
     description: `## Masalahnya
 
@@ -189,6 +195,7 @@ Perawatan dikelola oleh komite sekolah dan siswa "duta kebersihan" sehingga fasi
     status: "COMPLETED",
     featured: false,
     cover: "/images/landing/education.webp",
+    coverAlt: "Sekelompok siswa berseragam putih belajar bersama dan membahas sebuah model",
     endsInDays: null,
     description: `## Campaign selesai
 

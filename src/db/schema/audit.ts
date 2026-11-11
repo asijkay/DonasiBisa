@@ -1,5 +1,6 @@
 import { index, jsonb, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 import { users } from "./auth";
+import { dataRequestStatusEnum, dataRequestTypeEnum } from "./enums";
 
 export const auditLogs = pgTable(
   "audit_logs",
@@ -15,4 +16,20 @@ export const auditLogs = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [index("audit_logs_created_idx").on(t.createdAt)],
+);
+
+export const dataRequests = pgTable(
+  "data_requests",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    type: dataRequestTypeEnum("type").notNull(),
+    email: text("email").notNull(),
+    normalizedEmail: text("normalized_email").notNull(),
+    details: text("details"),
+    status: dataRequestStatusEnum("status").notNull().default("OPEN"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    resolvedAt: timestamp("resolved_at", { withTimezone: true }),
+    resolvedBy: text("resolved_by").references(() => users.id, { onDelete: "set null" }),
+  },
+  (t) => [index("data_requests_status_idx").on(t.status, t.createdAt)],
 );

@@ -26,6 +26,7 @@ export default async function AccountPage() {
           <Card><p className="text-sm text-slate-600">Semua transaksi</p><p className="text-2xl font-bold">{summary.transactionCount}</p></Card>
         </div>
       )}
+      <p className="text-sm"><Link href="/account/privacy" className="font-semibold text-brand-ink underline underline-offset-2">Privasi &amp; data saya</Link> — unduh atau hapus data Anda.</p>
       <section aria-labelledby="h-recent">
         <div className="mb-3 flex items-center justify-between">
           <h2 id="h-recent" className="text-lg font-bold">Transaksi terbaru</h2>

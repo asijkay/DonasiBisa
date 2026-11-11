@@ -118,6 +118,7 @@ export type CampaignCardDTO = {
   title: string;
   summary: string;
   coverImageUrl: string | null;
+  coverImageAlt: string | null;
   targetAmount: number;
   raisedAmount: number;
   status: CampaignStatus;
@@ -142,6 +143,7 @@ function toCard(c: CampaignRow): CampaignCardDTO {
     title: c.title,
     summary: c.summary,
     coverImageUrl: c.coverImageUrl,
+    coverImageAlt: c.coverImageAlt,
     targetAmount: c.targetAmount,
     raisedAmount: c.raisedAmount,
     status: c.status,
@@ -252,6 +254,7 @@ export async function createCampaign(input: CampaignInput, actor: Actor): Promis
         startsAt: input.startsAt ?? null,
         endsAt: input.endsAt ?? null,
         coverImageUrl: input.coverImageUrl ?? null,
+        coverImageAlt: input.coverImageAlt ?? null,
         createdBy: actor.userId,
       })
       .returning();
@@ -286,6 +289,7 @@ export async function updateCampaign(id: string, input: CampaignInput, actor: Ac
         startsAt: input.startsAt ?? null,
         endsAt: input.endsAt ?? null,
         coverImageUrl: input.coverImageUrl ?? null,
+        coverImageAlt: input.coverImageAlt ?? null,
         updatedAt: new Date(),
       })
       .where(eq(campaigns.id, id))

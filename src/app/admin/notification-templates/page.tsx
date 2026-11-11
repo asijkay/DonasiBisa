@@ -1,4 +1,5 @@
-import { Button, Card, Input, Label, PageHeading, Textarea, Badge } from "@/components/ui";
+import { SubmitButton } from "@/components/ui/submit-button";
+import { Card, Input, Label, PageHeading, Textarea, Badge } from "@/components/ui";
 import { Flash } from "@/components/admin/flash";
 import { requirePermission } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/auth/permissions";
@@ -24,7 +25,7 @@ export default async function TemplatesPage({ searchParams }: { searchParams: Pr
             <div><Label htmlFor={`b-${t.id}`}>Isi (teks)</Label><Textarea id={`b-${t.id}`} name="bodyText" rows={5} defaultValue={t.bodyText} disabled={!canEdit} /></div>
             {t.channel === "EMAIL" && <div><Label htmlFor={`h-${t.id}`}>Isi (HTML, opsional)</Label><Textarea id={`h-${t.id}`} name="bodyHtml" rows={4} defaultValue={t.bodyHtml ?? ""} disabled={!canEdit} /></div>}
             <label className="flex items-center gap-2 text-sm"><input type="checkbox" name="isActive" defaultChecked={t.isActive} disabled={!canEdit} className="h-4 w-4" /> Aktif</label>
-            {canEdit && <Button type="submit">Simpan</Button>}
+            {canEdit && <SubmitButton>Simpan</SubmitButton>}
           </form>
         </Card>
       ))}

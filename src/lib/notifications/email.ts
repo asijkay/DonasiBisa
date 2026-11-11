@@ -4,7 +4,7 @@ import { getEnv } from "@/lib/env";
 import { NotificationSendError } from "./whatsapp";
 
 export interface EmailProvider {
-  send(msg: { to: string; subject: string; text: string; html?: string }): Promise<{ messageId?: string }>;
+  send(msg: { to: string; subject: string; text: string; html?: string; headers?: Record<string, string> }): Promise<{ messageId?: string }>;
 }
 
 let transporter: Transporter | undefined;
@@ -29,13 +29,13 @@ function fromHeader(defaultAddress: string): string {
 
 /** Resend (HTTP API). Without a verified domain it can only send from onboarding@resend.dev to the account owner. */
 export const resendEmailProvider: EmailProvider = {
-  async send({ to, subject, text, html }) {
+  async send({ to, subject, text, html, headers }) {
     const key = getEnv().RESEND_API_KEY;
     if (!key) throw new NotificationSendError("RESEND_API_KEY missing", false);
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ from: fromHeader("onboarding@resend.dev"), to: [to], subject, text, html }),
+      body: JSON.stringify({ from: fromHeader("onboarding@resend.dev"), to: [to], subject, text, html, headers }),
       signal: AbortSignal.timeout(15000),
     });
     const json = (await res.json().catch(() => ({}))) as { id?: string; message?: string };
@@ -48,8 +48,8 @@ export const resendEmailProvider: EmailProvider = {
 };
 
 export const smtpEmailProvider: EmailProvider = {
-  async send({ to, subject, text, html }) {
-    const info = await getTransporter().sendMail({ from: fromHeader(getEnv().SMTP_USER ?? ""), to, subject, text, html });
+  async send({ to, subject, text, html, headers }) {
+    const info = await getTransporter().sendMail({ from: fromHeader(getEnv().SMTP_USER ?? ""), to, subject, text, html, headers });
     return { messageId: info.messageId };
   },
 };

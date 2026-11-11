@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Alert, Button, FieldError, Input, Label, Textarea, cn } from "@/components/ui";
@@ -18,16 +19,21 @@ type Issue = { path: string; message: string };
 export function DonateForm({ slug, amountMode, options, min, max }: Props) {
   const router = useRouter();
   const idempotencyKey = useRef(crypto.randomUUID());
+  const inFlight = useRef(false); // synchronous guard against double tap/Enter
   const [optionId, setOptionId] = useState<string>("");
   const [amount, setAmount] = useState<string>("");
+  const [wa, setWa] = useState(false); // WhatsApp opt-in: the phone field is only asked for when ticked
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [issues, setIssues] = useState<Issue[]>([]);
+  const chosen = amountMode === "CLOSED_AMOUNT" ? options.find((o) => o.id === optionId)?.amount : Number(amount) || undefined;
+  const totalLabel = chosen ? formatIDR(chosen) : "pilih nominal terlebih dahulu";
   const fieldError = (p: string) => issues.find((i) => i.path === p || i.path.endsWith(p))?.message;
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (submitting) return;
+    if (inFlight.current || submitting) return;
+    inFlight.current = true;
     const fd = new FormData(e.currentTarget);
     setSubmitting(true);
     setError(null);
@@ -39,11 +45,13 @@ export function DonateForm({ slug, amountMode, options, min, max }: Props) {
       donor: {
         name: String(fd.get("name") ?? ""),
         email: String(fd.get("email") ?? ""),
-        whatsapp: String(fd.get("whatsapp") ?? ""),
-        whatsappOptIn: fd.get("whatsappOptIn") === "on",
+        whatsapp: wa ? String(fd.get("whatsapp") ?? "") || null : null,
+        whatsappOptIn: wa,
       },
       message: String(fd.get("message") ?? "") || null,
       isAnonymous: fd.get("isAnonymous") === "on",
+      acceptedTerms: fd.get("acceptedTerms") === "on",
+      ageConfirmed: fd.get("ageConfirmed") === "on",
     };
     try {
       const res = await fetch("/api/donations", {
@@ -56,6 +64,7 @@ export function DonateForm({ slug, amountMode, options, min, max }: Props) {
         idempotencyKey.current = crypto.randomUUID(); // a corrected resubmission is a new attempt
         setError(json.message ?? "Gagal membuat donasi.");
         setIssues(json.issues ?? []);
+        inFlight.current = false;
         setSubmitting(false);
         return;
       }
@@ -63,6 +72,7 @@ export function DonateForm({ slug, amountMode, options, min, max }: Props) {
     } catch {
       idempotencyKey.current = crypto.randomUUID();
       setError("Koneksi bermasalah. Silakan coba lagi.");
+      inFlight.current = false;
       setSubmitting(false);
     }
   }
@@ -110,11 +120,6 @@ export function DonateForm({ slug, amountMode, options, min, max }: Props) {
           <Input id="email" name="email" type="email" autoComplete="email" required aria-invalid={!!fieldError("email")} />
           <FieldError>{fieldError("donor.email")}</FieldError>
         </div>
-        <div className="sm:col-span-2">
-          <Label htmlFor="whatsapp" hint="(contoh 081234567890)">Nomor WhatsApp</Label>
-          <Input id="whatsapp" name="whatsapp" type="tel" autoComplete="tel" required aria-invalid={!!fieldError("whatsapp")} />
-          <FieldError>{fieldError("donor.whatsapp")}</FieldError>
-        </div>
       </div>
 
       <div>
@@ -125,17 +130,46 @@ export function DonateForm({ slug, amountMode, options, min, max }: Props) {
       <div className="space-y-3 text-sm">
         <label className="flex items-start gap-2">
           <input type="checkbox" name="isAnonymous" className="mt-1 h-4 w-4" />
-          <span>Sembunyikan nama saya (donasi anonim)</span>
+          <span>Sembunyikan nama saya dari tampilan publik (donasi anonim).</span>
         </label>
-        <label className="flex items-start gap-2">
-          <input type="checkbox" name="whatsappOptIn" className="mt-1 h-4 w-4" />
-          <span>Saya setuju menerima notifikasi transaksi melalui WhatsApp. (Tanpa persetujuan, hanya email yang dikirim.)</span>
-        </label>
+        <div className="space-y-2">
+          <label className="flex items-start gap-2">
+            <input type="checkbox" checked={wa} onChange={(e) => setWa(e.target.checked)} className="mt-1 h-4 w-4" aria-controls="wa-field" aria-expanded={wa} />
+            <span>Kirimi saya notifikasi transaksi lewat WhatsApp <span className="text-slate-600">(opsional; nomor hanya diminta jika Anda memilih ini)</span>.</span>
+          </label>
+          {wa && (
+            <div id="wa-field" className="ml-6">
+              <Label htmlFor="whatsapp" hint="(contoh 081234567890)">Nomor WhatsApp</Label>
+              <Input id="whatsapp" name="whatsapp" type="tel" autoComplete="tel" required aria-invalid={!!fieldError("whatsapp")} />
+              <FieldError>{fieldError("whatsapp")}</FieldError>
+            </div>
+          )}
+        </div>
       </div>
 
-      <p className="text-xs text-slate-500">Data Anda hanya digunakan untuk memproses donasi dan mengirim konfirmasi, serta tidak ditampilkan ke publik.</p>
+      <fieldset className="space-y-3 rounded-xl border border-slate-200 p-4 text-sm">
+        <legend className="px-2 font-semibold">Persetujuan (wajib)</legend>
+        <label className="flex items-start gap-2">
+          <input type="checkbox" name="ageConfirmed" required className="mt-1 h-4 w-4" aria-invalid={!!fieldError("ageConfirmed")} />
+          <span>Saya berusia minimal 18 tahun, atau berdonasi dengan persetujuan dan pendampingan orang tua/wali.</span>
+        </label>
+        <FieldError>{fieldError("ageConfirmed")}</FieldError>
+        <label className="flex items-start gap-2">
+          <input type="checkbox" name="acceptedTerms" required className="mt-1 h-4 w-4" aria-invalid={!!fieldError("acceptedTerms")} />
+          <span>
+            Saya telah membaca dan menyetujui <Link href="/terms" target="_blank" rel="noopener" className="font-semibold text-brand-ink underline">Syarat Layanan</Link> dan{" "}
+            <Link href="/privacy" target="_blank" rel="noopener" className="font-semibold text-brand-ink underline">Kebijakan Privasi</Link> (terbuka di tab baru).
+          </span>
+        </label>
+        <FieldError>{fieldError("acceptedTerms")}</FieldError>
+      </fieldset>
 
-      <Button type="submit" disabled={submitting} className="w-full sm:w-auto">
+      <div className="rounded-xl bg-brand-soft p-4 text-sm" aria-live="polite">
+        <p className="font-semibold text-slate-900">Total yang Anda bayar: {totalLabel}</p>
+        <p className="mt-0.5 text-slate-700">Sama dengan nominal donasi. Tidak ada biaya admin atau biaya tersembunyi dari kami.</p>
+      </div>
+
+      <Button type="submit" disabled={submitting} aria-busy={submitting} className="w-full sm:w-auto">
         {submitting ? "Memproses…" : "Lanjut ke pembayaran"}
       </Button>
     </form>

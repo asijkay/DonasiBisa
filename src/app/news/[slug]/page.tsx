@@ -21,7 +21,7 @@ export default async function NewsDetailPage({ params }: Props) {
   return (
     <article className="mx-auto max-w-3xl">
       <PageNav crumbs={[{ label: "Beranda", href: "/" }, { label: "Berita", href: "/news" }, { label: n.title }]} />
-      <CoverImage src={n.coverImageUrl} alt={n.title} className="mb-5 h-56 w-full rounded-xl" />
+      <CoverImage src={n.coverImageUrl} alt={n.coverImageAlt ?? `Gambar untuk berita: ${n.title}`} className="mb-5 h-56 w-full rounded-xl" />
       <p className="text-sm text-slate-500">
         {formatDate(n.publishedAt)}
         {row.campaignSlug && (

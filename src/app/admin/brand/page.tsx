@@ -1,4 +1,5 @@
-import { Button, Card, Input, Label, PageHeading, Textarea } from "@/components/ui";
+import { SubmitButton } from "@/components/ui/submit-button";
+import { Card, Input, Label, PageHeading, Textarea } from "@/components/ui";
 import { Flash } from "@/components/admin/flash";
 import { requirePermission } from "@/lib/auth/session";
 import { getBrand } from "@/services/brand.service";
@@ -27,6 +28,16 @@ export default async function BrandPage({ searchParams }: { searchParams: Promis
             <div><Label htmlFor="contactEmail">Email kontak</Label><Input id="contactEmail" name="contactEmail" type="email" defaultValue={b.contactEmail ?? ""} /></div>
             <div><Label htmlFor="contactWhatsapp">WhatsApp kontak</Label><Input id="contactWhatsapp" name="contactWhatsapp" defaultValue={b.contactWhatsapp ?? ""} /></div>
           </div>
+          <fieldset className="space-y-4 rounded-xl border border-slate-200 p-4">
+            <legend className="px-2 text-sm font-semibold">Detail bisnis (tampil di halaman legal, footer, dan Tentang &amp; Kontak)</legend>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div><Label htmlFor="legalName">Nama badan hukum / penyelenggara</Label><Input id="legalName" name="legalName" defaultValue={b.legalName ?? ""} /></div>
+              <div><Label htmlFor="legalForm" hint="(Yayasan, PT, Perkumpulan, …)">Bentuk badan</Label><Input id="legalForm" name="legalForm" defaultValue={b.legalForm ?? ""} /></div>
+              <div><Label htmlFor="registrationNumber" hint="(SK Kemenkumham / NIB)">Nomor pengesahan / izin</Label><Input id="registrationNumber" name="registrationNumber" defaultValue={b.registrationNumber ?? ""} /></div>
+              <div><Label htmlFor="taxId">NPWP</Label><Input id="taxId" name="taxId" defaultValue={b.taxId ?? ""} /></div>
+              <div className="sm:col-span-2"><Label htmlFor="privacyContactEmail" hint="(untuk permintaan data pribadi)">Email kontak privasi</Label><Input id="privacyContactEmail" name="privacyContactEmail" type="email" defaultValue={b.privacyContactEmail ?? ""} /></div>
+            </div>
+          </fieldset>
           <div><Label htmlFor="address">Alamat / keterangan organisasi</Label><Textarea id="address" name="address" rows={2} defaultValue={b.address ?? ""} /></div>
           <div className="grid gap-4 sm:grid-cols-2">
             <div><Label htmlFor="website">Website</Label><Input id="website" name="website" type="url" defaultValue={b.website ?? ""} /></div>
@@ -36,7 +47,7 @@ export default async function BrandPage({ searchParams }: { searchParams: Promis
             {["instagram", "facebook", "x", "youtube", "tiktok"].map((k) => (<div key={k}><Label htmlFor={`social_${k}`}>{k}</Label><Input id={`social_${k}`} name={`social_${k}`} defaultValue={b.socialLinks[k] ?? ""} /></div>))}
           </div>
           <div><Label htmlFor="footerText">Teks footer</Label><Input id="footerText" name="footerText" defaultValue={b.footerText ?? ""} /></div>
-          <Button type="submit">Simpan</Button>
+          <SubmitButton>Simpan</SubmitButton>
         </form>
       </Card>
     </div>

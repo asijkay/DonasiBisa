@@ -85,6 +85,7 @@ async function seedDemo(): Promise<void> {
       isFeatured: c.featured,
       isDemo: true,
       coverImageUrl: c.cover,
+      coverImageAlt: c.coverAlt,
       endsAt,
       publishedAt: new Date(Date.now() - 20 * 86_400_000),
     };
